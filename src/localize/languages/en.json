@@ -6,6 +6,14 @@
     "no_entity_set": "Entity not set",
     "no_entity": "Entity not available",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "offline": "Offline"
+  },
+  "google_button_card": {
+    "control_type": "Control Type",
+    "type": {
+      "generic": "Generic (Switch, Button...)",
+      "thermometer": "Thermometer"
+    }
   }
 }

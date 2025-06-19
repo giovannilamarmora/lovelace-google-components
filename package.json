@@ -1,7 +1,7 @@
 {
-  "name": "big-slider-card",
-  "version": "1.1.5",
-  "description": "Lovelace big-slider-card",
+  "name": "google-components",
+  "version": "1.5.0",
+  "description": "Lovelace Google Components for Home Assistant",
   "keywords": [
     "home-assistant",
     "homeassistant",
@@ -10,21 +10,21 @@
     "lovelace",
     "custom-cards"
   ],
-  "module": "big-slider-card.js",
+  "module": "google-components.js",
   "type": "module",
-  "repository": "git@github.com:nicufarmache/lovelace-big-slider-card.git",
-  "author": "Nicu Farmache <github@nicu.ro>",
+  "repository": "git@github.com:giovannilamarmora/Home-Assistant-Google-Home-Component.git",
+  "author": "Giovanni Lamarmora",
   "license": "MIT",
   "dependencies": {
-    "@nicufarmache/slide-gesture": "^1.1.2",
+    "@nicufarmache/slide-gesture": "^1.2.4",
     "custom-card-helpers": "^1.9.0",
-    "home-assistant-js-websocket": "^8.2.0",
-    "lit": "^2.8.0"
+    "home-assistant-js-websocket": "^9.5.0",
+    "lit": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-commonjs": "^25.0.4",
+    "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "@rollup/plugin-terser": "^0.4.3",

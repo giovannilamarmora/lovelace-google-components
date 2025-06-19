@@ -1,19 +1,46 @@
-import { BigSliderCard } from './big-slider-card';
-import { CARD_VERSION } from './const';
-import { localize } from './localize/localize';
+import { CARD_VERSION } from "./const";
+import { GoogleButtonCard } from "./google-button-card";
+import { GoogleButtonCardEditor } from "./google-button-card-editor";
+import { GoogleDashboardCard } from "./google-dashboard-card";
+import { GoogleSliderCard } from "./google-slider-card";
+import { localize } from "./localize/localize";
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  BIG-SLIDER-CARD \n%c  ${localize('common.version')} ${CARD_VERSION}    `,
-  'color: orange; font-weight: bold; background: black',
-  'color: white; font-weight: bold; background: dimgray',
+  `%c  GOOGLE-SLIDER-CARD \n%c  ${localize("common.version")} ${CARD_VERSION}    `,
+  "color: orange; font-weight: bold; background: black",
+  "color: white; font-weight: bold; background: dimgray"
 );
 
-customElements.define("big-slider-card", BigSliderCard);
+customElements.define("google-slider-card", GoogleSliderCard);
+if (!customElements.get("google-button-card")) {
+  customElements.define("google-button-card", GoogleButtonCard);
+}
+if (!customElements.get("google-button-card")) {
+  customElements.define("google-button-card", GoogleButtonCardEditor);
+}
+if (!customElements.get("google-dashboard-card")) {
+  customElements.define("google-dashboard-card", GoogleDashboardCard);
+}
 
 (window as any).customCards = (window as any).customCards ?? [];
 (window as any).customCards.push({
-  type: 'big-slider-card',
-  name: 'Big Slider Card',
-  description: 'Big slider card for light entities.',
+  type: "google-slider-card",
+  name: "Google Slider Card",
+  preview: true,
+  description: "Google Slider Card for light entities.",
+});
+
+(window as any).customCards.push({
+  type: "google-button-card",
+  name: "Google Button Card",
+  preview: true,
+  description: "Google-style button card.",
+});
+
+(window as any).customCards.push({
+  type: "google-dashboard-card",
+  name: "Google Dashboard Card",
+  preview: true,
+  description: "Google-style Dashboard card.",
 });

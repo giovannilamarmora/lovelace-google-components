@@ -7,5 +7,12 @@
     "no_entity": "Entitatea nu e disponibilă",
     "on": "Pornit",
     "off": "Oprit"
+  },
+  "google_button_card": {
+    "control_type": "Control Type",
+    "type": {
+      "generic": "Generic (Switch, Button...)",
+      "thermometer": "Thermometer"
+    }
   }
 }

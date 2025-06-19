@@ -3,7 +3,11 @@ resources:
     type: module
 views:
   - cards:
-      - type: custom:big-slider-card
-        name: Big Slider Card Development
+      - type: custom:google-slider-card
+        name: Google Slider Card Development
+        entity: light.sun
+        test_gui: true
+      - type: custom:google-button-card
+        name: Google Button Card Development
         entity: sun.sun
         test_gui: true

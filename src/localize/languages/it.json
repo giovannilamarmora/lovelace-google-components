@@ -1,18 +1,25 @@
 {
   "common": {
-    "version": "Versiunea",
-    "invalid_configuration": "Configurație invalidă",
-    "show_warning": "Show Warning",
-    "no_entity_set": "Entitatea nu e setată",
-    "no_entity": "Entitatea nu e disponibilă",
-    "on": "Pornit",
-    "off": "Oprit"
+    "version": "Versione",
+    "invalid_configuration": "Configurazione non valida",
+    "show_warning": "Mostra avviso",
+    "no_entity_set": "Entità non impostata",
+    "no_entity": "Entità non disponibile",
+    "on": "Acceso",
+    "off": "Spento",
+    "offline": "Offline",
+    "auto": "Auto",
+    "heat": "Riscalda",
+    "cool": "Raffresca"
   },
   "google_button_card": {
-    "control_type": "Control Type",
+    "control_type": "Tipo di controllo",
     "type": {
-      "generic": "Generic (Switch, Button...)",
-      "thermometer": "Thermometer"
+      "generic": "Generico (Interruttore, Pulsante...)",
+      "thermometer": "Termometro"
+    },
+    "dual_icon": {
+      "options": "Usa doppia icona (Elemento acceso e spento)."
     }
   }
 }

@@ -1,7 +1,6 @@
 import { CARD_VERSION } from "./const";
-import { GoogleButtonCard } from "./google-button-card";
-import { GoogleButtonCardEditor } from "./google-button-card-editor";
-import { GoogleDashboardCard } from "./google-dashboard-card";
+import { GoogleButtonCard } from "./google-button/google-button-card";
+import { GoogleDashboardCard } from "./google-dashboard/google-dashboard-card";
 import { GoogleSliderCard } from "./google-slider-card";
 import { localize } from "./localize/localize";
 
@@ -17,7 +16,7 @@ if (!customElements.get("google-button-card")) {
   customElements.define("google-button-card", GoogleButtonCard);
 }
 if (!customElements.get("google-button-card")) {
-  customElements.define("google-button-card", GoogleButtonCardEditor);
+  customElements.define("google-button-card", GoogleDashboardCard);
 }
 if (!customElements.get("google-dashboard-card")) {
   customElements.define("google-dashboard-card", GoogleDashboardCard);

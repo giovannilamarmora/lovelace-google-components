@@ -1,9 +1,15 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { HomeAssistant } from "./ha-types";
-import { GoogleButtonCardConfig } from "./types";
-import { localize } from "./localize/localize";
-import { DEFAULT_BTN_CONFIG } from "./const";
+import { GoogleButtonCardConfig } from "../types";
+import { localize } from "../localize/localize";
+import { DEFAULT_BTN_CONFIG } from "../const";
+import { fireEvent } from "custom-card-helpers";
+import { HomeAssistant } from "../ha-types";
+import {
+  getIcon,
+  isOfflineState,
+  mapStateDisplay,
+} from "./google-button-mapper";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -46,9 +52,16 @@ export class GoogleButtonCard extends LitElement {
       navigator.vibrate(50);
     }
 
-    if (this._config?.entity) {
+    if (!this._config || !this.hass) return;
+
+    const entityId = this._config.entity;
+    const controlType = this._config.control_type || "generic";
+
+    if (controlType === "thermometer") {
+      fireEvent(this, "hass-more-info", { entityId });
+    } else {
       this.hass.callService("homeassistant", "toggle", {
-        entity_id: this._config.entity,
+        entity_id: entityId,
       });
     }
   }
@@ -63,35 +76,35 @@ export class GoogleButtonCard extends LitElement {
       >`;
     }
 
-    const isOn = stateObj.state === "on";
-    const domain = this._config.entity!.split(".")[0];
-    console.log(domain, this._config.entity);
+    const isOn =
+      stateObj.state === "on" ||
+      stateObj.state === "auto" ||
+      stateObj.state === "heat" ||
+      stateObj.state === "cool";
+    //const domain = this._config.entity!.split(".")[0];
     const name = this._config.name || stateObj.attributes.friendly_name;
-    let icon = "";
+    const icon = getIcon(stateObj, this._config);
+    //let icon = "";
+    //if (this._config.icon && this._config.icon.trim() !== "") {
+    //  icon = this._config.icon;
+    //} else if (
+    //  stateObj.attributes.icon &&
+    //  stateObj.attributes.icon.trim() !== ""
+    //) {
+    //  icon = stateObj.attributes.icon;
+    //} else {
+    //  icon = `mdi:${domain}`;
+    //}
 
-    if (this._config.icon && this._config.icon.trim() !== "") {
-      icon = this._config.icon;
-    } else if (
-      stateObj.attributes.icon &&
-      stateObj.attributes.icon.trim() !== ""
-    ) {
-      icon = stateObj.attributes.icon;
-    } else {
-      icon = `mdi:${domain}`;
-    }
-
-    let stateDisplay: any;
-    const isOffline =
-      stateObj.state != "on" &&
-      stateObj.state != "off" &&
-      stateObj.state != "heat" &&
-      stateObj.state != "cool";
-    if (!isOn) {
-      if (!isOffline) stateDisplay = localize("common.off");
-      else stateDisplay = localize("common.offline");
-    } else stateDisplay = localize("common.on");
+    const isOffline = isOfflineState(stateObj.state);
+    const stateDisplay = mapStateDisplay(
+      stateObj,
+      this._config.control_type!,
+      isOffline
+    );
 
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
+    console.log(this._config);
 
     this.setColorCard(this._config.control_type, theme, isOffline, isOn);
 
@@ -127,6 +140,7 @@ export class GoogleButtonCard extends LitElement {
     isOffline: boolean,
     isOn: boolean
   ) {
+    console.log(control_type, theme, isOffline, isOn);
     let nameColor = "";
     let iconColor = "";
     let percentageColor = "";
@@ -144,12 +158,22 @@ export class GoogleButtonCard extends LitElement {
     } else if (isOn) {
       // Acceso, tema dark
       if (theme === "dark") {
-        nameColor = iconColor = percentageColor = "#d8e3f7";
-        containerColor = "#3e4758";
+        if (control_type === "thermometer") {
+          nameColor = iconColor = percentageColor = "#fedcca";
+          containerColor = "#5c4035";
+        } else {
+          nameColor = iconColor = percentageColor = "#d8e3f7";
+          containerColor = "#3e4758";
+        }
       } else {
         // Acceso, tema light
-        nameColor = iconColor = percentageColor = "#131c2b";
-        containerColor = "#d8e3f7";
+        if (control_type === "thermometer") {
+          nameColor = iconColor = percentageColor = "#812800";
+          containerColor = "#ffd5c4";
+        } else {
+          nameColor = iconColor = percentageColor = "#131c2b";
+          containerColor = "#d8e3f7";
+        }
       }
     } else {
       // Spento, tema dark

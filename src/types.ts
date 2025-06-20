@@ -47,7 +47,11 @@ export interface GoogleSliderCardConfig extends LovelaceCardConfig {
 export interface GoogleButtonCardConfig extends LovelaceCardConfig {
   entity?: string;
   attribute?: string;
+  use_default_icon?: boolean;
   icon?: string;
+  dual_icon?: boolean;
+  icon_on?: string;
+  icon_off?: string;
   height?: number;
   control_type?: "generic" | "thermometer";
   // ...altre proprietà

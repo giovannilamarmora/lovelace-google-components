@@ -7,13 +7,20 @@
     "no_entity": "Entity not available",
     "on": "On",
     "off": "Off",
-    "offline": "Offline"
+    "offline": "Offline",
+    "auto": "Auto",
+    "heat": "Heat",
+    "cool": "Cool"
   },
   "google_button_card": {
     "control_type": "Control Type",
     "type": {
       "generic": "Generic (Switch, Button...)",
       "thermometer": "Thermometer"
+    },
+    "dual_icon": {
+      "default": "Use default icon",
+      "options": "Use dual icon (Element On and Element Off)."
     }
   }
 }

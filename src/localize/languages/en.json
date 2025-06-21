@@ -12,6 +12,21 @@
     "heat": "Heat",
     "cool": "Cool"
   },
+  "google_dashboard_card": {
+    "description": "Configure the navigation path when a card is tapped.",
+    "cameras": "Cameras path",
+    "cameras_name": "Cameras",
+    "lighting": "Lighting path",
+    "lighting_name": "Lighting",
+    "lighting_label": "Lights",
+    "wifi": "Wi-Fi path",
+    "wifi_name": "Wi-Fi",
+    "climate": "Climate path",
+    "climate_name": "Climate",
+    "device": "Device",
+    "devices": "Devices",
+    "placeholder": "./path-or-url"
+  },
   "google_button_card": {
     "control_type": "Control Type",
     "type": {

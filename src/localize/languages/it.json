@@ -12,6 +12,21 @@
     "heat": "Riscalda",
     "cool": "Raffresca"
   },
+  "google_dashboard_card": {
+    "description": "Configura il percorso di navigazione quando una card viene cliccata.",
+    "cameras": "Percorso delle telecamere",
+    "cameras_name": "Telecamere",
+    "lighting": "Percorso delle luci",
+    "lighting_name": "Illuminazione",
+    "lighting_label": "Luci",
+    "wifi": "Percorso Wi-Fi",
+    "wifi_name": "Wi-Fi",
+    "climate": "Percorso del clima",
+    "climate_name": "Climatizzazione",
+    "device": "Dispositivo",
+    "devices": "Dispositivi",
+    "placeholder": "./percorso-o-url"
+  },
   "google_button_card": {
     "control_type": "Tipo di controllo",
     "type": {

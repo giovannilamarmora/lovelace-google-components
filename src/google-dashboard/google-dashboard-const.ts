@@ -1,136 +1,27 @@
-import { LitElement, html, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { HomeAssistant } from "custom-card-helpers";
-import jsyaml from "js-yaml";
-import {
-  googleDashboadTemplate,
-  GoogleDashboardCardConfig,
-} from "./google-dashboard-const";
+import { LovelaceCardConfig } from "custom-card-helpers";
 import { localize } from "../localize/localize";
 
-@customElement("google-dashboard-card")
-export class GoogleDashboardCard extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @state() private _config?: GoogleDashboardCardConfig;
-  @state() private _card?: any;
-
-  private static _cachedYamlConfig: any;
-
-  public static getStubConfig(): Partial<GoogleDashboardCardConfig> {
-    return {
-      type: "custom:google-dashboard-card",
-    };
-  }
-
-  async loadYamlConfig(config: any) {
-    if (!GoogleDashboardCard._cachedYamlConfig) {
-      const text = this.mapTemplate(config);
-      GoogleDashboardCard._cachedYamlConfig = jsyaml.load(text);
-    }
-    return GoogleDashboardCard._cachedYamlConfig;
-  }
-
-  public async setConfig(config: GoogleDashboardCardConfig): Promise<void> {
-    if (!config) throw new Error("Invalid configuration");
-    this._config = config;
-  }
-
-  protected async updated(changedProps: Map<string, any>) {
-    if (
-      changedProps.has("hass") &&
-      this.hass &&
-      this._config &&
-      !this._card // così non ricreiamo la card ogni volta
-    ) {
-      const template = this.mapTemplate(this._config);
-      const configJson = jsyaml.load(template);
-
-      const helpers = await (window as any).loadCardHelpers();
-      const card = await helpers.createCardElement(configJson);
-      card.hass = this.hass;
-
-      this._card = card;
-      this.requestUpdate();
-    }
-  }
-
-  static getCardSize() {
-    return 1;
-  }
-
-  static async getConfigElement() {
-    return document.createElement("google-dashboard-card-editor");
-  }
-
-  private _countEntities(prefix: string): number {
-    if (!this.hass || !this.hass.states) return 0;
-    return Object.keys(this.hass.states).filter((e) => e.startsWith(prefix))
-      .length;
-  }
-
-  private mapTemplate(config: GoogleDashboardCardConfig) {
-    const text = googleDashboadTemplate(
-      config.cameras!,
-      this.countEntities("camera"),
-      config.lighting!,
-      this.countEntities("light"),
-      config.wifi!,
-      this.countEntities("device_tracker"),
-      config.climate!,
-      this.countEntities("climate")
-    );
-    return text;
-  }
-
-  private countEntities(prefix: string) {
-    if (!this.hass || !this.hass.states) return "No Data";
-
-    if (prefix === "light") {
-      const lightEntities = Object.keys(this.hass.states).filter(
-        (entity) =>
-          entity.startsWith("light.") &&
-          this.hass.states[entity].state !== "unavailable"
-      );
-      const lightsOn = lightEntities.filter(
-        (entity) => this.hass.states[entity].state === "on"
-      ).length;
-      const totalLights = lightEntities.length;
-      return `${lightsOn}/${totalLights} ${localize("google_dashboard_card.lighting_label")}`;
-    } else if (prefix === "device_tracker") {
-      const devices = Object.keys(this.hass.states).filter(
-        (entity) =>
-          entity.startsWith("device_tracker.") &&
-          this.hass.states[entity].state === "home"
-      ).length;
-      return `${devices > 1 ? devices + " " + localize("google_dashboard_card.devices") : devices + " " + localize("google_dashboard_card.device")}`;
-    } else if (prefix === "climate") {
-      const climateEntities = Object.keys(this.hass.states).filter(
-        (entity) =>
-          entity.startsWith("climate.") &&
-          this.hass.states[entity].state !== "unavailable"
-      ).length;
-      return `${climateEntities > 1 ? climateEntities + " " + localize("google_dashboard_card.devices") : climateEntities + " " + localize("google_dashboard_card.device")}`;
-    } else {
-      const devices = Object.keys(this.hass.states).filter((e) =>
-        e.startsWith(prefix)
-      ).length;
-      return `${devices > 1 ? devices + " " + localize("google_dashboard_card.devices") : devices + " " + localize("google_dashboard_card.device")}`;
-    }
-  }
-
-  protected render(): TemplateResult {
-    if (!this._card) {
-      return html`<ha-card>Loading…</ha-card>`;
-    }
-    return html`${this._card}`;
-  }
-
-  protected createRenderRoot() {
-    return this;
-  }
+export interface GoogleDashboardCardConfig extends LovelaceCardConfig {
+  cameras?: string;
+  lighting?: string;
+  wifi?: string;
+  climate?: string;
 }
 
-/*function ymlFile() {
+export const DEFAULT_CONFIG: GoogleDashboardCardConfig = {
+  type: "custom:google-dashboard-card",
+};
+
+export function googleDashboadTemplate(
+  camera_path: string,
+  camera_label: string,
+  lighting_path: string,
+  lighting_label: string,
+  wifi_path: string,
+  wifi_label: string,
+  climate_path: string,
+  climate_label: string
+) {
   return `type: custom:swipe-card
 card_width: max-content
 parameters:
@@ -141,14 +32,15 @@ parameters:
 cards:
   - type: custom:button-card
     icon: m3r:videocam
-    name: Cameras
+    name: ${localize("google_dashboard_card.cameras_name")}
     triggers_update: all
-    label: 6 Cameras
+    label: ${camera_label}
     show_name: true
     show_label: true
     show_icon: true
     tap_action:
-      action: none
+      action: ${camera_path ? "navigate" : "none"}
+      navigation_path: ${camera_path}
       haptic: medium
     styles:
       grid:
@@ -178,7 +70,8 @@ cards:
         - font-weight: bold
         - justify-self: start
         - align-self: end
-        - margin: 0px 0px 0px 20px
+        - margin: 0px 20px 0px 20px
+        - max-width: -webkit-fill-available;
         - color: |
             [[[
               return hass.themes.darkMode ? '#E8EAED' : '#202124';
@@ -212,27 +105,15 @@ cards:
                 ]]]
   - type: custom:button-card
     icon: m3r:light-group
-    name: Lighting
+    name: ${localize("google_dashboard_card.lighting_name")}
     triggers_update: all
-    label: |
-      [[[
-        // Conta automaticamente le luci accese
-        const lightEntities = Object.keys(hass.states).filter(entity => 
-          entity.startsWith('light.') && 
-          hass.states[entity].state !== 'unavailable'
-        );
-        const lightsOn = lightEntities.filter(entity => 
-          hass.states[entity].state === 'on'
-        ).length;
-        const totalLights = lightEntities.length;
-        return "0/3 lights";
-      ]]]
+    label: ${lighting_label}
     show_name: true
     show_label: true
     show_icon: true
     tap_action:
-      action: navigate
-      navigation_path: ./lighting
+      action: ${lighting_path ? "navigate" : "none"}
+      navigation_path: ${lighting_path}
       haptic: medium
     styles:
       grid:
@@ -267,7 +148,8 @@ cards:
         - font-weight: bold
         - justify-self: start
         - align-self: end
-        - margin: 0px 0px 0px 20px
+        - margin: 0px 20px 0px 20px
+        - max-width: -webkit-fill-available;
         - color: |
             [[[
               return hass.themes.darkMode ? '#FFFFFF' : '#202124';
@@ -308,22 +190,15 @@ cards:
                 ]]]
   - type: custom:button-card
     icon: m3of:wifi
-    name: Wi-Fi
+    name: ${localize("google_dashboard_card.wifi_name")}
     triggers_update: all
-    label: |
-      [[[
-        // Conta dispositivi connessi (esempio con device_tracker)
-        const deviceEntities = Object.keys(hass.states).filter(entity => 
-          entity.startsWith('device_tracker.') && 
-          hass.states[entity].state === 'home'
-        );
-        return "5 Devices";
-      ]]]
+    label: ${wifi_label}
     show_name: true
     show_label: true
     show_icon: true
     tap_action:
-      action: none
+      action: ${wifi_path ? "navigate" : "none"}
+      navigation_path: ${wifi_path}
       haptic: medium
     styles:
       grid:
@@ -361,7 +236,8 @@ cards:
         - font-weight: bold
         - justify-self: start
         - align-self: end
-        - margin: 0px 0px 0px 20px
+        - margin: 0px 20px 0px 20px
+        - max-width: -webkit-fill-available;
         - color: |
             [[[
               return hass.themes.darkMode ? '#FFFFFF' : '#202124';
@@ -403,22 +279,15 @@ cards:
   - type: custom:button-card
     entity: light.luce_giovanni
     icon: m3of:thermostat
-    name: Climate
+    name: ${localize("google_dashboard_card.climate_name")}
     triggers_update: all
-    label: |
-      [[[
-        // Conta dispositivi clima
-        const climateEntities = Object.keys(hass.states).filter(entity => 
-          entity.startsWith('climate.') && 
-          hass.states[entity].state !== 'unavailable'
-        );
-        return "5 Devices";
-      ]]]
+    label: ${climate_label}
     show_name: true
     show_label: true
     show_icon: true
     tap_action:
-      action: none
+      action: ${climate_path ? "navigate" : "none"}
+      navigation_path: ${climate_path}
       haptic: medium
     styles:
       grid:
@@ -459,7 +328,8 @@ cards:
         - font-weight: bold
         - justify-self: start
         - align-self: end
-        - margin: 0px 0px 0px 20px
+        - margin: 0px 20px 0px 20px
+        - max-width: -webkit-fill-available;
         - color: |
             [[[
               return hass.themes.darkMode ? '#FFFFFF' : '#202124';
@@ -499,4 +369,4 @@ cards:
                   return hass.themes.darkMode ? '#FF8A65' : '#812800';
                 ]]]
 `;
-}*/
+}

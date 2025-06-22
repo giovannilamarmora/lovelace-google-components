@@ -14,13 +14,9 @@ export const DEFAULT_CONFIG: GoogleDashboardCardConfig = {
 
 export function googleDashboadTemplate(
   camera_path: string,
-  camera_label: string,
   lighting_path: string,
-  lighting_label: string,
   wifi_path: string,
-  wifi_label: string,
-  climate_path: string,
-  climate_label: string
+  climate_path: string
 ) {
   return `type: custom:swipe-card
 card_width: max-content
@@ -34,7 +30,13 @@ cards:
     icon: m3r:videocam
     name: ${localize("google_dashboard_card.cameras_name")}
     triggers_update: all
-    label: ${camera_label}
+    label: |
+      [[[
+          const devices = Object.keys(hass.states).filter((e) =>
+          e.startsWith("camera.")
+        ).length;
+        return devices > 1 ? devices + " " + "${localize("google_dashboard_card.devices")}" : devices + " " + "${localize("google_dashboard_card.device")}";
+      ]]]
     show_name: true
     show_label: true
     show_icon: true
@@ -107,7 +109,20 @@ cards:
     icon: m3r:light-group
     name: ${localize("google_dashboard_card.lighting_name")}
     triggers_update: all
-    label: ${lighting_label}
+    label: |
+      [[[
+        // Conta automaticamente le luci accese
+        const lightEntities = Object.keys(hass.states).filter(
+        (entity) =>
+          entity.startsWith("light.") &&
+          hass.states[entity].state !== "unavailable"
+        );
+        const lightsOn = lightEntities.filter(
+          (entity) => hass.states[entity].state === "on"
+        ).length;
+        const totalLights = lightEntities.length;
+        return lightsOn + "/" + totalLights + " ${localize("google_dashboard_card.lighting_label")}";
+      ]]]
     show_name: true
     show_label: true
     show_icon: true
@@ -192,7 +207,15 @@ cards:
     icon: m3of:wifi
     name: ${localize("google_dashboard_card.wifi_name")}
     triggers_update: all
-    label: ${wifi_label}
+    label: |
+      [[[
+        const devices = Object.keys(hass.states).filter(
+          (entity) =>
+            entity.startsWith("device_tracker.") &&
+            hass.states[entity].state === "home"
+        ).length;
+        return devices > 1 ? (devices + " " + "${localize("google_dashboard_card.devices")}") : (devices + " " + "${localize("google_dashboard_card.device")}");
+      ]]]
     show_name: true
     show_label: true
     show_icon: true
@@ -281,7 +304,15 @@ cards:
     icon: m3of:thermostat
     name: ${localize("google_dashboard_card.climate_name")}
     triggers_update: all
-    label: ${climate_label}
+    label: |
+      [[[
+        const climateEntities = Object.keys(hass.states).filter(
+            (entity) =>
+              entity.startsWith("climate.") &&
+              hass.states[entity].state !== "unavailable"
+          ).length;
+          return climateEntities > 1 ? climateEntities + " " + "${localize("google_dashboard_card.devices")}" : climateEntities + " " + "${localize("google_dashboard_card.device")}";
+      ]]]
     show_name: true
     show_label: true
     show_icon: true

@@ -1,8 +1,8 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { GoogleButtonCardConfig } from "../types";
+import { GoogleButtonCardConfig } from "../google-slider/types";
 import { localize } from "../localize/localize";
-import { DEFAULT_BTN_CONFIG } from "../const";
+import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { fireEvent } from "custom-card-helpers";
 import { HomeAssistant } from "../ha-types";
 import {
@@ -10,6 +10,7 @@ import {
   isOfflineState,
   mapStateDisplay,
 } from "./google-button-mapper";
+import { applyRippleEffect } from "../utils";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -45,6 +46,11 @@ export class GoogleButtonCard extends LitElement {
 
   static async getConfigElement() {
     return document.createElement("google-button-card-editor");
+  }
+
+  public _onClick(event: MouseEvent) {
+    applyRippleEffect(event.currentTarget as HTMLElement, event);
+    this._toggle();
   }
 
   private _toggle() {
@@ -104,14 +110,13 @@ export class GoogleButtonCard extends LitElement {
     );
 
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
-    console.log(this._config);
 
     this.setColorCard(this._config.control_type, theme, isOffline, isOn);
 
     return html`
       <ha-card
         class="google-button ${isOn ? "on" : "off"}"
-        @click=${this._toggle}
+        @click=${this._onClick}
       >
         <div class="content">
           <ha-icon .icon=${icon} class="icon"></ha-icon>
@@ -140,7 +145,6 @@ export class GoogleButtonCard extends LitElement {
     isOffline: boolean,
     isOn: boolean
   ) {
-    console.log(control_type, theme, isOffline, isOn);
     let nameColor = "";
     let iconColor = "";
     let percentageColor = "";
@@ -252,6 +256,7 @@ export class GoogleButtonCard extends LitElement {
         background-color 0.3s ease,
         color 0.3s ease;
       height: var(--bsc-height);
+      overflow: hidden; /* fondamentale per contenere il ripple */
     }
 
     .content {
@@ -276,7 +281,7 @@ export class GoogleButtonCard extends LitElement {
 
     .name {
       color: var(--bsc-name-color);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 500;
     }
 
@@ -289,6 +294,35 @@ export class GoogleButtonCard extends LitElement {
       padding: 16px;
       color: red;
       font-weight: bold;
+    }
+
+    @media (max-width: 420px) {
+      .name,
+      .state {
+        font-size: small;
+      }
+      .name {
+        line-height: 1.4;
+      }
+      #icon_offline {
+        right: 15px;
+      }
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-animation 600ms ease-out;
+      background-color: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
     }
   `;
 }

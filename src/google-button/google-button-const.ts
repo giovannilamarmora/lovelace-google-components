@@ -1,4 +1,4 @@
-import { GoogleButtonCardConfig } from "../types";
+import { GoogleButtonCardConfig } from "../google-slider/types";
 
 export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
   type: "custom:google-button-card",

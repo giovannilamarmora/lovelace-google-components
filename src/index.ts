@@ -1,10 +1,11 @@
-import { CARD_VERSION } from "./const";
+import { CARD_VERSION } from "./google-slider/const";
 import { GoogleButtonCard } from "./google-button/google-button-card";
 import { GoogleButtonCardEditor } from "./google-button/google-button-card-editor";
 import { GoogleDashboardCard } from "./google-dashboard/google-dashboard-card";
 import { GoogleDashboardCardEditor } from "./google-dashboard/google-dashboard-card-editor";
-import { GoogleSliderCard } from "./google-slider-card";
+import { GoogleSliderCard } from "./google-slider/google-slider-card";
 import { localize } from "./localize/localize";
+import { GoogleClimateCard } from "./google-climate/google-climate-card";
 
 /* eslint no-console: 0 */
 console.info(
@@ -34,6 +35,10 @@ if (!customElements.get("google-dashboard-card-editor")) {
   );
 }
 
+if (!customElements.get("google-climate-card")) {
+  customElements.define("google-climate-card", GoogleClimateCard);
+}
+
 (window as any).customCards = (window as any).customCards ?? [];
 (window as any).customCards.push({
   type: "google-slider-card",
@@ -54,4 +59,11 @@ if (!customElements.get("google-dashboard-card-editor")) {
   name: "Google Dashboard Card",
   preview: true,
   description: "Google-style Dashboard card.",
+});
+
+(window as any).customCards.push({
+  type: "google-climate-card",
+  name: "Google Climate Card",
+  preview: true,
+  description: "Google-style Climate card.",
 });

@@ -16,6 +16,7 @@
   "author": "Giovanni Lamarmora",
   "license": "MIT",
   "dependencies": {
+    "@material/web": "^2.3.0",
     "@nicufarmache/slide-gesture": "^1.2.4",
     "custom-card-helpers": "^1.9.0",
     "home-assistant-js-websocket": "^9.5.0",

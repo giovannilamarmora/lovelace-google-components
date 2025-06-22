@@ -1,8 +1,8 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
-import { GoogleButtonCardConfig } from "../types";
-import { DEFAULT_BTN_CONFIG } from "../const";
+import { GoogleButtonCardConfig } from "../google-slider/types";
+import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { localize } from "../localize/localize";
 
 @customElement("google-button-card-editor")

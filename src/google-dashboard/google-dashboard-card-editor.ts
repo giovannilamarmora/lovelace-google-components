@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
 import { localize } from "../localize/localize";
 import { DEFAULT_CONFIG } from "./google-dashboard-const";
-import { GoogleButtonCardConfig } from "../types";
+import { GoogleButtonCardConfig } from "../google-slider/types";
 
 @customElement("google-dashboard-card-editor")
 export class GoogleDashboardCardEditor

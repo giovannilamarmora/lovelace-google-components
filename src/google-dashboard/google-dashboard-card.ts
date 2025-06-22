@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult } from "lit";
+import { LitElement, html, TemplateResult, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import jsyaml from "js-yaml";
@@ -6,7 +6,7 @@ import {
   googleDashboadTemplate,
   GoogleDashboardCardConfig,
 } from "./google-dashboard-const";
-import { localize } from "../localize/localize";
+import { applyRippleEffect } from "../utils";
 
 @customElement("google-dashboard-card")
 export class GoogleDashboardCard extends LitElement {
@@ -14,20 +14,10 @@ export class GoogleDashboardCard extends LitElement {
   @state() private _config?: GoogleDashboardCardConfig;
   @state() private _card?: any;
 
-  private static _cachedYamlConfig: any;
-
   public static getStubConfig(): Partial<GoogleDashboardCardConfig> {
     return {
       type: "custom:google-dashboard-card",
     };
-  }
-
-  async loadYamlConfig(config: any) {
-    if (!GoogleDashboardCard._cachedYamlConfig) {
-      const text = this.mapTemplate(config);
-      GoogleDashboardCard._cachedYamlConfig = jsyaml.load(text);
-    }
-    return GoogleDashboardCard._cachedYamlConfig;
   }
 
   public async setConfig(config: GoogleDashboardCardConfig): Promise<void> {
@@ -36,21 +26,21 @@ export class GoogleDashboardCard extends LitElement {
   }
 
   protected async updated(changedProps: Map<string, any>) {
-    if (
-      changedProps.has("hass") &&
-      this.hass &&
-      this._config &&
-      !this._card // così non ricreiamo la card ogni volta
-    ) {
-      const template = this.mapTemplate(this._config);
-      const configJson = jsyaml.load(template);
+    if (changedProps.has("hass")) {
+      if (this._card) {
+        this._card.hass = this.hass; // aggiorna la card esistente
+      } else if (this._config) {
+        const template = this.mapTemplate(this._config);
+        const configJson = jsyaml.load(template);
 
-      const helpers = await (window as any).loadCardHelpers();
-      const card = await helpers.createCardElement(configJson);
-      card.hass = this.hass;
+        const helpers = await (window as any).loadCardHelpers();
+        const card = await helpers.createCardElement(configJson);
+        card.classList.add("ripple-card");
+        card.hass = this.hass;
 
-      this._card = card;
-      this.requestUpdate();
+        this._card = card;
+        this.requestUpdate();
+      }
     }
   }
 
@@ -62,59 +52,22 @@ export class GoogleDashboardCard extends LitElement {
     return document.createElement("google-dashboard-card-editor");
   }
 
-  private _countEntities(prefix: string): number {
-    if (!this.hass || !this.hass.states) return 0;
-    return Object.keys(this.hass.states).filter((e) => e.startsWith(prefix))
-      .length;
-  }
-
   private mapTemplate(config: GoogleDashboardCardConfig) {
     const text = googleDashboadTemplate(
       config.cameras!,
-      this.countEntities("camera"),
       config.lighting!,
-      this.countEntities("light"),
       config.wifi!,
-      this.countEntities("device_tracker"),
-      config.climate!,
-      this.countEntities("climate")
+      config.climate!
     );
     return text;
   }
 
-  private countEntities(prefix: string) {
-    if (!this.hass || !this.hass.states) return "No Data";
-
-    if (prefix === "light") {
-      const lightEntities = Object.keys(this.hass.states).filter(
-        (entity) =>
-          entity.startsWith("light.") &&
-          this.hass.states[entity].state !== "unavailable"
-      );
-      const lightsOn = lightEntities.filter(
-        (entity) => this.hass.states[entity].state === "on"
-      ).length;
-      const totalLights = lightEntities.length;
-      return `${lightsOn}/${totalLights} ${localize("google_dashboard_card.lighting_label")}`;
-    } else if (prefix === "device_tracker") {
-      const devices = Object.keys(this.hass.states).filter(
-        (entity) =>
-          entity.startsWith("device_tracker.") &&
-          this.hass.states[entity].state === "home"
-      ).length;
-      return `${devices > 1 ? devices + " " + localize("google_dashboard_card.devices") : devices + " " + localize("google_dashboard_card.device")}`;
-    } else if (prefix === "climate") {
-      const climateEntities = Object.keys(this.hass.states).filter(
-        (entity) =>
-          entity.startsWith("climate.") &&
-          this.hass.states[entity].state !== "unavailable"
-      ).length;
-      return `${climateEntities > 1 ? climateEntities + " " + localize("google_dashboard_card.devices") : climateEntities + " " + localize("google_dashboard_card.device")}`;
-    } else {
-      const devices = Object.keys(this.hass.states).filter((e) =>
-        e.startsWith(prefix)
-      ).length;
-      return `${devices > 1 ? devices + " " + localize("google_dashboard_card.devices") : devices + " " + localize("google_dashboard_card.device")}`;
+  private _handleClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    // Cerca l'elemento più vicino che abbia una classe riconoscibile, ad es. 'button-card'
+    const card = target.closest(".ripple-card") as HTMLElement;
+    if (card) {
+      applyRippleEffect(card, event);
     }
   }
 
@@ -122,381 +75,19 @@ export class GoogleDashboardCard extends LitElement {
     if (!this._card) {
       return html`<ha-card>Loading…</ha-card>`;
     }
-    return html`${this._card}`;
+
+    // Avvolgi il contenuto in un div che intercetta il click
+    return html` <div @mousedown=${this._handleClick}>${this._card}</div> `;
   }
+
+  static styles = css`
+    .ripple-card {
+      position: relative;
+      overflow: hidden;
+    }
+  `;
 
   protected createRenderRoot() {
     return this;
   }
 }
-
-/*function ymlFile() {
-  return `type: custom:swipe-card
-card_width: max-content
-parameters:
-  grabCursor: true
-  centeredSlides: false
-  slidesPerView: auto
-  spaceBetween: 8
-cards:
-  - type: custom:button-card
-    icon: m3r:videocam
-    name: Cameras
-    triggers_update: all
-    label: 6 Cameras
-    show_name: true
-    show_label: true
-    show_icon: true
-    tap_action:
-      action: none
-      haptic: medium
-    styles:
-      grid:
-        - grid-template-columns: 2fr 1fr 1fr
-        - grid-template-rows: 2fr 0.1fr 1fr 1fr
-        - grid-template-areas: |
-            "i . ."
-            ". . ."
-            "n n n"
-            "l l l"
-      card:
-        - display: |
-            [[[
-              const lights = Object.keys(hass.states).filter(e => e.startsWith("camera.") && hass.states[e].state !== "unavailable");
-              return lights.length === 0 ? "none" : "block";
-            ]]]
-        - margin-bottom: 1px
-        - height: 130px
-        - width: 130px
-        - border-radius: 30px
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
-      name:
-        - font-size: 1rem
-        - font-weight: bold
-        - justify-self: start
-        - align-self: end
-        - margin: 0px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#E8EAED' : '#202124';
-            ]]]
-      label:
-        - font-size: 0.85rem
-        - justify-self: start
-        - align-self: start
-        - margin: 2px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#9AA0A6' : '#5F6368';
-            ]]]
-      icon:
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#8AB4F8' : '#1A73E8';
-            ]]]
-    state:
-      - value: "on"
-        styles:
-          card:
-            - background: |
-                [[[
-                  return hass.themes.darkMode ? '#302f32' : '#E8F0FE';
-                ]]]
-          icon:
-            - color: |
-                [[[
-                  return hass.themes.darkMode ? '#fee183' : '#1A73E8';
-                ]]]
-  - type: custom:button-card
-    icon: m3r:light-group
-    name: Lighting
-    triggers_update: all
-    label: |
-      [[[
-        // Conta automaticamente le luci accese
-        const lightEntities = Object.keys(hass.states).filter(entity => 
-          entity.startsWith('light.') && 
-          hass.states[entity].state !== 'unavailable'
-        );
-        const lightsOn = lightEntities.filter(entity => 
-          hass.states[entity].state === 'on'
-        ).length;
-        const totalLights = lightEntities.length;
-        return "0/3 lights";
-      ]]]
-    show_name: true
-    show_label: true
-    show_icon: true
-    tap_action:
-      action: navigate
-      navigation_path: ./lighting
-      haptic: medium
-    styles:
-      grid:
-        - grid-template-columns: 2fr 1fr 1fr
-        - grid-template-rows: 2fr 0.1fr 1fr 1fr
-        - grid-template-areas: |
-            "i . ."
-            ". . ."
-            "n n n"
-            "l l l"
-      card:
-        - display: |
-            [[[
-              const lights = Object.keys(hass.states).filter(e => e.startsWith("light.") && hass.states[e].state !== "unavailable");
-              return lights.length === 0 ? "none" : "block";
-            ]]]
-        - margin-left: |
-            [[[
-              const camera = Object.keys(hass.states).filter(e => e.startsWith("camera.") && hass.states[e].state !== "unavailable");
-              return camera.length === 0 ? "-7px" : "0px";
-            ]]]
-        - margin-bottom: 1px
-        - height: 130px
-        - width: 130px
-        - border-radius: 30px
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
-      name:
-        - font-size: 1rem
-        - font-weight: bold
-        - justify-self: start
-        - align-self: end
-        - margin: 0px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#FFFFFF' : '#202124';
-            ]]]
-      label:
-        - font-size: 0.85rem
-        - justify-self: start
-        - align-self: start
-        - margin: 2px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#9AA0A6' : '#5F6368';
-            ]]]
-      icon:
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#FBBC04' : '#F9AB00';
-            ]]]
-    state:
-      - operator: template
-        value: |
-          [[[
-            return Object.keys(hass.states).some(entity => 
-              entity.startsWith('light.') && 
-              hass.states[entity].state === 'on'
-            );
-          ]]]
-        styles:
-          card:
-            - background: |
-                [[[
-                  return hass.themes.darkMode ? '#332f2a' : '#FEF7E0';
-                ]]]
-          icon:
-            - color: |
-                [[[
-                  return hass.themes.darkMode ? '#FBBC04' : '#745b00';
-                ]]]
-  - type: custom:button-card
-    icon: m3of:wifi
-    name: Wi-Fi
-    triggers_update: all
-    label: |
-      [[[
-        // Conta dispositivi connessi (esempio con device_tracker)
-        const deviceEntities = Object.keys(hass.states).filter(entity => 
-          entity.startsWith('device_tracker.') && 
-          hass.states[entity].state === 'home'
-        );
-        return "5 Devices";
-      ]]]
-    show_name: true
-    show_label: true
-    show_icon: true
-    tap_action:
-      action: none
-      haptic: medium
-    styles:
-      grid:
-        - grid-template-columns: 2fr 1fr 1fr
-        - grid-template-rows: 2fr 0.1fr 1fr 1fr
-        - grid-template-areas: |
-            "i . ."
-            ". . ."
-            "n n n"
-            "l l l"
-      card:
-        - display: |
-            [[[
-              const deviceEntities = Object.keys(hass.states).filter(entity => 
-              entity.startsWith('device_tracker.') && 
-              hass.states[entity].state === 'home'
-              );
-              return deviceEntities.length === 0 ? "none" : "block";
-            ]]]
-        - margin-left: |
-            [[[
-              const lights = Object.keys(hass.states).filter(e => e.startsWith("light.") && hass.states[e].state !== "unavailable");
-              return lights.length === 0 ? "-7px" : "0px";
-            ]]]
-        - margin-bottom: 1px
-        - height: 130px
-        - width: 130px
-        - border-radius: 30px
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
-      name:
-        - font-size: 1rem
-        - font-weight: bold
-        - justify-self: start
-        - align-self: end
-        - margin: 0px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#FFFFFF' : '#202124';
-            ]]]
-      label:
-        - font-size: 0.85rem
-        - justify-self: start
-        - align-self: start
-        - margin: 2px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#9AA0A6' : '#5F6368';
-            ]]]
-      icon:
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#81C995' : '#137333';
-            ]]]
-    state:
-      - operator: template
-        value: |
-          [[[
-            return Object.keys(hass.states).some(entity => 
-              entity.startsWith('device_tracker.') && 
-              hass.states[entity].state === 'home'
-            );
-          ]]]
-        styles:
-          card:
-            - background: |
-                [[[
-                  return hass.themes.darkMode ? '#2e312e' : '#E6F4EA';
-                ]]]
-          icon:
-            - color: |
-                [[[
-                  return hass.themes.darkMode ? '#81C995' : '#137333';
-                ]]]
-  - type: custom:button-card
-    entity: light.luce_giovanni
-    icon: m3of:thermostat
-    name: Climate
-    triggers_update: all
-    label: |
-      [[[
-        // Conta dispositivi clima
-        const climateEntities = Object.keys(hass.states).filter(entity => 
-          entity.startsWith('climate.') && 
-          hass.states[entity].state !== 'unavailable'
-        );
-        return "5 Devices";
-      ]]]
-    show_name: true
-    show_label: true
-    show_icon: true
-    tap_action:
-      action: none
-      haptic: medium
-    styles:
-      grid:
-        - grid-template-columns: 2fr 1fr 1fr
-        - grid-template-rows: 2fr 0.1fr 1fr 1fr
-        - grid-template-areas: |
-            "i . ."
-            ". . ."
-            "n n n"
-            "l l l"
-      card:
-        - display: |
-            [[[
-              const climateEntities = Object.keys(hass.states).filter(entity => 
-              entity.startsWith('climate.') && 
-              hass.states[entity].state !== 'unavailable'
-              );
-              return climateEntities.length === 0 ? "none" : "block";
-            ]]]
-        - margin-left: |
-            [[[
-              const deviceEntities = Object.keys(hass.states).filter(entity => 
-              entity.startsWith('device_tracker.') && 
-              hass.states[entity].state === 'home'
-              );
-              return deviceEntities.length === 0 ? "-7px" : "0px";
-            ]]]
-        - margin-bottom: 1px
-        - height: 130px
-        - width: 130px
-        - border-radius: 30px
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
-      name:
-        - font-size: 1rem
-        - font-weight: bold
-        - justify-self: start
-        - align-self: end
-        - margin: 0px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#FFFFFF' : '#202124';
-            ]]]
-      label:
-        - font-size: 0.85rem
-        - justify-self: start
-        - align-self: start
-        - margin: 2px 0px 0px 20px
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#9AA0A6' : '#5F6368';
-            ]]]
-      icon:
-        - color: |
-            [[[
-              return hass.themes.darkMode ? '#ffdbcd' : '#812800';
-            ]]]
-    state:
-      - operator: template
-        value: |
-          [[[
-            return Object.keys(hass.states).some(entity => 
-              entity.startsWith('climate.') && 
-              (hass.states[entity].state === 'on' || hass.states[entity].state === 'auto' || hass.states[entity].state === 'heat' || hass.states[entity].state === 'cool')
-            );
-          ]]]
-        styles:
-          card:
-            - background: |
-                [[[
-                  return hass.themes.darkMode ? '#352f2d' : '#FCE8E6';
-                ]]]
-          icon:
-            - color: |
-                [[[
-                  return hass.themes.darkMode ? '#FF8A65' : '#812800';
-                ]]]
-`;
-}*/

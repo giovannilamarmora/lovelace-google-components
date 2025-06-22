@@ -1,12 +1,13 @@
 import { SlideGesture } from "@nicufarmache/slide-gesture";
 import { HassEntity } from "home-assistant-js-websocket";
-import { HomeAssistant } from "./ha-types";
+import { HomeAssistant } from "../ha-types";
 import type { GoogleSliderCardConfig, MousePos } from "./types";
 import { DEFAULT_CONFIG, TAP_THRESHOLD } from "./const";
-import { localize } from "./localize/localize";
+import { localize } from "../localize/localize";
 import { state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { LitElement, html, CSSResult, TemplateResult, css } from "lit";
+import { applyRippleEffect } from "../utils";
 
 export class GoogleSliderCard extends LitElement {
   // @property({ attribute: false }) public hass!: HomeAssistant;
@@ -46,7 +47,7 @@ export class GoogleSliderCard extends LitElement {
       attribute: "brightness",
       icon: "m3of:lightbulb",
       show_percentage: true,
-      bold_text: true,
+      bold_text: false,
       height: 95,
     };
   }
@@ -423,6 +424,10 @@ export class GoogleSliderCard extends LitElement {
     );
   }
 
+  public _onClick(event: MouseEvent) {
+    applyRippleEffect(event.currentTarget as HTMLElement, event);
+  }
+
   protected updated(): void {
     this.containerWidth =
       this.shadowRoot?.getElementById("container")?.clientWidth ?? 0;
@@ -509,23 +514,30 @@ export class GoogleSliderCard extends LitElement {
         : this._config.icon;
 
     return html`
-      <ha-card id="container" tabindex="0" style="position: relative;">
+      <ha-card
+        id="container"
+        tabindex="0"
+        style="position: relative;"
+        @mousedown=${this._onClick}
+      >
         <div id="slider" class="animate ${colorize ? "colorize" : ""}"></div>
-        <ha-state-icon
-          id="icon"
-          .icon=${iconName}
-          .state=${this._state}
-          .hass=${this._hass}
-          .stateObj=${this._state}
-          data-domain=${this._entity.split(".")[0]}
-          data-state=${ifDefined(this._status)}
-        ></ha-state-icon>
         <div id="content">
-          <p id="label" class="${boldText ? "bold" : ""}">
-            <span id="name">${this._name}</span>
+          <ha-state-icon
+            id="icon"
+            .icon=${iconName}
+            .state=${this._state}
+            .hass=${this._hass}
+            .stateObj=${this._state}
+            data-domain=${this._entity.split(".")[0]}
+            data-state=${ifDefined(this._status)}
+          ></ha-state-icon>
+          <p id="label">
+            <span id="name" class="${boldText ? "bold" : ""}"
+              >${this._name}</span
+            >
             <span
               id="percentage"
-              class="${showPercentage ? "" : "hide"}"
+              class="${showPercentage ? "" : "hide"} ${boldText ? "bold" : ""}"
             ></span>
           </p>
         </div>
@@ -595,11 +607,11 @@ export class GoogleSliderCard extends LitElement {
       }
 
       :host([half-pressed]) {
-        transform: scale(0.99);
+        /*transform: scale(0.99);*/
       }
 
       :host([pressed]) {
-        transform: scale(0.98);
+        /*transform: scale(0.98);*/
       }
 
       #container {
@@ -620,6 +632,7 @@ export class GoogleSliderCard extends LitElement {
         -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* IE10+/Edge */
         user-select: none; /* Standard */
+        padding: 12px 16px;
       }
 
       .hide {
@@ -655,61 +668,44 @@ export class GoogleSliderCard extends LitElement {
           filter 1s ease;
       }
 
-      #icon {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 24px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: var(--bsc-icon-color, var(--bsc-entity-color));
-        filter: brightness(var(--bsc-brightness-ui));
-        transition: color 0.3s ease-out;
-      }
-
       #content {
-        height: 100%;
-        width: 100%;
-        position: absolute;
         display: flex;
-        justify-content: flex-start;
         align-items: center;
-        padding: 0 24px 0 72px;
-        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
       }
 
       #label {
         display: flex;
         flex-direction: column;
-      }
-
-      #label.bold {
-        font-weight: bold;
-      }
-
-      #name {
-        color: var(--bsc-primary-text-color);
-      }
-
-      #percentage {
-        color: var(--bsc-secondary-text-color);
+        width: -webkit-fill-available;
       }
 
       #name {
         color: var(--bsc-name-color);
-        margin-left: var(--bsc-name-margin);
+        font-size: 15px;
+        font-weight: 500;
       }
 
-      #icon {
-        color: var(--bsc-icon-color);
-        margin-left: var(--bsc-icon-margin);
+      #name.bold,
+      #percentage.bold {
+        font-weight: bold !important;
       }
 
       #percentage {
         color: var(--bsc-percentage-color);
-        margin-left: var(--bsc-percentage-margin);
+        font-size: 13px;
       }
+
+      #icon {
+        width: 32px;
+        height: 32px;
+        color: var(--bsc-icon-color);
+        align-content: center;
+        margin-right: 5px;
+        transition: color 0.3s ease-out;
+      }
+
       @media (max-width: 420px) {
         #name,
         #percentage {
@@ -720,6 +716,22 @@ export class GoogleSliderCard extends LitElement {
         }
         #icon_offline {
           right: 15px;
+        }
+      }
+
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple-animation 600ms ease-out;
+        background-color: rgba(255, 255, 255, 0.3);
+        pointer-events: none;
+      }
+
+      @keyframes ripple-animation {
+        to {
+          transform: scale(4);
+          opacity: 0;
         }
       }
     `;

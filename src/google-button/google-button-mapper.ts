@@ -1,8 +1,7 @@
 import { localize } from "../localize/localize";
-import { GoogleButtonCardConfig } from "../types";
 import { OnlineStates } from "./google-button-const";
 
-export function getIcon(stateObj: any, config: GoogleButtonCardConfig): string {
+export function getIcon(stateObj: any, config: any): string {
   const domain = stateObj.entity_id.split(".")[0];
   const state = stateObj.state;
   const controlType: string = config.control_type ?? "generic";

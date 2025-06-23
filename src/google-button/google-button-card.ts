@@ -72,6 +72,61 @@ export class GoogleButtonCard extends LitElement {
     }
   }
 
+  private _pressTimer?: number;
+  private _startX?: number;
+  private _startY?: number;
+  private _moved = false;
+
+  private _startPress(event: MouseEvent | TouchEvent) {
+    this._cancelPress(); // elimina timer precedente se presente
+    this._moved = false;
+
+    if (event instanceof TouchEvent && event.touches.length > 0) {
+      this._startX = event.touches[0].clientX;
+      this._startY = event.touches[0].clientY;
+    } else if (event instanceof MouseEvent) {
+      this._startX = event.clientX;
+      this._startY = event.clientY;
+    }
+
+    this._pressTimer = window.setTimeout(() => {
+      this._pressTimer = undefined;
+      if (!this._moved) {
+        this._handleHold();
+      }
+    }, 500);
+  }
+
+  private _handleMove(event: TouchEvent) {
+    if (!this._startX || !this._startY || event.touches.length === 0) return;
+
+    const moveX = event.touches[0].clientX;
+    const moveY = event.touches[0].clientY;
+
+    const deltaX = Math.abs(moveX - this._startX);
+    const deltaY = Math.abs(moveY - this._startY);
+
+    if (deltaX > 10 || deltaY > 10) {
+      this._moved = true;
+      this._cancelPress(); // annulla il timer
+    }
+  }
+
+  private _cancelPress(event?: MouseEvent | TouchEvent) {
+    if (this._pressTimer) {
+      clearTimeout(this._pressTimer);
+      this._pressTimer = undefined;
+      if (!this._moved && event instanceof MouseEvent) {
+        this._onClick(event); // solo click "buoni"
+      }
+    }
+  }
+
+  private _handleHold() {
+    if (!this._config || !this.hass) return;
+    fireEvent(this, "hass-more-info", { entityId: this._config.entity });
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;
 
@@ -102,7 +157,7 @@ export class GoogleButtonCard extends LitElement {
     //  icon = `mdi:${domain}`;
     //}
 
-    const isOffline = isOfflineState(stateObj.state);
+    const isOffline = isOfflineState(stateObj.state, this._config.control_type);
     const stateDisplay = mapStateDisplay(
       stateObj,
       this._config.control_type!,
@@ -116,25 +171,45 @@ export class GoogleButtonCard extends LitElement {
     return html`
       <ha-card
         class="google-button ${isOn ? "on" : "off"}"
-        @click=${this._onClick}
+        @mousedown=${this._startPress}
+        @touchstart=${this._startPress}
+        @mouseup=${this._cancelPress}
+        @mouseleave=${this._cancelPress}
+        @touchend=${this._cancelPress}
+        @touchcancel=${this._cancelPress}
+        @touchmove=${this._handleMove}
       >
         <div class="content">
           <ha-icon .icon=${icon} class="icon"></ha-icon>
           <div class="text">
             <div class="name">${name}</div>
-            <div class="state">${stateDisplay}</div>
+            ${this._config.control_type == "scene"
+              ? html``
+              : html`<div class="state">${stateDisplay}</div>`}
           </div>
         </div>
         ${isOffline
-          ? html`
-              <ha-icon
-                id="icon_offline"
-                icon="mdi:alert"
-                style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color);"
-                title="Offline"
-              ></ha-icon>
-            `
-          : ""}
+          ? html`<ha-icon
+              id="icon_offline"
+              icon="mdi:alert"
+              style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color);"
+              title="Offline"
+            ></ha-icon>`
+          : this._config.control_type == "thermometer"
+            ? html`<ha-icon
+                icon="m3rf:arrow-forward-ios"
+                style="
+                  position: absolute;
+                  right: 5%;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  color: var(--bsc-icon-color);
+                  --mdc-icon-size: 15px;
+                "
+                title="Enter"
+                class="chevron"
+              ></ha-icon>`
+            : html``}
       </ha-card>
     `;
   }
@@ -173,6 +248,8 @@ export class GoogleButtonCard extends LitElement {
         // Acceso, tema light
         if (control_type === "thermometer") {
           nameColor = iconColor = percentageColor = "#812800";
+          containerColor = "rgba(258, 193.8, 166, 0.4)";
+          //containerColor = "#ffd5c4";
           containerColor = "#ffd5c4";
         } else {
           nameColor = iconColor = percentageColor = "#131c2b";
@@ -190,32 +267,6 @@ export class GoogleButtonCard extends LitElement {
         containerColor = "#e8e8ea";
       }
     }
-
-    //// Acceso e Dark Mode
-    //if (isOn && theme === "dark") {
-    //  nameColor = iconColor = percentageColor = "#d8e3f7";
-    //  containerColor = "#3e4758";
-    //  // Acceso e Light Mode
-    //} else if (isOn) {
-    //  nameColor = iconColor = percentageColor = "#131c2b";
-    //  containerColor = "#d8e3f7";
-    //  // Spento e Dark Mode
-    //} else if (theme === "dark") {
-    //  nameColor = iconColor = percentageColor = "#e3e3e5";
-    //  containerColor = "#292a2e";
-    //  // Spento e Light Mode
-    //} else {
-    //  nameColor = iconColor = percentageColor = "#1b1b1d";
-    //  containerColor = "#e8e8ea";
-    //}
-    //
-    //if (isOffline && theme === "light") {
-    //  nameColor = iconColor = percentageColor = "#949496";
-    //  containerColor = "#dfdfe1";
-    //} else if (isOffline && theme === "dark") {
-    //  nameColor = iconColor = percentageColor = "#717173";
-    //  containerColor = "#2c2c2e";
-    //}
 
     this._setStyleProperty("--bsc-name-color", nameColor);
     this._setStyleProperty("--bsc-icon-color", iconColor);
@@ -257,6 +308,9 @@ export class GoogleButtonCard extends LitElement {
         color 0.3s ease;
       height: var(--bsc-height);
       overflow: hidden; /* fondamentale per contenere il ripple */
+      box-shadow:
+        0px 0.5px 1px rgba(0, 0, 0, 0.05),
+        0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
     }
 
     .content {

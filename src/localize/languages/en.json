@@ -27,11 +27,24 @@
     "devices": "Devices",
     "placeholder": "./path-or-url"
   },
+  "google_climate_card": {
+    "name": "Entity Name",
+    "entity": "Entity",
+    "theme": "Use Material Expressive",
+    "increase_temp": "Increase Temperature (e.g. 0.5)",
+    "decrease_temp": "Decrease Temperature (e.g. 0.5)",
+    "dual_icon": {
+      "default": "Use Default Icon",
+      "options": "Use Dual Icon (On and Off states)."
+    }
+  },
   "google_button_card": {
+    "name": "Entity Name",
     "control_type": "Control Type",
     "type": {
       "generic": "Generic (Switch, Button...)",
-      "thermometer": "Thermometer"
+      "thermometer": "Thermometer",
+      "scene": "Autonomation and scene"
     },
     "dual_icon": {
       "default": "Use default icon",

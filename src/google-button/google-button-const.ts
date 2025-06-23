@@ -17,4 +17,5 @@ export enum OnlineStates {
   AUTO = "auto",
   HEAT = "heat",
   COOL = "cool",
+  //UNKNOWN = "unknown",
 }

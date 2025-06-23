@@ -44,6 +44,9 @@ export function getIcon(stateObj: any, config: any): string {
         return "mdi:thermometer";
     }
   }
+  if (controlType === "scene") {
+    return "mdi:creation-outline";
+  }
 
   return `mdi:${domain}`;
 }
@@ -77,6 +80,12 @@ export function getStateDisplay(state: string, text: string = ""): string {
   return text != "" ? finalState + text : finalState;
 }
 
-export function isOfflineState(state: string): boolean {
+export function isOfflineState(
+  state: string,
+  control_type: string = ""
+): boolean {
+  if (control_type == "scene" && state == "unknown") {
+    return false;
+  }
   return !Object.values(OnlineStates).includes(state as OnlineStates);
 }

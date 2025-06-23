@@ -1,19 +1,21 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
-import { GoogleButtonCardConfig } from "../google-slider/types";
-import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { localize } from "../localize/localize";
+import {
+  DEFAULT_CONFIG,
+  GoogleClimateCardConfig,
+} from "./google-climate-const";
 
-@customElement("google-button-card-editor")
-export class GoogleButtonCardEditor
+@customElement("google-climate-card-editor")
+export class GoogleClimateCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
-  @state() private _config: GoogleButtonCardConfig = DEFAULT_BTN_CONFIG;
+  @state() private _config: GoogleClimateCardConfig = DEFAULT_CONFIG;
 
-  public setConfig(config: GoogleButtonCardConfig): void {
+  public setConfig(config: GoogleClimateCardConfig): void {
     this._config = { ...config };
   }
 
@@ -63,49 +65,18 @@ export class GoogleButtonCardEditor
     await card.constructor.getConfigElement();
   }
 
-  setEntityFilter() {
-    switch (this._config.control_type) {
-      case "thermometer":
-        return ["climate"];
-      case "scene":
-        return ["scene"];
-      default:
-        return undefined;
-    }
-  }
-
   render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
 
     this._config.use_default_icon = this._config.use_default_icon ?? true;
+    this._config.use_material_color = this._config.use_material_color ?? true;
 
     return html`
       <div class="form">
-        <span class="switch-label"
-          >${localize("google_button_card.dual_icon.options")}</span
-        >
-        <ha-select
-          label="${localize("google_button_card.control_type")}"
-          .value=${this._config.control_type || "generic"}
-          configValue="control_type"
-          @selected=${this._valueChanged}
-          @closed=${(ev: Event) => ev.stopPropagation()}
-        >
-          <mwc-list-item value="generic">
-            ${localize("google_button_card.type.generic")}
-          </mwc-list-item>
-          <mwc-list-item value="thermometer">
-            ${localize("google_button_card.type.thermometer")}
-          </mwc-list-item>
-          <mwc-list-item value="scene">
-            ${localize("google_button_card.type.scene")}
-          </mwc-list-item>
-        </ha-select>
-
         <ha-textfield
-          label="${localize("google_button_card.name")}"
+          label="${localize("google_climate_card.name")}"
           .value=${this._config.name || ""}
           configValue="name"
           @input=${this._valueChanged}
@@ -113,10 +84,10 @@ export class GoogleButtonCardEditor
         ></ha-textfield>
 
         <ha-entity-picker
-          label="Entity"
+          label="${localize("google_climate_card.entity")}"
           .value=${this._config.entity || ""}
           .hass=${this.hass}
-          .includeDomains=${this.setEntityFilter()}
+          .includeDomains=${["climate"]}
           allow-custom-entity
           configValue="entity"
           @value-changed=${this._entityChanged}
@@ -125,7 +96,18 @@ export class GoogleButtonCardEditor
 
         <div class="switch-row">
           <span class="switch-label"
-            >${localize("google_button_card.dual_icon.default")}</span
+            >${localize("google_climate_card.theme")}</span
+          >
+          <ha-switch
+            .checked=${this._config.use_material_color ?? true}
+            configValue="use_material_color"
+            @change=${this._valueChanged}
+          />
+        </div>
+
+        <div class="switch-row">
+          <span class="switch-label"
+            >${localize("google_climate_card.dual_icon.default")}</span
           >
           <ha-switch
             .checked=${this._config.use_default_icon ?? true}
@@ -139,7 +121,7 @@ export class GoogleButtonCardEditor
           : html`
               <div class="switch-row">
                 <span class="switch-label"
-                  >${localize("google_button_card.dual_icon.options")}</span
+                  >${localize("google_climate_card.dual_icon.options")}</span
                 >
                 <ha-switch
                   .checked=${this._config.dual_icon ?? false}
@@ -177,6 +159,22 @@ export class GoogleButtonCardEditor
                     />
                   `}
             `}
+
+        <ha-textfield
+          label="${localize("google_climate_card.increase_temp")}"
+          .value=${this._config.increase_temp || 1}
+          configValue="increase_temp"
+          @input=${this._valueChanged}
+          placeholder="e.g. 0.5"
+        ></ha-textfield>
+
+        <ha-textfield
+          label="${localize("google_climate_card.decrease_temp")}"
+          .value=${this._config.decrease_temp || 1}
+          configValue="decrease_temp"
+          @input=${this._valueChanged}
+          placeholder="e.g. 0.5"
+        ></ha-textfield>
       </div>
     `;
   }
@@ -213,6 +211,6 @@ export class GoogleButtonCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "google-button-card-editor": GoogleButtonCardEditor;
+    "google-climate-card-editor": GoogleClimateCardEditor;
   }
 }

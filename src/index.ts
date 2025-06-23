@@ -6,6 +6,7 @@ import { GoogleDashboardCardEditor } from "./google-dashboard/google-dashboard-c
 import { GoogleSliderCard } from "./google-slider/google-slider-card";
 import { localize } from "./localize/localize";
 import { GoogleClimateCard } from "./google-climate/google-climate-card";
+import { GoogleClimateCardEditor } from "./google-climate/google-climate-card-editor";
 
 /* eslint no-console: 0 */
 console.info(
@@ -37,6 +38,10 @@ if (!customElements.get("google-dashboard-card-editor")) {
 
 if (!customElements.get("google-climate-card")) {
   customElements.define("google-climate-card", GoogleClimateCard);
+}
+
+if (!customElements.get("google-climate-card-editor")) {
+  customElements.define("google-climate-card-editor", GoogleClimateCardEditor);
 }
 
 (window as any).customCards = (window as any).customCards ?? [];

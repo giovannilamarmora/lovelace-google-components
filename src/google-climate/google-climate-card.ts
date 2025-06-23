@@ -39,6 +39,8 @@ export class GoogleClimateCard extends LitElement {
       entity: randomClimate,
       increase_temp: 1,
       decrease_temp: 1,
+      use_material_color: true,
+      use_default_icon: true,
     };
   }
 
@@ -53,7 +55,7 @@ export class GoogleClimateCard extends LitElement {
   public _onClick(event: MouseEvent) {
     applyRippleEffect(event.currentTarget as HTMLElement, event);
     if (navigator.vibrate) {
-      navigator.vibrate(50);
+      navigator.vibrate(60);
     }
 
     if (!this._config || !this.hass) return;
@@ -64,7 +66,9 @@ export class GoogleClimateCard extends LitElement {
   }
 
   private async _adjustTemp(delta: number): Promise<void> {
-    console.log(delta);
+    if (navigator.vibrate) {
+      navigator.vibrate(60);
+    }
     if (!this.hass || !this._config?.entity) return;
 
     const stateObj = this.hass.states[this._config.entity];
@@ -86,6 +90,86 @@ export class GoogleClimateCard extends LitElement {
     }, 500); // 500ms è solitamente sufficiente
   }
 
+  private setColorCard(
+    use_material_color: boolean,
+    theme: string,
+    isOffline: boolean,
+    isOn: boolean
+  ) {
+    let nameColor = "";
+    let iconColor = "";
+    let adjustTemp = "";
+    let internalTemp = "";
+    let containerColor = "";
+    if (isOffline) {
+      // Offline, tema light
+      if (theme === "light") {
+        nameColor = iconColor = "#949496";
+        containerColor = "rgba(223, 223, 225, 0.85)";
+        //containerColor = "#dfdfe1";
+      } else {
+        // Offline, tema dark
+        nameColor = iconColor = "#717173";
+        containerColor = "#2c2c2e";
+      }
+    } else if (isOn) {
+      // Acceso, tema dark
+      if (theme === "dark") {
+        if (use_material_color) {
+          nameColor = iconColor = "#fedcca";
+          adjustTemp = "#4b332b";
+          internalTemp = "#e6c0b2";
+          containerColor = "rgba(92, 64, 53, 0.85)";
+          //containerColor = "#5c4035";
+        } else {
+          nameColor = iconColor = "#c3c3c3";
+          adjustTemp = "#5c5b60";
+          internalTemp = "#c1c2c6";
+          containerColor = "rgba(65, 66, 70, 0.83)";
+          //containerColor = "#414246";
+        }
+      } else {
+        // Acceso, tema light
+        if (use_material_color) {
+          nameColor = iconColor = internalTemp = "#812800";
+          adjustTemp = "rgba(245, 180, 150, 0.6)";
+          containerColor = "rgba(258, 193.8, 166, 0.3)";
+        } else {
+          nameColor = iconColor = internalTemp = "#525252";
+          //containerColor = "#d8e3f7";
+          adjustTemp = "#c1c1c3";
+          containerColor = "rgba(221, 221, 223, 0.83)";
+        }
+      }
+    } else {
+      // Spento, tema dark
+      if (theme === "dark") {
+        nameColor = iconColor = "#e3e3e5";
+        containerColor = "#292a2e";
+      } else {
+        // Spento, tema light
+        nameColor = iconColor = "#1b1b1d";
+        containerColor = "#e8e8ea";
+      }
+    }
+
+    this._setStyleProperty("--bsc-name-color", nameColor);
+    this._setStyleProperty("--bsc-icon-color", iconColor);
+    this._setStyleProperty("--bsc-adjustTemp-color", adjustTemp);
+    this._setStyleProperty("--bsc-internalTemp-color", internalTemp);
+    this._setStyleProperty("--bsc-background", containerColor);
+  }
+
+  _setStyleProperty(
+    name: string,
+    value: any,
+    transform = (value: any): string => value
+  ): void {
+    if (value !== undefined && value !== null && value !== "") {
+      this.style.setProperty(name, transform(value));
+    }
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;
 
@@ -99,11 +183,23 @@ export class GoogleClimateCard extends LitElement {
     const name = this._config.name || stateObj.attributes.friendly_name;
     const isOffline = isOfflineState(stateObj.state);
 
-    console.log(stateObj, this._config.entity, isOffline);
     const stateDisplay = mapStateDisplay(stateObj, "thermometer", isOffline);
+    const theme = this.hass?.themes?.darkMode ? "dark" : "light";
+    const isOn =
+      stateObj.state === "on" ||
+      stateObj.state === "auto" ||
+      stateObj.state === "heat" ||
+      stateObj.state === "cool";
+
+    this.setColorCard(this._config.use_material_color, theme, isOffline, isOn);
 
     const config = {
       control_type: "thermometer",
+      icon: this._config.icon,
+      use_default_icon: this._config.use_default_icon,
+      dual_icon: this._config.dual_icon,
+      icon_on: this._config.icon_on,
+      icon_off: this._config.icon_off,
     };
 
     return html`
@@ -114,11 +210,13 @@ export class GoogleClimateCard extends LitElement {
               id="icon_offline"
               icon="${getIcon(stateObj, config)}"
               title="Climate"
+              class="chevron"
               style="
-                  --mdc-icon-size: 20px;
-                  margin-bottom: 3px;
-                "
+                --mdc-icon-size: 20px;
+                margin-top: -5px;
+              "
             ></ha-icon>
+
             <span class="valve-name">${name}</span>
           </div>
 
@@ -145,11 +243,8 @@ export class GoogleClimateCard extends LitElement {
         </div>
         ${isOffline
           ? html`
-              <div
-                class="temperature-control"
-                style="justify-content: center; margin-bottom: 45px;"
-              >
-                <div class="temperature-display">Offline</div>
+              <div class="temperature-control offline-control">
+                <div class="temperature-display offline">Offline</div>
               </div>
             `
           : html`
@@ -188,11 +283,13 @@ export class GoogleClimateCard extends LitElement {
 
   static styles = css`
     .temperature-card {
-      background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+      /* background: #414246;*/
+      background: var(--bsc-background);
       border-radius: 28px;
       padding: 10px 15px;
       width: -webkit-fill-available;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); */
+      box-shadow: none;
       position: relative;
       overflow: hidden;
     }
@@ -204,7 +301,8 @@ export class GoogleClimateCard extends LitElement {
       left: 0;
       right: 0;
       bottom: 0;
-      background: #414246;
+      /* background: #414246;*/
+      background: var(--bsc-background);
       border-radius: 24px;
       pointer-events: none;
     }
@@ -228,7 +326,7 @@ export class GoogleClimateCard extends LitElement {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-top: 5px;
+      margin-top: 2px;
     }
 
     .steam-icon {
@@ -237,13 +335,15 @@ export class GoogleClimateCard extends LitElement {
     }
 
     .valve-name {
-      color: #c3c3c3;
+      /* color: #c3c3c3; */
+      color: var(--bsc-name-color);
       font-size: 16px;
       font-weight: 500;
     }
 
     .chevron {
-      color: #c3c3c3;
+      /* color: #c3c3c3; */
+      color: var(--bsc-icon-color);
       font-size: 20px;
       cursor: pointer;
       transition: color 0.2s ease;
@@ -266,9 +366,11 @@ export class GoogleClimateCard extends LitElement {
       width: 80px;
       height: 55px;
       border-radius: 30px;
-      background: #5c5b60;
+      /* background: #5c5b60; */
+      background: var(--bsc-adjustTemp-color);
       border: none;
-      color: #c3c3c3;
+      /* color: #c3c3c3; */
+      color: var(--bsc-name-color);
       font-size: 32px;
       font-weight: 300;
       cursor: pointer;
@@ -277,6 +379,7 @@ export class GoogleClimateCard extends LitElement {
       align-items: center;
       justify-content: center;
       backdrop-filter: blur(10px);
+      -webkit-tap-highlight-color: transparent;
     }
 
     .control-btn:hover {
@@ -289,7 +392,8 @@ export class GoogleClimateCard extends LitElement {
     }
 
     .temperature-display {
-      color: #c3c3c3;
+      /* color: #c3c3c3; */
+      color: var(--bsc-name-color);
       font-size: 72px;
       font-weight: 450;
       text-align: center;
@@ -298,12 +402,23 @@ export class GoogleClimateCard extends LitElement {
 
     .internal-temp {
       text-align: center;
-      color: #c1c2c6;
+      /* color: #c1c2c6; */
+      color: var(--bsc-internalTemp-color);
       font-size: 15px;
       font-weight: 400;
       position: relative;
       z-index: 2;
       margin-bottom: 20px;
+    }
+
+    .offline {
+      font-size: 65px;
+    }
+
+    .offline-control {
+      justify-content: center;
+      margin-bottom: 61px;
+      margin-top: 30px;
     }
 
     .ripple {
@@ -329,11 +444,6 @@ export class GoogleClimateCard extends LitElement {
       }
       .valve-name {
         line-height: 1.4;
-        margin-bottom: 2px;
-      }
-
-      #icon_offline {
-        margin-bottom: 5px;
       }
 
       .temperature-display {
@@ -344,6 +454,14 @@ export class GoogleClimateCard extends LitElement {
         width: 65px;
         height: 45px;
         font-size: 28px;
+      }
+
+      .offline {
+        font-size: 55px;
+      }
+
+      .offline-control {
+        margin-bottom: 59px;
       }
     }
   `;

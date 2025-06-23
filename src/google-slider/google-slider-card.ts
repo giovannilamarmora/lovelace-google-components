@@ -633,6 +633,9 @@ export class GoogleSliderCard extends LitElement {
         -ms-user-select: none; /* IE10+/Edge */
         user-select: none; /* Standard */
         padding: 12px 16px;
+        box-shadow:
+          0px 0.5px 1px rgba(0, 0, 0, 0.05),
+          0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
       }
 
       .hide {

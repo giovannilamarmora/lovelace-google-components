@@ -69,6 +69,7 @@ export class GoogleDashboardCardEditor
     }
 
     this._config.use_default_icon = this._config.use_default_icon ?? true;
+    this._config.default_action = this._config.default_action ?? true;
 
     return html`
       <div class="form">
@@ -119,6 +120,50 @@ export class GoogleDashboardCardEditor
           @input=${this._valueChanged}
           placeholder="e.g. ./climate"
         ></ha-textfield>
+
+        <div class="switch-row">
+          <span class="switch-label"
+            >${localize("google_dashboard_card.default")}</span
+          >
+          <ha-switch
+            .checked=${this._config.default_action ?? true}
+            configValue="default_action"
+            @change=${this._valueChanged}
+          />
+        </div>
+
+        ${this._config.default_action
+          ? html``
+          : html`
+              <ha-select
+                label="${localize("google_dashboard_card.tap_type")}"
+                .value=${this._config.action_type || "tap_action"}
+                configValue="action_type"
+                @selected=${this._valueChanged}
+                @closed=${(ev: Event) => ev.stopPropagation()}
+              >
+                <mwc-list-item value="tap_action">
+                  ${localize("google_dashboard_card.single")}
+                </mwc-list-item>
+                <mwc-list-item value="hold_action">
+                  ${localize("google_dashboard_card.hold")}
+                </mwc-list-item>
+                <mwc-list-item value="double_tap_action">
+                  ${localize("google_dashboard_card.double")}
+                </mwc-list-item>
+              </ha-select>
+
+              <div class="switch-row">
+                <span class="switch-label"
+                  >${localize("google_dashboard_card.web")}</span
+                >
+                <ha-switch
+                  .checked=${this._config.single_tap_web ?? false}
+                  configValue="single_tap_web"
+                  @change=${this._valueChanged}
+                />
+              </div>
+            `}
       </div>
     `;
   }
@@ -138,6 +183,17 @@ export class GoogleDashboardCardEditor
 
     .text-label {
       font-size: 14px;
+      font-weight: 500;
+    }
+
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .switch-label {
+      font-size: 16px;
       font-weight: 500;
     }
   `;

@@ -25,7 +25,13 @@
     "climate_name": "Climate",
     "device": "Device",
     "devices": "Devices",
-    "placeholder": "./path-or-url"
+    "placeholder": "./path-or-url",
+    "default": "Use default configuration on Tap (Single Tap)",
+    "tap_type": "Select the type of Tap (Single Tap, Hold Press, Double Tap)",
+    "single": "Single Tap",
+    "hold": "Hold Press",
+    "double": "Double Tap",
+    "web": "Use Single Tap on Browser (Selected tap on mobile)"
   },
   "google_climate_card": {
     "name": "Entity Name",

@@ -6,17 +6,34 @@ export interface GoogleDashboardCardConfig extends LovelaceCardConfig {
   lighting?: string;
   wifi?: string;
   climate?: string;
+  default_action?: boolean;
+  action_type?: "tap_action" | "hold_action" | "double_tap_action";
+  single_tap_web?: boolean;
 }
 
 export const DEFAULT_CONFIG: GoogleDashboardCardConfig = {
   type: "custom:google-dashboard-card",
 };
 
+const otherAction = (
+  action: "tap_action" | "hold_action" | "double_tap_action"
+) => {
+  switch (action) {
+    case "tap_action":
+      return "hold_action";
+    case "hold_action":
+      return "tap_action";
+    case "double_tap_action":
+      return "tap_action";
+  }
+};
+
 export function googleDashboadTemplate(
   camera_path: string,
   lighting_path: string,
   wifi_path: string,
-  climate_path: string
+  climate_path: string,
+  action: "tap_action" | "hold_action" | "double_tap_action"
 ) {
   return `type: custom:swipe-card
 card_width: max-content
@@ -27,7 +44,6 @@ parameters:
   spaceBetween: 8
   preventClicksPropagation: true
   preventClicks: true
-  slideToClickedSlide: true
 card_mod:
   style: |
     .swiper-container {
@@ -48,7 +64,10 @@ cards:
     show_name: true
     show_label: true
     show_icon: true
-    tap_action:
+    ${otherAction(action)}:
+      action: none
+      haptic: medium
+    ${action}:
       action: ${camera_path ? "navigate" : "none"}
       navigation_path: ${camera_path}
       haptic: medium
@@ -138,7 +157,10 @@ cards:
     show_name: true
     show_label: true
     show_icon: true
-    tap_action:
+    ${otherAction(action)}:
+      action: none
+      haptic: medium
+    ${action}:
       action: ${lighting_path ? "navigate" : "none"}
       navigation_path: ${lighting_path}
       haptic: medium
@@ -235,7 +257,10 @@ cards:
     show_name: true
     show_label: true
     show_icon: true
-    tap_action:
+    ${otherAction(action)}:
+      action: none
+      haptic: medium
+    ${action}:
       action: ${wifi_path ? "navigate" : "none"}
       navigation_path: ${wifi_path}
       haptic: medium
@@ -336,7 +361,10 @@ cards:
     show_name: true
     show_label: true
     show_icon: true
-    tap_action:
+    ${otherAction(action)}:
+      action: none
+      haptic: medium
+    ${action}:
       action: ${climate_path ? "navigate" : "none"}
       navigation_path: ${climate_path}
       haptic: medium

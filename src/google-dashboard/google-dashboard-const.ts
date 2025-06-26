@@ -44,11 +44,7 @@ parameters:
   spaceBetween: 8
   preventClicksPropagation: true
   preventClicks: true
-card_mod:
-  style: |
-    .swiper-container {
-      margin: 0px -15px;
-    }
+  threshold: 30
 cards:
   - type: custom:button-card
     icon: m3r:videocam
@@ -182,7 +178,7 @@ cards:
         - margin-left: |
             [[[
               const camera = Object.keys(hass.states).filter(e => e.startsWith("camera.") && hass.states[e].state !== "unavailable");
-              return camera.length === 0 ? "-7px" : "0px";
+              return camera.length === 0 ? "5px" : "0px";
             ]]]
         - margin-bottom: 1px
         - height: 130px
@@ -285,7 +281,7 @@ cards:
         - margin-left: |
             [[[
               const lights = Object.keys(hass.states).filter(e => e.startsWith("light.") && hass.states[e].state !== "unavailable");
-              return lights.length === 0 ? "-7px" : "0px";
+              return lights.length === 0 ? "5px" : "0px";
             ]]]
         - margin-bottom: 1px
         - height: 130px
@@ -392,7 +388,7 @@ cards:
               entity.startsWith('device_tracker.') && 
               hass.states[entity].state === 'home'
               );
-              return deviceEntities.length === 0 ? "-7px" : "0px";
+              return deviceEntities.length === 0 ? "5px" : "0px";
             ]]]
         - margin-bottom: 1px
         - height: 130px

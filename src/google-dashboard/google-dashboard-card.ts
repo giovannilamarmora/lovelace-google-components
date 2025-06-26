@@ -106,7 +106,11 @@ export class GoogleDashboardCard extends LitElement {
     }
 
     // Avvolgi il contenuto in un div che intercetta il click
-    return html` <div @mousedown=${this._handleClick}>${this._card}</div> `;
+    return html`
+      <div style="margin: 0px -15px;" @mousedown=${this._handleClick}>
+        ${this._card}
+      </div>
+    `;
   }
 
   static styles = css`

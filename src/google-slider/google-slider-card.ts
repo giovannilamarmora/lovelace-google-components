@@ -105,14 +105,6 @@ export class GoogleSliderCard extends LitElement {
     }
   }
 
-  _log(text): void {
-    console.log(
-      `%c GOOGLE-SLIDER-CARD ${this._name} %c ${text} `,
-      "color: orange; font-weight: bold; background: black",
-      ""
-    );
-  }
-
   connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener("contextmenu", this._handleContextMenu);

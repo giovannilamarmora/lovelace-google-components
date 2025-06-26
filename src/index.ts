@@ -11,7 +11,7 @@ import { GoogleControlCard } from "./google-control/google-control-card";
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  GOOGLE-SLIDER-CARD \n%c  ${localize("common.version")} ${CARD_VERSION}    `,
+  `%c GOOGLE-SLIDER-CARD %c ${localize("common.version")} ${CARD_VERSION}    `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );

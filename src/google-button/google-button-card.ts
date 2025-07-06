@@ -191,7 +191,7 @@ export class GoogleButtonCard extends LitElement {
         ${isOffline
           ? html`<ha-icon
               id="icon_offline"
-              icon="mdi:alert"
+              icon="m3rf:warning"
               style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color);"
               title="Offline"
             ></ha-icon>`

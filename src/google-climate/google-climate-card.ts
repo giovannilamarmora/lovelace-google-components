@@ -223,7 +223,7 @@ export class GoogleClimateCard extends LitElement {
           ${isOffline
             ? html`<ha-icon
                 id="icon_offline"
-                icon="mdi:alert"
+                icon="m3rf:warning"
                 style="position: absolute; right: 0px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color);"
                 title="Offline"
               ></ha-icon>`

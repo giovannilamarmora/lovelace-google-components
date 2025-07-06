@@ -2,7 +2,7 @@
 
 A custom component that brings the **Google Home look and feel** to your Home Assistant dashboard. Provides dynamic, swipeable cards for Cameras, Lights, Wi-Fi devices, and Climate control with Material You styling.
 
-![Google Home Preview](https://raw.githubusercontent.com/giovannilamarmora/Home-Assistant-Google-Home-Component/master/assets/preview.png)
+[Google Home Documentation](https://giovannilamarmora.gitbook.io/google-home-on-home-assistant)
 
 ---
 

@@ -1,18 +1,17 @@
 # 🏠 Google Home Dashboard Component for Home Assistant
 
-A custom component that brings the **Google Home look and feel** to your Home Assistant dashboard. Provides dynamic, swipeable cards for Cameras, Lights, Wi-Fi devices, and Climate control with Material You styling.
+A custom card suite that brings the **Google Home app experience** into Home Assistant, using **Material You** design principles.
 
-[Google Home Documentation](https://giovannilamarmora.gitbook.io/google-home-on-home-assistant)
+📘 [Read the full documentation](https://giovannilamarmora.gitbook.io/google-home-on-home-assistant)
 
 ---
 
-## 🚀 Features
+## ✨ Highlights
 
-- 🖼️ Modern Google Home-style UI  
-- 📱 Compact swipeable dashboard (uses [swipe-card](https://github.com/bramkragten/swipe-card))  
-- 🔘 Dynamic button-cards with automatic entity counting  
-- 🎨 Light/Dark theme support  
-- 📦 Easily installable via GitHub or CDN
+- 📱 Mobile-first UI with swipeable views
+- 🎨 Material You design with dynamic theming
+- 🧩 Smart cards for Lights, Climate, Cameras, and more
+- ⚙️ Easy to install and configure
 
 ---
 
@@ -38,7 +37,7 @@ A custom component that brings the **Google Home look and feel** to your Home As
 
 ---
 
-### ☁️ Method 2 – CDN Installation
+### ☁️ Method 2 – CDN Installation - Recommended
 
 1. In Home Assistant, go to:
    - `Settings` → `Dashboards` → `Manage Resources`
@@ -56,6 +55,12 @@ A custom component that brings the **Google Home look and feel** to your Home As
 
 ---
 
+## 📚 Documentation
+
+For setup instructions, examples, requirements, and customization:
+
+👉 https://giovannilamarmora.gitbook.io/google-home-on-home-assistant
+
 ## 🧩 Dependencies
 
 This component uses:
@@ -66,21 +71,14 @@ This component uses:
 
 ---
 
-## ✨ Example Usage
+## 🙏 Credits
 
-```yaml
-type: custom:google-dashboard-card
-cameras: ./cameras
-lighting: ./lights
-wifi: ./network
-climate: ./climate
-```
+This project builds on the work of:
 
----
-
-## 🛠️ Development
-
-Clone the repository and run your preferred build tool (e.g., Vite, Webpack). Make sure to output to the `dist/` folder.
+- [@Nerwyn](https://github.com/Nerwyn) – [Material You theme](https://github.com/Nerwyn/material-you-theme
+)
+- [@beecho01](https://github.com/beecho01
+) – [Material Symbol Icons](https://github.com/beecho01/material-symbols)
 
 ---
 
@@ -90,6 +88,8 @@ MIT License – feel free to use, modify, and share.
 
 ---
 
-## 🤝 Contribute
+## 🛠 Contributing
 
-PRs are welcome! If you'd like to help translate or improve features, open an Issue or Pull Request.
+This project is currently in beta. Contributions, ideas, and feedback are welcome!
+
+Feel free to open issues or submit pull requests.

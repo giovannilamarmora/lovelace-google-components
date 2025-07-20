@@ -13,6 +13,7 @@ import {
 } from "./google-climate-const";
 import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
+import { toBeSetted } from "./google-climate-mapper";
 
 @customElement("google-climate-card")
 export class GoogleClimateCard extends LitElement {
@@ -72,10 +73,16 @@ export class GoogleClimateCard extends LitElement {
     if (!this.hass || !this._config?.entity) return;
 
     const stateObj = this.hass.states[this._config.entity];
-    const current = Number(stateObj?.attributes?.temperature);
+    const current = Number(
+      toBeSetted(stateObj, stateObj.attributes.temperature)
+        ? stateObj.attributes.temperature * 5
+        : stateObj?.attributes?.temperature
+    );
     if (isNaN(current)) return;
 
-    const newTemp = current + delta;
+    const newTemp = toBeSetted(stateObj, current)
+      ? (current + delta) / 5
+      : current + delta;
 
     this.hass.states[this._config.entity]!.attributes!.temperature! = newTemp;
 
@@ -262,7 +269,9 @@ export class GoogleClimateCard extends LitElement {
                   −
                 </button>
                 <div class="temperature-display" id="tempDisplay">
-                  ${stateObj.attributes.temperature}
+                  ${toBeSetted(stateObj, stateObj.attributes.temperature)
+                    ? stateObj.attributes.temperature * 5
+                    : stateObj.attributes.temperature}
                 </div>
                 <button
                   class="control-btn plus-btn"

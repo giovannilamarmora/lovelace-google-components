@@ -41,6 +41,8 @@ export class GoogleDashboardCard extends LitElement {
         this._card = card;
         this.requestUpdate();
       }
+      console.log("This LOG is for debug purpose, Google Dashboard");
+      console.log(this.hass);
     }
   }
 

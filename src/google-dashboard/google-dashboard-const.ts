@@ -53,7 +53,9 @@ cards:
     label: |
       [[[
           const devices = Object.keys(hass.states).filter((e) =>
-          e.startsWith("camera.")
+          e.startsWith("camera.") &&
+          hass.entities[e] &&
+          !hass.entities[e].hidden
         ).length;
         return devices > 1 ? devices + " " + "${localize("google_dashboard_card.devices")}" : devices + " " + "${localize("google_dashboard_card.device")}";
       ]]]
@@ -79,7 +81,9 @@ cards:
       card:
         - display: |
             [[[
-              const lights = Object.keys(hass.states).filter(e => e.startsWith("camera.") && hass.states[e].state !== "unavailable");
+              const lights = Object.keys(hass.states).filter(e => e.startsWith("camera.") && hass.states[e].state !== "unavailable" &&
+                hass.entities[e] &&
+                !hass.entities[e].hidden);
               return lights.length === 0 ? "none" : "block";
             ]]]
         - margin-bottom: 1px
@@ -142,7 +146,9 @@ cards:
         const lightEntities = Object.keys(hass.states).filter(
         (entity) =>
           entity.startsWith("light.") &&
-          hass.states[entity].state !== "unavailable"
+          hass.states[entity].state !== "unavailable" &&
+          hass.entities[entity] &&
+          !hass.entities[entity].hidden
         );
         const lightsOn = lightEntities.filter(
           (entity) => hass.states[entity].state === "on"
@@ -172,7 +178,10 @@ cards:
       card:
         - display: |
             [[[
-              const lights = Object.keys(hass.states).filter(e => e.startsWith("light.") && hass.states[e].state !== "unavailable");
+              const lights = Object.keys(hass.states).filter(e => e.startsWith("light.") && 
+                hass.states[e].state !== "unavailable" &&
+                hass.entities[e] &&
+                !hass.entities[e].hidden);
               return lights.length === 0 ? "none" : "block";
             ]]]
         - margin-left: |
@@ -246,7 +255,9 @@ cards:
         const devices = Object.keys(hass.states).filter(
           (entity) =>
             entity.startsWith("device_tracker.") &&
-            hass.states[entity].state === "home"
+            hass.states[entity].state === "home" &&
+            hass.entities[entity] &&
+            !hass.entities[entity].hidden
         ).length;
         return devices > 1 ? (devices + " " + "${localize("google_dashboard_card.devices")}") : (devices + " " + "${localize("google_dashboard_card.device")}");
       ]]]
@@ -273,8 +284,10 @@ cards:
         - display: |
             [[[
               const deviceEntities = Object.keys(hass.states).filter(entity => 
-              entity.startsWith('device_tracker.') && 
-              hass.states[entity].state === 'home'
+                entity.startsWith('device_tracker.') && 
+                hass.states[entity].state === 'home' &&
+                hass.entities[entity] &&
+                !hass.entities[entity].hidden
               );
               return deviceEntities.length === 0 ? "none" : "block";
             ]]]
@@ -350,7 +363,9 @@ cards:
         const climateEntities = Object.keys(hass.states).filter(
             (entity) =>
               entity.startsWith("climate.") &&
-              hass.states[entity].state !== "unavailable"
+              hass.states[entity].state !== "unavailable" &&
+              hass.entities[entity] &&
+              !hass.entities[entity].hidden
           ).length;
           return climateEntities > 1 ? climateEntities + " " + "${localize("google_dashboard_card.devices")}" : climateEntities + " " + "${localize("google_dashboard_card.device")}";
       ]]]
@@ -377,8 +392,10 @@ cards:
         - display: |
             [[[
               const climateEntities = Object.keys(hass.states).filter(entity => 
-              entity.startsWith('climate.') && 
-              hass.states[entity].state !== 'unavailable'
+                entity.startsWith('climate.') && 
+                hass.states[entity].state !== 'unavailable' &&
+                hass.entities[entity] &&
+                !hass.entities[entity].hidden
               );
               return climateEntities.length === 0 ? "none" : "block";
             ]]]
@@ -431,7 +448,11 @@ cards:
           [[[
             return Object.keys(hass.states).some(entity => 
               entity.startsWith('climate.') && 
-              (hass.states[entity].state === 'on' || hass.states[entity].state === 'auto' || hass.states[entity].state === 'heat' || hass.states[entity].state === 'cool')
+              (hass.states[entity].state === 'on' || 
+                hass.states[entity].state === 'auto' || 
+                hass.states[entity].state === 'heat' || 
+                hass.states[entity].state === 'cool' || 
+                hass.states[entity].state === 'heat_cool')
             );
           ]]]
         styles:

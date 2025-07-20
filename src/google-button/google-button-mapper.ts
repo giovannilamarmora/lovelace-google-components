@@ -1,5 +1,6 @@
+import { toBeSetted } from "../google-climate/google-climate-mapper";
 import { localize } from "../localize/localize";
-import { OnlineStates } from "./google-button-const";
+import { ControlType, OnlineStates } from "./google-button-const";
 
 export function getIcon(stateObj: any, config: any): string {
   const domain = stateObj.entity_id.split(".")[0];
@@ -32,20 +33,28 @@ export function getIcon(stateObj: any, config: any): string {
     return stateObj.attributes.icon;
   }
 
-  if (controlType === "thermometer") {
-    switch (state) {
-      case "auto":
-        return "mdi:thermostat-auto";
-      case "heat":
-        return "mdi:fire";
-      case "cool":
-        return "mdi:snowflake";
-      default:
-        return "mdi:thermometer";
+  switch (controlType) {
+    case ControlType.THERMOMETER: {
+      switch (state) {
+        case "auto":
+          return "mdi:thermostat-auto";
+        case "heat":
+          return "mdi:fire";
+        case "cool":
+          return "mdi:snowflake";
+        default:
+          return "mdi:thermometer";
+      }
     }
-  }
-  if (controlType === "scene") {
-    return "mdi:creation-outline";
+    case ControlType.SCENE:
+      return "mdi:creation-outline";
+    case ControlType.MEDIA_PLAYER:
+      switch (state) {
+        case "idle":
+          return "m3rf:tv-gen";
+        default:
+          return "m3r:tv-gen";
+      }
   }
 
   return `mdi:${domain}`;
@@ -58,7 +67,12 @@ export function mapStateDisplay(
 ) {
   let text = "";
   if (control_type === "thermometer" && !isOffline)
-    text = " • " + stateObj.attributes.current_temperature + "°";
+    text =
+      " • " +
+      (toBeSetted(stateObj, stateObj.attributes.current_temperature)
+        ? stateObj.attributes.current_temperature * 5
+        : stateObj.attributes.current_temperature) +
+      "°";
   return getStateDisplay(stateObj.state, text);
 }
 
@@ -73,7 +87,7 @@ export function getStateDisplay(state: string, text: string = ""): string {
     [OnlineStates.AUTO]: localize("common.auto"),
     [OnlineStates.HEAT]: localize("common.heat"),
     [OnlineStates.COOL]: localize("common.cool"),
-    [OnlineStates.HEAT_COOL]: localize("common.heat"),
+    [OnlineStates.HEAT_COOL]: localize("common.auto"),
   };
 
   const finalState = stateMap[state] || state;

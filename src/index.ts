@@ -71,9 +71,10 @@ if (!customElements.get("google-control-card-editor")) {
 
 (window as any).customCards.push({
   type: "google-dashboard-card",
-  name: "Google Dashboard Card (Beta)",
+  name: "Google Dashboard Card",
   preview: true,
-  description: "Google-style Dashboard card.",
+  description:
+    "A customizable dashboard card inspired by Google's Material Design. Perfect for building modern, responsive Home Assistant interfaces.",
 });
 
 (window as any).customCards.push({

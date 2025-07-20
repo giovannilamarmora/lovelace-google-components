@@ -1,6 +1,5 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { GoogleButtonCardConfig } from "../google-slider/types";
 import { localize } from "../localize/localize";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { fireEvent } from "custom-card-helpers";
@@ -11,6 +10,7 @@ import {
   mapStateDisplay,
 } from "./google-button-mapper";
 import { applyRippleEffect } from "../utils";
+import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -141,7 +141,8 @@ export class GoogleButtonCard extends LitElement {
       stateObj.state === "on" ||
       stateObj.state === "auto" ||
       stateObj.state === "heat" ||
-      stateObj.state === "cool";
+      stateObj.state === "cool" ||
+      stateObj.state === "idle";
     //const domain = this._config.entity!.split(".")[0];
     const name = this._config.name || stateObj.attributes.friendly_name;
     const icon = getIcon(stateObj, this._config);
@@ -157,7 +158,10 @@ export class GoogleButtonCard extends LitElement {
     //  icon = `mdi:${domain}`;
     //}
 
-    const isOffline = isOfflineState(stateObj.state, this._config.control_type);
+    const isOffline = isOfflineState(
+      stateObj.state,
+      this._config.control_type!
+    );
     const stateDisplay = mapStateDisplay(
       stateObj,
       this._config.control_type!,
@@ -183,7 +187,8 @@ export class GoogleButtonCard extends LitElement {
           <ha-icon .icon=${icon} class="icon"></ha-icon>
           <div class="text">
             <div class="name">${name}</div>
-            ${this._config.control_type == "scene"
+            ${this._config.control_type == ControlType.SCENE ||
+            this._config.control_type == ControlType.MEDIA_PLAYER
               ? html``
               : html`<div class="state">${stateDisplay}</div>`}
           </div>

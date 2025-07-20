@@ -1,6 +1,7 @@
-import { GoogleButtonCardConfig, GoogleSliderCardConfig } from "./types";
+import { GoogleButtonCardConfig } from "../google-button/google-button-const";
+import { GoogleSliderCardConfig } from "./types";
 
-export const CARD_VERSION = "1.0.2";
+export const CARD_VERSION = "1.0.3";
 export const DEFAULT_ATTRIBUTE = "brightness";
 export const SETTLE_TIME = 3000;
 export const HOLD_TIME = 600;

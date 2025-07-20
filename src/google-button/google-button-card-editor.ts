@@ -1,9 +1,9 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
-import { GoogleButtonCardConfig } from "../google-slider/types";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { localize } from "../localize/localize";
+import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
 
 @customElement("google-button-card-editor")
 export class GoogleButtonCardEditor
@@ -65,10 +65,12 @@ export class GoogleButtonCardEditor
 
   setEntityFilter() {
     switch (this._config.control_type) {
-      case "thermometer":
+      case ControlType.THERMOMETER:
         return ["climate"];
-      case "scene":
+      case ControlType.SCENE:
         return ["scene"];
+      case ControlType.MEDIA_PLAYER:
+        return ["media_player"];
       default:
         return undefined;
     }
@@ -101,6 +103,9 @@ export class GoogleButtonCardEditor
           </mwc-list-item>
           <mwc-list-item value="scene">
             ${localize("google_button_card.type.scene")}
+          </mwc-list-item>
+          <mwc-list-item value="media_player">
+            ${localize("google_button_card.type.media")}
           </mwc-list-item>
         </ha-select>
 

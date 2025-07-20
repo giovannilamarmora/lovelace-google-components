@@ -8,6 +8,7 @@ import { localize } from "./localize/localize";
 import { GoogleClimateCard } from "./google-climate/google-climate-card";
 import { GoogleClimateCardEditor } from "./google-climate/google-climate-card-editor";
 import { GoogleControlCard } from "./google-control/google-control-card";
+import { GoogleControlCardEditor } from "./google-control/google-control-card-editor";
 
 /* eslint no-console: 0 */
 console.info(
@@ -49,38 +50,42 @@ if (!customElements.get("google-control-card")) {
   customElements.define("google-control-card", GoogleControlCard);
 }
 
+if (!customElements.get("google-control-card-editor")) {
+  customElements.define("google-control-cardeditor", GoogleControlCardEditor);
+}
+
 (window as any).customCards = (window as any).customCards ?? [];
 (window as any).customCards.push({
   type: "google-slider-card",
-  name: "Google Slider Card",
+  name: "Google Slider Card (Beta)",
   preview: true,
   description: "Google Slider Card for light entities.",
 });
 
 (window as any).customCards.push({
   type: "google-button-card",
-  name: "Google Button Card",
+  name: "Google Button Card (Beta)",
   preview: true,
   description: "Google-style button card.",
 });
 
 (window as any).customCards.push({
   type: "google-dashboard-card",
-  name: "Google Dashboard Card",
+  name: "Google Dashboard Card (Beta)",
   preview: true,
   description: "Google-style Dashboard card.",
 });
 
 (window as any).customCards.push({
   type: "google-climate-card",
-  name: "Google Climate Card",
+  name: "Google Climate Card (Beta)",
   preview: true,
   description: "Google-style Climate card.",
 });
 
 (window as any).customCards.push({
   type: "google-control-card",
-  name: "Google Control Card",
+  name: "Google Control Card (Preview)",
   preview: true,
   description: "Google-style Control card.",
 });

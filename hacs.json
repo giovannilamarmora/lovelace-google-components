@@ -1,8 +1,8 @@
 {
-  "name": "Google Home Dashboard Component",
+  "name": "Google Home Component",
   "description": "A custom Google Home-style UI component for Home Assistant.",
-  "version": "1.0.0",
-  "slug": "google_home_dashboard_component",
+  "version": "1.0.1",
+  "slug": "google_home_component",
   "type": "plugin",
   "authors": ["giovannilamarmora"],
   "repository": "https://github.com/giovannilamarmora/Home-Assistant-Google-Home-Component",

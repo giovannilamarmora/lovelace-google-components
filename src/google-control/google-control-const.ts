@@ -15,19 +15,7 @@ export function googleControlTemplate(name: string, icon: string) {
   return `type: custom:button-card
 name: ${name}
 icon: ${icon}
-tap_action:
-  action: url
-  url_path: |
-    [[[
-      const ua = navigator.userAgent || "";
-      if (ua.includes("Android")) {
-        return "app://com.google.android.apps.chromecast.app";
-      } else if (ua.includes("iPhone") || ua.includes("iPad")) {
-        return "https://apps.apple.com/app/google-home/id680819774";
-      } else {
-        return "https://home.google.com/";
-      }
-    ]]]
+${tap_action()}
 styles:
   grid:
     - grid-template-columns: 2fr 1fr 1fr
@@ -67,4 +55,20 @@ styles:
           return hass.themes.darkMode ? '#c4c7d0' : '#43484e';
         ]]]
 `;
+}
+
+function tap_action() {
+  return `tap_action:
+  action: url
+  url_path: |
+    [[[
+      const ua = navigator.userAgent || "";
+      if (ua.includes("Android")) {
+        return "app://com.google.android.apps.chromecast.app";
+      } else if (ua.includes("iPhone") || ua.includes("iPad")) {
+        return "googlehome://";
+      } else {
+        return "https://home.google.com/";
+      }
+    ]]]`;
 }

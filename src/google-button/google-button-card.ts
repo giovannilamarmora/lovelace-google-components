@@ -192,7 +192,7 @@ export class GoogleButtonCard extends LitElement {
           ? html`<ha-icon
               id="icon_offline"
               icon="m3rf:warning"
-              style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color);"
+              style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color); --mdc-icon-size: 20px;"
               title="Offline"
             ></ha-icon>`
           : this._config.control_type == "thermometer"

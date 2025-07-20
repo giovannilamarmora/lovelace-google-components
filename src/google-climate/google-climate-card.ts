@@ -180,6 +180,7 @@ export class GoogleClimateCard extends LitElement {
       >`;
     }
 
+    console.log("CLIMATE", stateObj);
     const name = this._config.name || stateObj.attributes.friendly_name;
     const isOffline = isOfflineState(stateObj.state);
 
@@ -189,7 +190,8 @@ export class GoogleClimateCard extends LitElement {
       stateObj.state === "on" ||
       stateObj.state === "auto" ||
       stateObj.state === "heat" ||
-      stateObj.state === "cool";
+      stateObj.state === "cool" ||
+      stateObj.state === "heat_cool";
 
     this.setColorCard(this._config.use_material_color, theme, isOffline, isOn);
 

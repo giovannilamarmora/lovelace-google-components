@@ -73,6 +73,7 @@ export function getStateDisplay(state: string, text: string = ""): string {
     [OnlineStates.AUTO]: localize("common.auto"),
     [OnlineStates.HEAT]: localize("common.heat"),
     [OnlineStates.COOL]: localize("common.cool"),
+    [OnlineStates.HEAT_COOL]: localize("common.heat"),
   };
 
   const finalState = stateMap[state] || state;

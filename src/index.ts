@@ -12,7 +12,7 @@ import { GoogleControlCardEditor } from "./google-control/google-control-card-ed
 
 /* eslint no-console: 0 */
 console.info(
-  `%c GOOGLE-SLIDER-CARD %c ${localize("common.version")} ${CARD_VERSION}    `,
+  `%c Google Component %c ${localize("common.version")} ${CARD_VERSION}    `,
   "color: orange; font-weight: bold; background: black",
   "color: white; font-weight: bold; background: dimgray"
 );

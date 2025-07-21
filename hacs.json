@@ -4,6 +4,8 @@
   "version": "1.0.4",
   "slug": "google_home_component",
   "type": "plugin",
+  "content_in_root": false,
+  "render_readme": true,
   "authors": ["giovannilamarmora"],
   "repository": "https://github.com/giovannilamarmora/Home-Assistant-Google-Home-Component",
   "resources": [

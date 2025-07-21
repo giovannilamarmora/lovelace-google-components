@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+env:
+  ACTIONS_STEP_DEBUG: true
+
 jobs:
   hacs:
     name: HACS Action

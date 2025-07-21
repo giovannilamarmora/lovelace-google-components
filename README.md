@@ -1,12 +1,12 @@
 # 🏠 Google Home Dashboard Component for Home Assistant
 
-![Dashboard](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/src/shared/assets/img/control.png)
+![Dashboard](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/img/control.png)
 
-![Button](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/src/shared/assets/img/button.png)
+![Button](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/img/button.png)
 
-![Slider](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/src/shared/assets/img/slider.png)
+![Slider](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/img/slider.png)
 
-![Climate](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/src/shared/assets/img/climate.png)
+![Climate](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/img/climate.png)
 
 A custom card suite that brings the **Google Home app experience** into Home Assistant, using **Material You** design principles.
 

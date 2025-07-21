@@ -1,14 +1,9 @@
 {
   "name": "Google Home Component",
   "description": "A custom Google Home-style UI component for Home Assistant.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "type": "plugin",
   "render_readme": true,
   "authors": ["giovannilamarmora"],
-  "resources": [
-    {
-      "file": "google-components.js",
-      "type": "module"
-    }
-  ]
+  "filename": "google-components.js"
 }

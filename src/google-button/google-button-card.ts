@@ -145,7 +145,7 @@ export class GoogleButtonCard extends LitElement {
       stateObj.state === "idle";
     //const domain = this._config.entity!.split(".")[0];
     const name = this._config.name || stateObj.attributes.friendly_name;
-    const icon = getIcon(stateObj, this._config);
+    const icon = getIcon(stateObj, this._config, this.hass);
     //let icon = "";
     //if (this._config.icon && this._config.icon.trim() !== "") {
     //  icon = this._config.icon;

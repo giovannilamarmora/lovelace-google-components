@@ -1,7 +1,8 @@
 import { localize } from "../localize/localize";
+import { GoogleDevice } from "../shared/google_model";
 import { ControlType, OnlineStates } from "./google-button-const";
 
-export function getIcon(stateObj: any, config: any): string {
+export function getIcon(stateObj: any, config: any, hass: any): string {
   const domain = stateObj.entity_id.split(".")[0];
   const state = stateObj.state;
   const controlType: string = config.control_type ?? "generic";
@@ -51,12 +52,20 @@ export function getIcon(stateObj: any, config: any): string {
     case ControlType.SCENE:
       return "mdi:creation-outline";
     case ControlType.MEDIA_PLAYER:
-      switch (state) {
-        case "idle":
-          return "m3rf:tv-gen";
-        default:
-          return "m3r:tv-gen";
+      const device_id = hass.entities[config.entity!].device_id;
+      const google_device: GoogleDevice = hass.devices[device_id].model || null;
+      console.log("DEVICE", device_id, google_device);
+      if (google_device) {
+        switch (google_device) {
+          case GoogleDevice.NEST_MINI:
+            return state == "idle" ? "m3of:nest-mini" : "m3o:nest-mini";
+          case GoogleDevice.GOOGLE_HOME:
+            return state == "idle" ? "m3of:home-speaker" : "m3o:home-speaker";
+          case GoogleDevice.NEST_HUB:
+            return state == "idle" ? "m3of:nest-display" : "m3o:nest-display";
+        }
       }
+      return state == "idle" ? "m3rf:tv-gen" : "m3r:tv-gen";
   }
 
   return `mdi:${domain}`;

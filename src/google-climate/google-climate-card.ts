@@ -251,7 +251,7 @@ export class GoogleClimateCard extends LitElement {
           <div class="valve-info">
             <ha-icon
               id="icon_offline"
-              icon="${getIcon(stateObj, config)}"
+              icon="${getIcon(stateObj, config, this.hass)}"
               title="Climate"
               class="chevron"
               style="

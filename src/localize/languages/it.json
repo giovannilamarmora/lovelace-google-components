@@ -42,7 +42,8 @@
     "dual_icon": {
       "default": "Usa Icona di default",
       "options": "Usa doppia icona (Elemento acceso e spento)."
-    }
+    },
+    "fix_temperature": "Abilita se la temperatura non è corretta"
   },
   "google_button_card": {
     "name": "Nome Entità",

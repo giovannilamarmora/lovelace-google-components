@@ -175,6 +175,17 @@ export class GoogleClimateCardEditor
           @input=${this._valueChanged}
           placeholder="e.g. 0.5"
         ></ha-textfield>
+
+        <div class="switch-row">
+          <span class="switch-label"
+            >${localize("google_climate_card.fix_temperature")}</span
+          >
+          <ha-switch
+            .checked=${this._config.fix_temperature ?? false}
+            configValue="fix_temperature"
+            @change=${this._valueChanged}
+          />
+        </div>
       </div>
     `;
   }

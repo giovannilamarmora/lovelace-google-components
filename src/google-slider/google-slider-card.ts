@@ -48,7 +48,6 @@ export class GoogleSliderCard extends LitElement {
       icon: "m3of:lightbulb",
       show_percentage: true,
       bold_text: false,
-      height: 95,
     };
   }
 
@@ -509,7 +508,9 @@ export class GoogleSliderCard extends LitElement {
       <ha-card
         id="container"
         tabindex="0"
-        style="position: relative;"
+        style="position: relative; ${isOffline
+          ? "padding: 12px 35px 12px 12px"
+          : "padding: 12px 12px"}"
         @mousedown=${this._onClick}
       >
         <div id="slider" class="animate ${colorize ? "colorize" : ""}"></div>
@@ -538,7 +539,7 @@ export class GoogleSliderCard extends LitElement {
               <ha-icon
                 id="icon_offline"
                 icon="m3rf:warning"
-                style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color); --mdc-icon-size: 20px;"
+                style="position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color); --mdc-icon-size: 20px;"
                 title="Offline"
               ></ha-icon>
             `
@@ -590,7 +591,7 @@ export class GoogleSliderCard extends LitElement {
         --bsc-border-radius: var(--ha-card-border-radius);
         --bsc-border-style: var(--ha-card-border-style);
         --bsc-border-width: var(--ha-card-border-width);
-        --bsc-height: var(--ha-card-height, 60px);
+        --bsc-height: var(--ha-card-height, 97px);
         --bsc-opacity: 1;
 
         display: flex;
@@ -624,7 +625,7 @@ export class GoogleSliderCard extends LitElement {
         -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* IE10+/Edge */
         user-select: none; /* Standard */
-        padding: 12px 16px;
+        padding: 12px 12px;
         box-shadow:
           0px 0.5px 1px rgba(0, 0, 0, 0.05),
           0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
@@ -681,6 +682,7 @@ export class GoogleSliderCard extends LitElement {
         color: var(--bsc-name-color);
         font-size: 15px;
         font-weight: 500;
+        line-height: 1.35;
       }
 
       #name.bold,
@@ -691,6 +693,7 @@ export class GoogleSliderCard extends LitElement {
       #percentage {
         color: var(--bsc-percentage-color);
         font-size: 13px;
+        margin-top: 1px;
       }
 
       #icon {
@@ -703,13 +706,6 @@ export class GoogleSliderCard extends LitElement {
       }
 
       @media (max-width: 420px) {
-        #name,
-        #percentage {
-          font-size: small;
-        }
-        #name {
-          line-height: 1.4;
-        }
         #icon_offline {
           right: 15px;
         }

@@ -79,9 +79,10 @@ if (!customElements.get("google-control-card-editor")) {
 
 (window as any).customCards.push({
   type: "google-climate-card",
-  name: "Google Climate Card (Beta)",
+  name: "Google Climate Card",
   preview: true,
-  description: "Google-style Climate card.",
+  description:
+    "A climate card inspired by Google's design, providing intuitive control and status display for HVAC devices.",
 });
 
 (window as any).customCards.push({

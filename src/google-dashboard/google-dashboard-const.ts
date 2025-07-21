@@ -92,8 +92,6 @@ cards:
         - border-radius: 30px
         - box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.05),
             0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
-
-
         - background: |
             [[[
               return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
@@ -293,8 +291,16 @@ cards:
             ]]]
         - margin-left: |
             [[[
-              const lights = Object.keys(hass.states).filter(e => e.startsWith("light.") && hass.states[e].state !== "unavailable");
-              return lights.length === 0 ? "5px" : "0px";
+              const cameras = Object.keys(hass.states).filter(e => e.startsWith("camera.") && hass.states[e].state !== "unavailable");
+              const lights = Object.keys(hass.states).filter(e => 
+                e.startsWith("light.") && hass.states[e].state !== "unavailable");
+              return lights.length === 0 ? "-8px" : "0px";
+
+              if (lights.length === 0 && cameras.length === 0) 
+                return "5px";
+              else if (lights.length != 0 || cameras.length != 0) 
+                return "-8px";
+              else return "0px";
             ]]]
         - margin-bottom: 1px
         - height: 130px
@@ -401,11 +407,20 @@ cards:
             ]]]
         - margin-left: |
             [[[
+              const cameras = Object.keys(hass.states).filter((e) =>
+                e.startsWith("camera.") &&
+                hass.entities[e] &&
+                !hass.entities[e].hidden
+              ).length;
+              const lights = Object.keys(hass.states).filter(e => 
+                e.startsWith("light.") && hass.states[e].state !== "unavailable");
               const deviceEntities = Object.keys(hass.states).filter(entity => 
-              entity.startsWith('device_tracker.') && 
-              hass.states[entity].state === 'home'
-              );
-              return deviceEntities.length === 0 ? "5px" : "0px";
+                entity.startsWith('device_tracker.') && hass.states[entity].state === 'home');
+              if (deviceEntities.length === 0 && lights.length === 0 && cameras.length === 0) 
+                return "5px";
+              else if (deviceEntities.length === 0 && lights.length != 0) 
+                return "-8px";
+              else return "0px";
             ]]]
         - margin-bottom: 1px
         - height: 130px

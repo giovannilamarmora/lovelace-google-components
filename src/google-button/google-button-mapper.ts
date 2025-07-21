@@ -1,4 +1,3 @@
-import { toBeSetted } from "../google-climate/google-climate-mapper";
 import { localize } from "../localize/localize";
 import { ControlType, OnlineStates } from "./google-button-const";
 
@@ -37,11 +36,14 @@ export function getIcon(stateObj: any, config: any): string {
     case ControlType.THERMOMETER: {
       switch (state) {
         case "auto":
+        case "heat_cool":
           return "mdi:thermostat-auto";
         case "heat":
           return "mdi:fire";
         case "cool":
           return "mdi:snowflake";
+        case "off":
+          return "mdi:thermometer-off";
         default:
           return "mdi:thermometer";
       }
@@ -63,13 +65,14 @@ export function getIcon(stateObj: any, config: any): string {
 export function mapStateDisplay(
   stateObj: any,
   control_type: string,
-  isOffline: boolean
+  isOffline: boolean,
+  fix_temperature: boolean = false
 ) {
   let text = "";
   if (control_type === "thermometer" && !isOffline)
     text =
       " • " +
-      (toBeSetted(stateObj, stateObj.attributes.current_temperature)
+      (fix_temperature
         ? stateObj.attributes.current_temperature * 5
         : stateObj.attributes.current_temperature) +
       "°";

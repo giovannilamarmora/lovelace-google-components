@@ -13,12 +13,13 @@ import {
 } from "./google-climate-const";
 import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
-import { toBeSetted } from "./google-climate-mapper";
+import { google_color } from "../shared/color";
 
 @customElement("google-climate-card")
 export class GoogleClimateCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @state() private _config: GoogleClimateCardConfig = DEFAULT_CONFIG;
+  private google_color_scheme: any = google_color;
 
   public setConfig(config: GoogleClimateCardConfig): void {
     if (!config || !config.entity) {
@@ -74,13 +75,13 @@ export class GoogleClimateCard extends LitElement {
 
     const stateObj = this.hass.states[this._config.entity];
     const current = Number(
-      toBeSetted(stateObj, stateObj.attributes.temperature)
+      this._config.fix_temperature
         ? stateObj.attributes.temperature * 5
         : stateObj?.attributes?.temperature
     );
     if (isNaN(current)) return;
 
-    const newTemp = toBeSetted(stateObj, current)
+    const newTemp = this._config.fix_temperature
       ? (current + delta) / 5
       : current + delta;
 
@@ -111,52 +112,80 @@ export class GoogleClimateCard extends LitElement {
     if (isOffline) {
       // Offline, tema light
       if (theme === "light") {
-        nameColor = iconColor = "#949496";
-        containerColor = "rgba(223, 223, 225, 0.85)";
+        nameColor = iconColor =
+          this.google_color_scheme.light.offline.climate.title;
+        containerColor =
+          this.google_color_scheme.light.offline.climate.background;
         //containerColor = "#dfdfe1";
       } else {
         // Offline, tema dark
-        nameColor = iconColor = "#717173";
-        containerColor = "#2c2c2e";
+        nameColor = iconColor =
+          this.google_color_scheme.dark.offline.climate.title;
+        containerColor =
+          this.google_color_scheme.dark.offline.climate.background;
       }
     } else if (isOn) {
       // Acceso, tema dark
       if (theme === "dark") {
         if (use_material_color) {
-          nameColor = iconColor = "#fedcca";
-          adjustTemp = "#4b332b";
-          internalTemp = "#e6c0b2";
-          containerColor = "rgba(92, 64, 53, 0.85)";
+          nameColor = iconColor =
+            this.google_color_scheme.dark.on.climate.material.title;
+          adjustTemp = this.google_color_scheme.dark.on.climate.material.button;
+          internalTemp =
+            this.google_color_scheme.dark.on.climate.material.subtitle;
+          containerColor =
+            this.google_color_scheme.dark.on.climate.material.background;
           //containerColor = "#5c4035";
         } else {
-          nameColor = iconColor = "#c3c3c3";
-          adjustTemp = "#5c5b60";
-          internalTemp = "#c1c2c6";
-          containerColor = "rgba(65, 66, 70, 0.83)";
+          nameColor = iconColor =
+            this.google_color_scheme.dark.on.climate.default.title;
+          adjustTemp = this.google_color_scheme.dark.on.climate.default.button;
+          internalTemp =
+            this.google_color_scheme.dark.on.climate.default.subtitle;
+          containerColor =
+            this.google_color_scheme.dark.on.climate.default.background;
           //containerColor = "#414246";
         }
       } else {
         // Acceso, tema light
         if (use_material_color) {
-          nameColor = iconColor = internalTemp = "#812800";
-          adjustTemp = "rgba(245, 180, 150, 0.6)";
-          containerColor = "rgba(258, 193.8, 166, 0.3)";
+          nameColor =
+            iconColor =
+            internalTemp =
+              this.google_color_scheme.light.on.climate.material.title;
+          adjustTemp =
+            this.google_color_scheme.light.on.climate.material.button;
+          containerColor =
+            this.google_color_scheme.light.on.climate.material.background;
         } else {
-          nameColor = iconColor = internalTemp = "#525252";
-          //containerColor = "#d8e3f7";
-          adjustTemp = "#c1c1c3";
-          containerColor = "rgba(221, 221, 223, 0.83)";
+          nameColor =
+            iconColor =
+            internalTemp =
+              this.google_color_scheme.light.on.climate.default.title;
+          adjustTemp = this.google_color_scheme.light.on.climate.default.button;
+          containerColor =
+            this.google_color_scheme.light.on.climate.default.background;
         }
       }
     } else {
-      // Spento, tema dark
+      // Spento, tema dark (Updated on 21/07/2025)
       if (theme === "dark") {
-        nameColor = iconColor = "#e3e3e5";
-        containerColor = "#292a2e";
+        nameColor =
+          iconColor =
+          internalTemp =
+            this.google_color_scheme.dark.off.climate.default.title;
+        adjustTemp = this.google_color_scheme.dark.off.climate.default.button;
+        containerColor =
+          this.google_color_scheme.dark.off.climate.default.background;
       } else {
         // Spento, tema light
-        nameColor = iconColor = "#1b1b1d";
-        containerColor = "#e8e8ea";
+        nameColor =
+          iconColor =
+          internalTemp =
+            this.google_color_scheme.light.off.climate.default.title;
+        adjustTemp = this.google_color_scheme.light.off.climate.default.button;
+        containerColor =
+          this.google_color_scheme.light.off.climate.default.background;
       }
     }
 
@@ -187,11 +216,16 @@ export class GoogleClimateCard extends LitElement {
       >`;
     }
 
-    console.log("CLIMATE", stateObj);
+    console.log("CLIMATE", stateObj, this.hass);
     const name = this._config.name || stateObj.attributes.friendly_name;
     const isOffline = isOfflineState(stateObj.state);
 
-    const stateDisplay = mapStateDisplay(stateObj, "thermometer", isOffline);
+    const stateDisplay = mapStateDisplay(
+      stateObj,
+      "thermometer",
+      isOffline,
+      this._config.fix_temperature
+    );
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
     const isOn =
       stateObj.state === "on" ||
@@ -269,7 +303,7 @@ export class GoogleClimateCard extends LitElement {
                   −
                 </button>
                 <div class="temperature-display" id="tempDisplay">
-                  ${toBeSetted(stateObj, stateObj.attributes.temperature)
+                  ${this._config.fix_temperature
                     ? stateObj.attributes.temperature * 5
                     : stateObj.attributes.temperature}
                 </div>
@@ -294,12 +328,10 @@ export class GoogleClimateCard extends LitElement {
 
   static styles = css`
     .temperature-card {
-      /* background: #414246;*/
       background: var(--bsc-background);
       border-radius: 28px;
       padding: 10px 15px;
       width: -webkit-fill-available;
-      /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); */
       box-shadow: none;
       position: relative;
       overflow: hidden;
@@ -312,7 +344,6 @@ export class GoogleClimateCard extends LitElement {
       left: 0;
       right: 0;
       bottom: 0;
-      /* background: #414246;*/
       background: var(--bsc-background);
       border-radius: 24px;
       pointer-events: none;
@@ -346,14 +377,12 @@ export class GoogleClimateCard extends LitElement {
     }
 
     .valve-name {
-      /* color: #c3c3c3; */
       color: var(--bsc-name-color);
       font-size: 16px;
       font-weight: 500;
     }
 
     .chevron {
-      /* color: #c3c3c3; */
       color: var(--bsc-icon-color);
       font-size: 20px;
       cursor: pointer;
@@ -377,10 +406,8 @@ export class GoogleClimateCard extends LitElement {
       width: 80px;
       height: 55px;
       border-radius: 30px;
-      /* background: #5c5b60; */
       background: var(--bsc-adjustTemp-color);
       border: none;
-      /* color: #c3c3c3; */
       color: var(--bsc-name-color);
       font-size: 32px;
       font-weight: 300;
@@ -413,7 +440,6 @@ export class GoogleClimateCard extends LitElement {
 
     .internal-temp {
       text-align: center;
-      /* color: #c1c2c6; */
       color: var(--bsc-internalTemp-color);
       font-size: 15px;
       font-weight: 400;

@@ -12,6 +12,7 @@ export interface GoogleClimateCardConfig extends LovelaceCardConfig {
   dual_icon?: boolean;
   icon_on?: string;
   icon_off?: string;
+  fix_temperature?: boolean;
 }
 
 export const DEFAULT_CONFIG: GoogleClimateCardConfig = {

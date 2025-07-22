@@ -4,18 +4,17 @@ import { localize } from "../localize/localize";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { fireEvent } from "custom-card-helpers";
 import { HomeAssistant } from "../ha-types";
-import {
-  getIcon,
-  isOfflineState,
-  mapStateDisplay,
-} from "./google-button-mapper";
+import { getIcon, mapStateDisplay } from "./google-button-mapper";
 import { applyRippleEffect } from "../utils";
 import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
+import { isDeviceOn, isOfflineState } from "../shared/utils";
+import { google_color } from "../shared/color";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @state() private _config: GoogleButtonCardConfig = DEFAULT_BTN_CONFIG;
+  private color = google_color;
 
   public setConfig(config: GoogleButtonCardConfig): void {
     if (!config || !config.entity) {
@@ -36,7 +35,7 @@ export class GoogleButtonCard extends LitElement {
       type: "custom:google-button-card",
       entity: randomSwitch,
       icon: "mdi:switch",
-      height: 95,
+      height: 97,
     };
   }
 
@@ -63,7 +62,10 @@ export class GoogleButtonCard extends LitElement {
     const entityId = this._config.entity;
     const controlType = this._config.control_type || "generic";
 
-    if (controlType === "thermometer") {
+    if (
+      controlType === ControlType.THERMOMETER ||
+      controlType === ControlType.MEDIA_PLAYER
+    ) {
       fireEvent(this, "hass-more-info", { entityId });
     } else {
       this.hass.callService("homeassistant", "toggle", {
@@ -137,12 +139,8 @@ export class GoogleButtonCard extends LitElement {
       >`;
     }
 
-    const isOn =
-      stateObj.state === "on" ||
-      stateObj.state === "auto" ||
-      stateObj.state === "heat" ||
-      stateObj.state === "cool" ||
-      stateObj.state === "idle";
+    const isOn = isDeviceOn(stateObj.state);
+
     //const domain = this._config.entity!.split(".")[0];
     const name = this._config.name || stateObj.attributes.friendly_name;
     const icon = getIcon(stateObj, this._config, this.hass);
@@ -165,7 +163,8 @@ export class GoogleButtonCard extends LitElement {
     const stateDisplay = mapStateDisplay(
       stateObj,
       this._config.control_type!,
-      isOffline
+      isOffline,
+      this._config.fix_temperature
     );
 
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
@@ -182,13 +181,16 @@ export class GoogleButtonCard extends LitElement {
         @touchend=${this._cancelPress}
         @touchcancel=${this._cancelPress}
         @touchmove=${this._handleMove}
+        style="${isOffline
+          ? "padding: 12px 35px 12px 12px"
+          : "padding: 12px 12px"}"
       >
         <div class="content">
           <ha-icon .icon=${icon} class="icon"></ha-icon>
           <div class="text">
             <div class="name">${name}</div>
             ${this._config.control_type == ControlType.SCENE ||
-            this._config.control_type == ControlType.MEDIA_PLAYER
+            (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
               ? html``
               : html`<div class="state">${stateDisplay}</div>`}
           </div>
@@ -197,10 +199,11 @@ export class GoogleButtonCard extends LitElement {
           ? html`<ha-icon
               id="icon_offline"
               icon="m3rf:warning"
-              style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color); --mdc-icon-size: 20px;"
+              style="position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--bsc-icon-color); --mdc-icon-size: 20px;"
               title="Offline"
             ></ha-icon>`
-          : this._config.control_type == "thermometer"
+          : this._config.control_type == ControlType.THERMOMETER ||
+              this._config.control_type == ControlType.MEDIA_PLAYER
             ? html`<ha-icon
                 icon="m3rf:arrow-forward-ios"
                 style="
@@ -232,44 +235,58 @@ export class GoogleButtonCard extends LitElement {
     if (isOffline) {
       // Offline, tema light
       if (theme === "light") {
-        nameColor = iconColor = percentageColor = "#949496";
-        containerColor = "#dfdfe1";
+        nameColor = this.color.light.offline.button.title;
+        iconColor = this.color.light.offline.button.icon;
+        percentageColor = this.color.light.offline.button.percentage;
+        containerColor = this.color.light.offline.button.background;
       } else {
         // Offline, tema dark
-        nameColor = iconColor = percentageColor = "#717173";
-        containerColor = "#2c2c2e";
+        nameColor = this.color.dark.offline.button.title;
+        iconColor = this.color.dark.offline.button.icon;
+        percentageColor = this.color.dark.offline.button.percentage;
+        containerColor = this.color.dark.offline.button.background;
       }
     } else if (isOn) {
       // Acceso, tema dark
       if (theme === "dark") {
-        if (control_type === "thermometer") {
-          nameColor = iconColor = percentageColor = "#fedcca";
-          containerColor = "#5c4035";
+        if (control_type === "thermometer" && this._config.use_material_color) {
+          nameColor = this.color.dark.on.climate.material.title;
+          iconColor = this.color.dark.on.climate.material.icon;
+          percentageColor = this.color.dark.on.climate.material.subtitle;
+          containerColor = this.color.dark.on.climate.material.background;
         } else {
-          nameColor = iconColor = percentageColor = "#d8e3f7";
-          containerColor = "#3e4758";
+          nameColor = this.color.dark.on.button.title;
+          iconColor = this.color.dark.on.button.icon;
+          percentageColor = this.color.dark.on.button.percentage;
+          containerColor = this.color.dark.on.button.background;
         }
       } else {
         // Acceso, tema light
-        if (control_type === "thermometer") {
-          nameColor = iconColor = percentageColor = "#812800";
-          containerColor = "rgba(258, 193.8, 166, 0.4)";
-          //containerColor = "#ffd5c4";
-          containerColor = "#ffd5c4";
+        if (control_type === "thermometer" && this._config.use_material_color) {
+          nameColor = this.color.light.on.climate.material.title;
+          iconColor = this.color.light.on.climate.material.icon;
+          percentageColor = this.color.light.on.climate.material.subtitle;
+          containerColor = this.color.light.on.climate.material.background;
         } else {
-          nameColor = iconColor = percentageColor = "#131c2b";
-          containerColor = "#d8e3f7";
+          nameColor = this.color.light.on.button.title;
+          iconColor = this.color.light.on.button.icon;
+          percentageColor = this.color.light.on.button.percentage;
+          containerColor = this.color.light.on.button.background;
         }
       }
     } else {
       // Spento, tema dark
       if (theme === "dark") {
-        nameColor = iconColor = percentageColor = "#e3e3e5";
-        containerColor = "#292a2e";
+        nameColor = this.color.dark.off.button.title;
+        iconColor = this.color.dark.off.button.icon;
+        percentageColor = this.color.dark.off.button.percentage;
+        containerColor = this.color.dark.off.button.background;
       } else {
         // Spento, tema light
-        nameColor = iconColor = percentageColor = "#1b1b1d";
-        containerColor = "#e8e8ea";
+        nameColor = this.color.light.off.button.title;
+        iconColor = this.color.light.off.button.icon;
+        percentageColor = this.color.light.off.button.percentage;
+        containerColor = this.color.light.off.button.background;
       }
     }
 
@@ -279,7 +296,7 @@ export class GoogleButtonCard extends LitElement {
     this._setStyleProperty("--bsc-background", containerColor);
     this._setStyleProperty(
       "--bsc-height",
-      this._config.height || 95,
+      this._config.height || 97,
       (h) => `${h}px`
     );
     this._setStyleProperty("--bsc-border-radius", this._config.border_radius);
@@ -297,7 +314,7 @@ export class GoogleButtonCard extends LitElement {
 
   static styles = css`
     :host {
-      --bsc-height: var(--ha-card-height, 95px);
+      --bsc-height: var(--ha-card-height, 97px);
       --bsc-border-radius: var(--ha-card-border-radius);
     }
 
@@ -305,7 +322,7 @@ export class GoogleButtonCard extends LitElement {
       cursor: pointer;
       display: flex;
       align-items: center;
-      padding: 12px 16px;
+      padding: 12px 12px;
       border-radius: var(--bsc-border-radius, 28px);
       background: var(--bsc-background);
       transition:
@@ -326,9 +343,8 @@ export class GoogleButtonCard extends LitElement {
     }
 
     .icon {
-      width: 32px;
-      height: 32px;
-      margin-right: 5px;
+      width: 34px;
+      height: 34px;
       color: var(--bsc-icon-color);
       align-content: center;
     }
@@ -342,12 +358,13 @@ export class GoogleButtonCard extends LitElement {
     .name {
       color: var(--bsc-name-color);
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 560;
     }
 
     .state {
       font-size: 13px;
       color: var(--bsc-percentage-color);
+      font-weight: 500;
     }
 
     .warning {

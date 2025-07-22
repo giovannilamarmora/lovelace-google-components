@@ -8,6 +8,7 @@ import { state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { LitElement, html, CSSResult, TemplateResult, css } from "lit";
 import { applyRippleEffect } from "../utils";
+import { google_color } from "../shared/color";
 
 export class GoogleSliderCard extends LitElement {
   // @property({ attribute: false }) public hass!: HomeAssistant;
@@ -32,15 +33,18 @@ export class GoogleSliderCard extends LitElement {
   private isTap: boolean = false;
   private _lastTheme?: string;
   private _lastEntityState?: string;
+  private color: any = google_color;
 
   public static getStubConfig(
-    _hass: HomeAssistant,
-    entities: string[]
+    _hass: HomeAssistant
   ): Partial<GoogleSliderCardConfig> {
-    const lights = entities
-      .filter((entity) => entity.split(".")[0] === "light")
+    const allEntities = Object.keys(_hass.states);
+    const climates = allEntities
+      .filter((entity) => entity.startsWith("light."))
       .sort();
-    const randomLight = lights[Math.floor(Math.random() * lights.length)];
+
+    const randomLight = climates[Math.floor(Math.random() * climates.length)];
+
     return {
       type: "custom:google-slider-card",
       entity: randomLight,
@@ -456,23 +460,104 @@ export class GoogleSliderCard extends LitElement {
     //const iconMargin = '-2%';
     //const percentageMargin = '-18%';
 
-    if (isOn && theme === "dark") {
-      nameColor = iconColor = percentageColor = "#ffe083";
-      sliderColor = "#6d5300";
-      containerColor = "#333029";
+    if (isOffline) {
+      // Offline, tema light
+      if (theme === "light") {
+        nameColor = this.color.light.offline.light.title;
+        iconColor = this.color.light.offline.light.icon;
+        percentageColor = this.color.light.offline.light.percentage;
+        sliderColor = this.color.light.offline.light.slider;
+        containerColor = this.color.light.offline.light.background;
+        // Offline, tema dark
+      } else {
+        nameColor = this.color.dark.offline.light.title;
+        iconColor = this.color.dark.offline.light.icon;
+        percentageColor = this.color.dark.offline.light.percentage;
+        sliderColor = this.color.dark.offline.light.slider;
+        containerColor = this.color.dark.offline.light.background;
+      }
     } else if (isOn) {
-      nameColor = iconColor = percentageColor = "#745b01";
-      sliderColor = "#ffbf00";
-      containerColor = "#feefc8";
-    } else if (theme === "dark") {
-      //nameColor = iconColor = percentageColor = '#9e9e9e';
-      nameColor = iconColor = percentageColor = "#e3e3e5";
-      sliderColor = "#cccccc";
-      containerColor = "#292a2e";
+      // Acceso, tema dark
+      if (theme === "dark") {
+        //nameColor = iconColor = percentageColor = "#ffe083";
+        //sliderColor = "#6d5300";
+        //containerColor = "#333029";
+        nameColor = this.color.dark.on.light.title;
+        iconColor = this.color.dark.on.light.icon;
+        percentageColor = this.color.dark.on.light.percentage;
+        sliderColor = this.color.dark.on.light.slider;
+        containerColor = this.color.dark.on.light.background;
+        // Acceso, tema light
+      } else {
+        //nameColor = iconColor = percentageColor = "#745b01";
+        //sliderColor = "#ffbf00";
+        //containerColor = "#feefc8";
+        nameColor = this.color.light.on.light.title;
+        iconColor = this.color.light.on.light.icon;
+        percentageColor = this.color.light.on.light.percentage;
+        sliderColor = this.color.light.on.light.slider;
+        containerColor = this.color.light.on.light.background;
+      }
     } else {
-      nameColor = iconColor = percentageColor = "#1b1b1d";
-      containerColor = "#e8e8ea";
+      // Spento, tema dark
+      if (theme === "dark") {
+        //nameColor = iconColor = percentageColor = '#9e9e9e';
+        //nameColor = iconColor = percentageColor = "#e3e3e5";
+        //sliderColor = "#cccccc";
+        //containerColor = "#292a2e";
+        nameColor = this.color.dark.off.light.title;
+        iconColor = this.color.dark.off.light.icon;
+        percentageColor = this.color.dark.off.light.percentage;
+        sliderColor = this.color.dark.off.light.slider;
+        containerColor = this.color.dark.off.light.background;
+      } else {
+        nameColor = this.color.light.off.light.title;
+        iconColor = this.color.light.off.light.icon;
+        percentageColor = this.color.light.off.light.percentage;
+        sliderColor = this.color.light.off.light.slider;
+        containerColor = this.color.light.off.light.background;
+      }
     }
+
+    //// On, Dark Theme
+    //if (isOn && theme === "dark") {
+    //  //nameColor = iconColor = percentageColor = "#ffe083";
+    //  //sliderColor = "#6d5300";
+    //  //containerColor = "#333029";
+    //  nameColor = this.color.dark.on.light.title;
+    //  iconColor = this.color.dark.on.light.icon;
+    //  percentageColor = this.color.dark.on.light.percentage;
+    //  sliderColor = this.color.dark.on.light.slider;
+    //  containerColor = this.color.dark.on.light.background;
+    //  // On, Light Theme
+    //} else if (isOn) {
+    //  //nameColor = iconColor = percentageColor = "#745b01";
+    //  //sliderColor = "#ffbf00";
+    //  //containerColor = "#feefc8";
+    //  nameColor = this.color.light.on.light.title;
+    //  iconColor = this.color.light.on.light.icon;
+    //  percentageColor = this.color.light.on.light.percentage;
+    //  sliderColor = this.color.light.on.light.slider;
+    //  containerColor = this.color.light.on.light.background;
+    //  // Off, Dark Theme
+    //} else if (theme === "dark") {
+    //  //nameColor = iconColor = percentageColor = '#9e9e9e';
+    //  //nameColor = iconColor = percentageColor = "#e3e3e5";
+    //  //sliderColor = "#cccccc";
+    //  //containerColor = "#292a2e";
+    //  nameColor = this.color.dark.off.light.title;
+    //  iconColor = this.color.dark.off.light.icon;
+    //  percentageColor = this.color.dark.off.light.percentage;
+    //  sliderColor = this.color.dark.off.light.slider;
+    //  containerColor = this.color.dark.off.light.background;
+    //  // On, Light Theme
+    //} else {
+    //  nameColor = this.color.light.off.light.title;
+    //  iconColor = this.color.light.off.light.icon;
+    //  percentageColor = this.color.light.off.light.percentage;
+    //  sliderColor = this.color.light.off.light.slider;
+    //  containerColor = this.color.light.off.light.background;
+    //}
 
     this._setStyleProperty("--bsc-name-color", nameColor);
     this._setStyleProperty("--bsc-icon-color", iconColor);
@@ -612,7 +697,7 @@ export class GoogleSliderCard extends LitElement {
         width: 100%;
         position: relative;
         overflow: hidden;
-        opacity: var(--bsc-opacity);
+        /* opacity: var(--bsc-opacity);*/
         background: var(--bsc-background);
         border-color: var(--bsc-border-color, rgba(0 0 0 / 14%));
         border-radius: var(--bsc-border-radius, 4px);
@@ -644,7 +729,8 @@ export class GoogleSliderCard extends LitElement {
         height: 100%;
         position: absolute;
         background-color: var(--bsc-slider-color);
-        opacity: 0.3;
+        /*opacity: 0.3;*/
+        z-index: -1;
         left: 0;
         top: 0;
         right: calc(100% - var(--bsc-percent));
@@ -681,7 +767,7 @@ export class GoogleSliderCard extends LitElement {
       #name {
         color: var(--bsc-name-color);
         font-size: 15px;
-        font-weight: 500;
+        font-weight: 560;
         line-height: 1.35;
       }
 
@@ -694,6 +780,7 @@ export class GoogleSliderCard extends LitElement {
         color: var(--bsc-percentage-color);
         font-size: 13px;
         margin-top: 1px;
+        font-weight: 500;
       }
 
       #icon {

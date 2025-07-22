@@ -10,7 +10,8 @@
     "offline": "Offline",
     "auto": "Auto",
     "heat": "Heat",
-    "cool": "Cool"
+    "cool": "Cool",
+    "playing": "Playing"
   },
   "google_dashboard_card": {
     "description": "Configure the navigation path when a card is tapped.",

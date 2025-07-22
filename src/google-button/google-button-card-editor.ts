@@ -86,7 +86,7 @@ export class GoogleButtonCardEditor
     return html`
       <div class="form">
         <span class="switch-label"
-          >${localize("google_button_card.dual_icon.options")}</span
+          >${localize("google_button_card.control_type")}</span
         >
         <ha-select
           label="${localize("google_button_card.control_type")}"
@@ -182,6 +182,28 @@ export class GoogleButtonCardEditor
                     />
                   `}
             `}
+        ${this._config.control_type != ControlType.THERMOMETER
+          ? html``
+          : html` <div class="switch-row">
+                <span class="switch-label"
+                  >${localize("google_climate_card.theme")}</span
+                >
+                <ha-switch
+                  .checked=${this._config.use_material_color ?? false}
+                  configValue="use_material_color"
+                  @change=${this._valueChanged}
+                />
+              </div>
+              <div class="switch-row">
+                <span class="switch-label"
+                  >${localize("google_climate_card.fix_temperature")}</span
+                >
+                <ha-switch
+                  .checked=${this._config.fix_temperature ?? false}
+                  configValue="fix_temperature"
+                  @change=${this._valueChanged}
+                />
+              </div>`}
       </div>
     `;
   }

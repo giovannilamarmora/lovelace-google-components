@@ -1,6 +1,13 @@
 import { localize } from "../localize/localize";
 import { GoogleDevice } from "../shared/google_model";
-import { ControlType, OnlineStates } from "./google-button-const";
+import {
+  getOrDefault,
+  isDeviceOn,
+  isDeviceOnline,
+  OnlineStates,
+  OnStates,
+} from "../shared/utils";
+import { ControlType } from "./google-button-const";
 
 export function getIcon(stateObj: any, config: any, hass: any): string {
   const domain = stateObj.entity_id.split(".")[0];
@@ -58,14 +65,26 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
       if (google_device) {
         switch (google_device) {
           case GoogleDevice.NEST_MINI:
-            return state == "idle" ? "m3of:nest-mini" : "m3o:nest-mini";
+            return state == OnStates.IDLE || state == OnStates.PLAYING
+              ? "m3of:nest-mini"
+              : "m3o:nest-mini";
           case GoogleDevice.GOOGLE_HOME:
-            return state == "idle" ? "m3of:home-speaker" : "m3o:home-speaker";
+            return state == OnStates.IDLE || state == OnStates.PLAYING
+              ? "m3of:home-speaker"
+              : "m3o:home-speaker";
           case GoogleDevice.NEST_HUB:
-            return state == "idle" ? "m3of:nest-display" : "m3o:nest-display";
+            return state == OnStates.IDLE || state == OnStates.PLAYING
+              ? "m3of:nest-display"
+              : "m3o:nest-display";
+          case GoogleDevice.GOOGLE_CAST_GROUP:
+            return state == OnStates.IDLE || state == OnStates.PLAYING
+              ? "m3rf:speaker-group"
+              : "m3r:speaker-group";
         }
       }
-      return state == "idle" ? "m3rf:tv-gen" : "m3r:tv-gen";
+      return state == OnStates.IDLE || state == OnStates.PLAYING
+        ? "m3rf:tv-gen"
+        : "m3r:tv-gen";
   }
 
   return `mdi:${domain}`;
@@ -78,18 +97,24 @@ export function mapStateDisplay(
   fix_temperature: boolean = false
 ) {
   let text = "";
-  if (control_type === "thermometer" && !isOffline)
+  if (control_type === ControlType.THERMOMETER && !isOffline)
     text =
       " • " +
       (fix_temperature
         ? stateObj.attributes.current_temperature * 5
         : stateObj.attributes.current_temperature) +
       "°";
+  if (control_type === ControlType.MEDIA_PLAYER && !isOffline) {
+    if (!isDeviceOn(stateObj.state)) return "";
+  }
+  const app_name = getOrDefault(stateObj.attributes.app_name, "");
+  const title = getOrDefault(stateObj.attributes.media_title, "");
+  text = app_name ? " • " + app_name + " • " : "" + title ? title : "";
   return getStateDisplay(stateObj.state, text);
 }
 
 export function getStateDisplay(state: string, text: string = ""): string {
-  if (!Object.values(OnlineStates).includes(state as OnlineStates)) {
+  if (!isDeviceOnline(state)) {
     return localize("common.offline");
   }
 
@@ -100,19 +125,10 @@ export function getStateDisplay(state: string, text: string = ""): string {
     [OnlineStates.HEAT]: localize("common.heat"),
     [OnlineStates.COOL]: localize("common.cool"),
     [OnlineStates.HEAT_COOL]: localize("common.auto"),
+    [OnlineStates.PLAYING]: localize("common.playing"),
   };
 
   const finalState = stateMap[state] || state;
 
   return text != "" ? finalState + text : finalState;
-}
-
-export function isOfflineState(
-  state: string,
-  control_type: string = ""
-): boolean {
-  if (control_type == "scene" && state == "unknown") {
-    return false;
-  }
-  return !Object.values(OnlineStates).includes(state as OnlineStates);
 }

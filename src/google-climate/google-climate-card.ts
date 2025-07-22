@@ -4,7 +4,6 @@ import { localize } from "../localize/localize";
 import { HomeAssistant } from "../ha-types";
 import {
   getIcon,
-  isOfflineState,
   mapStateDisplay,
 } from "../google-button/google-button-mapper";
 import {
@@ -14,6 +13,7 @@ import {
 import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
 import { google_color } from "../shared/color";
+import { isDeviceOn, isOfflineState } from "../shared/utils";
 
 @customElement("google-climate-card")
 export class GoogleClimateCard extends LitElement {
@@ -29,13 +29,15 @@ export class GoogleClimateCard extends LitElement {
   }
 
   public static getStubConfig(
-    _hass: HomeAssistant,
-    entities: string[]
+    _hass: HomeAssistant
   ): Partial<GoogleClimateCardConfig> {
-    const switcher = entities
-      .filter((entity) => entity.split(".")[0] === "climate")
+    const allEntities = Object.keys(_hass.states);
+    const climates = allEntities
+      .filter((entity) => entity.startsWith("climate."))
       .sort();
-    const randomClimate = switcher[Math.floor(Math.random() * switcher.length)];
+
+    const randomClimate = climates[Math.floor(Math.random() * climates.length)];
+
     return {
       type: "custom:google-climate-card",
       entity: randomClimate,
@@ -227,12 +229,7 @@ export class GoogleClimateCard extends LitElement {
       this._config.fix_temperature
     );
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
-    const isOn =
-      stateObj.state === "on" ||
-      stateObj.state === "auto" ||
-      stateObj.state === "heat" ||
-      stateObj.state === "cool" ||
-      stateObj.state === "heat_cool";
+    const isOn = isDeviceOn(stateObj.state);
 
     this.setColorCard(this._config.use_material_color, theme, isOffline, isOn);
 

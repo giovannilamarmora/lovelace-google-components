@@ -10,7 +10,8 @@
     "offline": "Offline",
     "auto": "Auto",
     "heat": "Riscalda",
-    "cool": "Raffresca"
+    "cool": "Raffresca",
+    "playing": "Riproduzione"
   },
   "google_dashboard_card": {
     "description": "Configura il percorso di navigazione quando una card viene cliccata.",

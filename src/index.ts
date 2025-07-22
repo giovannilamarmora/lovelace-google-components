@@ -57,14 +57,14 @@ if (!customElements.get("google-control-card-editor")) {
 (window as any).customCards = (window as any).customCards ?? [];
 (window as any).customCards.push({
   type: "google-slider-card",
-  name: "Google Slider Card (Beta)",
+  name: "Google Slider Card (Beta 2)",
   preview: true,
   description: "Google Slider Card for light entities.",
 });
 
 (window as any).customCards.push({
   type: "google-button-card",
-  name: "Google Button Card (Beta)",
+  name: "Google Button Card (Beta 2)",
   preview: true,
   description: "Google-style button card.",
 });

@@ -11,15 +11,6 @@ export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
   },
 };
 
-export enum OnlineStates {
-  ON = "on",
-  OFF = "off",
-  AUTO = "auto",
-  HEAT = "heat",
-  COOL = "cool",
-  IDLE = "idle",
-  HEAT_COOL = "heat_cool",
-}
 
 export enum ControlType {
   GENERIC = "generic",
@@ -39,4 +30,6 @@ export interface GoogleButtonCardConfig extends LovelaceCardConfig {
   icon_off?: string;
   height?: number;
   control_type?: ControlType;
+  fix_temperature?: boolean;
+  use_material_color?: boolean;
 }

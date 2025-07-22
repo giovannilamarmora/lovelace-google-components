@@ -126,7 +126,16 @@ export class GoogleButtonCard extends LitElement {
 
   private _handleHold() {
     if (!this._config || !this.hass) return;
-    fireEvent(this, "hass-more-info", { entityId: this._config.entity });
+    const entityId = this._config.entity;
+    const controlType = this._config.control_type || "generic";
+
+    if (controlType === ControlType.MEDIA_PLAYER) {
+      this.hass.callService("homeassistant", "toggle", {
+        entity_id: entityId,
+      });
+    } else {
+      fireEvent(this, "hass-more-info", { entityId: this._config.entity });
+    }
   }
 
   protected render(): TemplateResult {
@@ -181,7 +190,9 @@ export class GoogleButtonCard extends LitElement {
         @touchend=${this._cancelPress}
         @touchcancel=${this._cancelPress}
         @touchmove=${this._handleMove}
-        style="${isOffline
+        style="${isOffline ||
+        this._config.control_type == ControlType.THERMOMETER ||
+        this._config.control_type == ControlType.MEDIA_PLAYER
           ? "padding: 12px 35px 12px 12px"
           : "padding: 12px 12px"}"
       >
@@ -339,7 +350,7 @@ export class GoogleButtonCard extends LitElement {
     .content {
       display: flex;
       align-items: center;
-      width: 100%;
+      /*width: 100%;*/
     }
 
     .icon {
@@ -365,6 +376,18 @@ export class GoogleButtonCard extends LitElement {
       font-size: 13px;
       color: var(--bsc-percentage-color);
       font-weight: 500;
+    }
+
+    .state {
+      white-space: nowrap; /* Non andare a capo */
+      overflow-x: auto; /* Mostra scroll solo se necessario */
+      overflow-y: hidden;
+      max-width: 100%;
+      display: block;
+    }
+
+    .state::-webkit-scrollbar {
+      display: none; /* opzionale, per nascondere la scrollbar */
     }
 
     .warning {

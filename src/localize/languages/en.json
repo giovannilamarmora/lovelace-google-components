@@ -11,7 +11,8 @@
     "auto": "Auto",
     "heat": "Heat",
     "cool": "Cool",
-    "playing": "Playing"
+    "playing": "Playing",
+    "idle": "Cast"
   },
   "google_dashboard_card": {
     "description": "Configure the navigation path when a card is tapped.",

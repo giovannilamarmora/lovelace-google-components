@@ -108,8 +108,9 @@ export function mapStateDisplay(
     if (!isDeviceOn(stateObj.state)) return "";
   }
   const app_name = getOrDefault(stateObj.attributes.app_name, "");
-  const title = getOrDefault(stateObj.attributes.media_title, "");
-  text = app_name ? " • " + app_name + " • " : "" + title ? title : "";
+  //const title = getOrDefault(stateObj.attributes.media_title, "");
+  // text = app_name ? " • " + app_name : "" + title ? " • " + title : "";
+  text = app_name ? " • " + app_name : "";
   return getStateDisplay(stateObj.state, text);
 }
 
@@ -125,6 +126,7 @@ export function getStateDisplay(state: string, text: string = ""): string {
     [OnlineStates.HEAT]: localize("common.heat"),
     [OnlineStates.COOL]: localize("common.cool"),
     [OnlineStates.HEAT_COOL]: localize("common.auto"),
+    [OnlineStates.IDLE]: localize("common.idle"),
     [OnlineStates.PLAYING]: localize("common.playing"),
   };
 

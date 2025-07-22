@@ -11,7 +11,8 @@
     "auto": "Auto",
     "heat": "Riscalda",
     "cool": "Raffresca",
-    "playing": "Riproduzione"
+    "playing": "Riproduzione",
+    "idle": "Cast"
   },
   "google_dashboard_card": {
     "description": "Configura il percorso di navigazione quando una card viene cliccata.",

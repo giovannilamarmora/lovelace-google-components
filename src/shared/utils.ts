@@ -6,6 +6,10 @@ export enum OnStates {
   HEAT = "heat",
   COOL = "cool",
   HEAT_COOL = "heat_cool",
+  FAN_ONLY = "fan_only",
+  FAN = "fan",
+  DRY = "dry",
+  ECO = "eco",
   // Media Player
   IDLE = "idle",
   PLAYING = "playing",

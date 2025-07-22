@@ -397,13 +397,13 @@ export class GoogleButtonCard extends LitElement {
     }
 
     @media (max-width: 420px) {
-      .name,
+      /*.name,
       .state {
         font-size: small;
       }
       .name {
         line-height: 1.4;
-      }
+      }*/
       #icon_offline {
         right: 15px;
       }

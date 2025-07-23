@@ -79,7 +79,7 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
                 "m3rf:speaker-group"
               : "m3r:speaker-group";
           default:
-            idDeviceTurnOn ? "m3rf:tv-gen" : "m3r:tv-gen";
+            return idDeviceTurnOn ? "m3rf:tv-gen" : "m3r:tv-gen";
         }
       }
   }

@@ -105,7 +105,7 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
     .content {
       display: flex;
       align-items: center;
-      /*width: 100%;*/
+      width: 100%;
     }
 
     .icon {
@@ -119,6 +119,8 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       display: flex;
       flex-direction: column;
       justify-content: center;
+      flex: 1; /* Aggiungi questo */
+      min-width: 0; /* Necessario per evitare overflow nel flex */
     }
 
     .name {
@@ -136,8 +138,8 @@ const dt=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
 
     .state-wrapper {
       overflow: hidden;
-      max-width: 100%;
       position: relative;
+      max-width: 100%; /* Cambia da 170px */
     }
 
     .state {
@@ -1174,4 +1176,4 @@ function Wt(t){return null==t}Yt.styles=c`
       font-size: 16px;
       font-weight: 500;
     }
-  `,n([gt({attribute:!1})],on.prototype,"hass",void 0),n([ft()],on.prototype,"_config",void 0),on=n([dt("google-control-card-editor")],on),console.info(`%c Google Component %c ${Ct("common.version")} 1.0.15    `,"color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray"),customElements.define("google-slider-card",Zi),customElements.get("google-button-card")||customElements.define("google-button-card",Ht),customElements.get("google-button-card-editor")||customElements.define("google-button-card-editor",Yt),customElements.get("google-dashboard-card")||customElements.define("google-dashboard-card",qi),customElements.get("google-dashboard-card-editor")||customElements.define("google-dashboard-card-editor",Xi),customElements.get("google-climate-card")||customElements.define("google-climate-card",Qi),customElements.get("google-climate-card-editor")||customElements.define("google-climate-card-editor",tn),customElements.get("google-control-card")||customElements.define("google-control-card",nn),customElements.get("google-control-card-editor")||customElements.define("google-control-cardeditor",on),window.customCards=null!==(sn=window.customCards)&&void 0!==sn?sn:[],window.customCards.push({type:"google-slider-card",name:"Google Slider Card (Beta 2)",preview:!0,description:"Google Slider Card for light entities."}),window.customCards.push({type:"google-button-card",name:"Google Button Card (Beta 3)",preview:!0,description:"Google-style button card."}),window.customCards.push({type:"google-dashboard-card",name:"Google Dashboard Card",preview:!0,description:"A customizable dashboard card inspired by Google's Material Design. Perfect for building modern, responsive Home Assistant interfaces."}),window.customCards.push({type:"google-climate-card",name:"Google Climate Card",preview:!0,description:"A climate card inspired by Google's design, providing intuitive control and status display for HVAC devices."}),window.customCards.push({type:"google-control-card",name:"Google Control Card (Preview)",preview:!0,description:"Google-style Control card."});
+  `,n([gt({attribute:!1})],on.prototype,"hass",void 0),n([ft()],on.prototype,"_config",void 0),on=n([dt("google-control-card-editor")],on),console.info(`%c Google Component %c ${Ct("common.version")} 1.0.16    `,"color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray"),customElements.define("google-slider-card",Zi),customElements.get("google-button-card")||customElements.define("google-button-card",Ht),customElements.get("google-button-card-editor")||customElements.define("google-button-card-editor",Yt),customElements.get("google-dashboard-card")||customElements.define("google-dashboard-card",qi),customElements.get("google-dashboard-card-editor")||customElements.define("google-dashboard-card-editor",Xi),customElements.get("google-climate-card")||customElements.define("google-climate-card",Qi),customElements.get("google-climate-card-editor")||customElements.define("google-climate-card-editor",tn),customElements.get("google-control-card")||customElements.define("google-control-card",nn),customElements.get("google-control-card-editor")||customElements.define("google-control-cardeditor",on),window.customCards=null!==(sn=window.customCards)&&void 0!==sn?sn:[],window.customCards.push({type:"google-slider-card",name:"Google Slider Card (Beta 2)",preview:!0,description:"Google Slider Card for light entities."}),window.customCards.push({type:"google-button-card",name:"Google Button Card (Beta 3)",preview:!0,description:"Google-style button card."}),window.customCards.push({type:"google-dashboard-card",name:"Google Dashboard Card",preview:!0,description:"A customizable dashboard card inspired by Google's Material Design. Perfect for building modern, responsive Home Assistant interfaces."}),window.customCards.push({type:"google-climate-card",name:"Google Climate Card",preview:!0,description:"A climate card inspired by Google's design, providing intuitive control and status display for HVAC devices."}),window.customCards.push({type:"google-control-card",name:"Google Control Card (Preview)",preview:!0,description:"Google-style Control card."});

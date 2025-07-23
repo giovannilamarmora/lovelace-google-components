@@ -369,7 +369,7 @@ export class GoogleButtonCard extends LitElement {
     .content {
       display: flex;
       align-items: center;
-      /*width: 100%;*/
+      width: 100%;
     }
 
     .icon {
@@ -383,6 +383,8 @@ export class GoogleButtonCard extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: center;
+      flex: 1; /* Aggiungi questo */
+      min-width: 0; /* Necessario per evitare overflow nel flex */
     }
 
     .name {
@@ -400,8 +402,8 @@ export class GoogleButtonCard extends LitElement {
 
     .state-wrapper {
       overflow: hidden;
-      max-width: 100%;
       position: relative;
+      max-width: 100%; /* Cambia da 170px */
     }
 
     .state {

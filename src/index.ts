@@ -64,7 +64,7 @@ if (!customElements.get("google-control-card-editor")) {
 
 (window as any).customCards.push({
   type: "google-button-card",
-  name: "Google Button Card (Beta 2)",
+  name: "Google Button Card (Beta 3)",
   preview: true,
   description: "Google-style button card.",
 });

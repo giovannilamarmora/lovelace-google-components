@@ -4,11 +4,11 @@ import { localize } from "../localize/localize";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { fireEvent } from "custom-card-helpers";
 import { HomeAssistant } from "../ha-types";
-import { getIcon, mapStateDisplay } from "./google-button-mapper";
 import { applyRippleEffect } from "../utils";
 import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
 import { isDeviceOn, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
+import { getIcon, mapStateDisplay } from "../shared/mapper";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -45,6 +45,23 @@ export class GoogleButtonCard extends LitElement {
 
   static async getConfigElement() {
     return document.createElement("google-button-card-editor");
+  }
+
+  protected updated(): void {
+    requestAnimationFrame(() => {
+      const wrapper = this.renderRoot.querySelector(".state-wrapper");
+      const text = this.renderRoot.querySelector(".state");
+
+      if (wrapper && text) {
+        const needsScroll = text.scrollWidth > wrapper.clientWidth;
+
+        if (needsScroll) {
+          text.classList.add("scroll");
+        } else {
+          text.classList.remove("scroll");
+        }
+      }
+    });
   }
 
   public _onClick(event: MouseEvent) {
@@ -203,7 +220,9 @@ export class GoogleButtonCard extends LitElement {
             ${this._config.control_type == ControlType.SCENE ||
             (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
               ? html``
-              : html`<div class="state">${stateDisplay}</div>`}
+              : html`<div class="state-wrapper">
+                  <div class="state">${stateDisplay}</div>
+                </div>`}
           </div>
         </div>
         ${isOffline
@@ -369,7 +388,8 @@ export class GoogleButtonCard extends LitElement {
     .name {
       color: var(--bsc-name-color);
       font-size: 15px;
-      font-weight: 560;
+      font-weight: 550;
+      line-height: 1.35;
     }
 
     .state {
@@ -378,16 +398,28 @@ export class GoogleButtonCard extends LitElement {
       font-weight: 500;
     }
 
-    .state {
-      white-space: nowrap; /* Non andare a capo */
-      overflow-x: auto; /* Mostra scroll solo se necessario */
-      overflow-y: hidden;
+    .state-wrapper {
+      overflow: hidden;
       max-width: 100%;
-      display: block;
+      position: relative;
     }
 
-    .state::-webkit-scrollbar {
-      display: none; /* opzionale, per nascondere la scrollbar */
+    .state {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .state.scroll {
+      animation: scroll-text 8s linear infinite;
+    }
+
+    @keyframes scroll-text {
+      0% {
+        transform: translateX(0%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
     }
 
     .warning {

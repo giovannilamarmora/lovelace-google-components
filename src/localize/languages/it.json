@@ -54,7 +54,8 @@
       "generic": "Generico (Interruttore, Pulsante...)",
       "thermometer": "Termometro",
       "scene": "Autonomazioni e scene",
-      "media": "Dispositivo Google o Alexa"
+      "media": "Dispositivo Google, Alexa...",
+      "other": "Altri dispositivi"
     },
     "dual_icon": {
       "default": "Usa Icona di default",

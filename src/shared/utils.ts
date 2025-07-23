@@ -13,6 +13,7 @@ export enum OnStates {
   // Media Player
   IDLE = "idle",
   PLAYING = "playing",
+  PAUSE = "pause",
 }
 
 export enum OffStates {

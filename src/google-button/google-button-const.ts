@@ -11,12 +11,12 @@ export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
   },
 };
 
-
 export enum ControlType {
   GENERIC = "generic",
   THERMOMETER = "thermometer",
   SCENE = "scene",
   MEDIA_PLAYER = "media_player",
+  OTHER = "other",
 }
 
 export interface GoogleButtonCardConfig extends LovelaceCardConfig {

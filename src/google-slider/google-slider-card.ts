@@ -767,7 +767,7 @@ export class GoogleSliderCard extends LitElement {
       #name {
         color: var(--bsc-name-color);
         font-size: 15px;
-        font-weight: 560;
+        font-weight: 550;
         line-height: 1.35;
       }
 

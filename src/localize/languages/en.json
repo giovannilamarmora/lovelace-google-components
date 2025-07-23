@@ -54,7 +54,8 @@
       "generic": "Generic (Switch, Button...)",
       "thermometer": "Thermometer",
       "scene": "Autonomation and scene",
-      "media": "Google or Alexa Device"
+      "media": "Device such Google, Alexa...",
+      "other": "Altri dispositivi"
     },
     "dual_icon": {
       "default": "Use default icon",

@@ -3,10 +3,6 @@ import { customElement, property, state } from "lit/decorators.js";
 import { localize } from "../localize/localize";
 import { HomeAssistant } from "../ha-types";
 import {
-  getIcon,
-  mapStateDisplay,
-} from "../google-button/google-button-mapper";
-import {
   DEFAULT_CONFIG,
   GoogleClimateCardConfig,
 } from "./google-climate-const";
@@ -14,6 +10,7 @@ import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
 import { google_color } from "../shared/color";
 import { isDeviceOn, isOfflineState } from "../shared/utils";
+import { getIcon, mapStateDisplay } from "../shared/mapper";
 
 @customElement("google-climate-card")
 export class GoogleClimateCard extends LitElement {

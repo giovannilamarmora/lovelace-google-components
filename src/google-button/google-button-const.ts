@@ -14,6 +14,7 @@ export enum ControlType {
 
 export enum DomainType {
   BINARY_SENSOR = "binary_sensor",
+  SENSOR = "sensor",
   SWITCH = "switch",
 }
 

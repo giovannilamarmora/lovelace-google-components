@@ -86,7 +86,7 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
       break;
     case ControlType.GENERIC: {
       const deviceOn = isDeviceOn(state);
-      if (domain == DomainType.BINARY_SENSOR) {
+      if (domain == DomainType.BINARY_SENSOR || domain == DomainType.SENSOR) {
         const device_class = getValidDeviceClass(stateObj.attributes);
         switch (device_class) {
           case DeviceType.CONNECTIVITY:

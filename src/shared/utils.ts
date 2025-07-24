@@ -26,6 +26,12 @@ export const OnlineStates = {
 } as const;
 
 export function isDeviceOn(state: string) {
+  const stateNum = Number.parseInt(state);
+
+  if (!isNaN(stateNum) && stateNum !== 0) {
+    // Se è un numero diverso da 0, non è offline
+    return false;
+  }
   return Object.values(OnStates).includes(state as OnStates);
 }
 

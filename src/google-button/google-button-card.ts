@@ -385,7 +385,8 @@ export class GoogleButtonCard extends LitElement {
           <ha-icon .icon=${icon} class="icon"></ha-icon>
           <div class="text">
             <div class="name">${name}</div>
-            ${this._config.control_type == ControlType.SCENE ||
+            ${device_class == DeviceType.MEASUREMENT ||
+            this._config.control_type == ControlType.SCENE ||
             (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
               ? html``
               : html`<div class="state-wrapper">

@@ -36,10 +36,6 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
 
   // Se use_default_icon è true, prosegui con la logica predefinita
 
-  if (stateObj.attributes.icon?.trim()) {
-    return stateObj.attributes.icon;
-  }
-
   switch (controlType) {
     case ControlType.THERMOMETER: {
       switch (state) {
@@ -108,6 +104,10 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
         else return "m3r:switch";
       }
     }
+  }
+
+  if (stateObj.attributes.icon?.trim()) {
+    return stateObj.attributes.icon;
   }
 
   const entity = hass.entities[config.entity!];

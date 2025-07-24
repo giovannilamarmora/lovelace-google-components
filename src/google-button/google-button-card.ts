@@ -5,8 +5,13 @@ import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { fireEvent } from "custom-card-helpers";
 import { HomeAssistant } from "../ha-types";
 import { applyRippleEffect } from "../utils";
-import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
-import { isDeviceOn, isOfflineState } from "../shared/utils";
+import {
+  ControlType,
+  DeviceType,
+  getValidDeviceClass,
+  GoogleButtonCardConfig,
+} from "./google-button-const";
+import { Action, isDeviceOn, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
 import { getIcon, mapStateDisplay } from "../shared/mapper";
 
@@ -68,7 +73,6 @@ export class GoogleButtonCard extends LitElement {
     applyRippleEffect(event.currentTarget as HTMLElement, event);
     this._toggle();
   }
-
   private _toggle() {
     if (navigator.vibrate) {
       navigator.vibrate(50);
@@ -77,19 +81,96 @@ export class GoogleButtonCard extends LitElement {
     if (!this._config || !this.hass) return;
 
     const entityId = this._config.entity;
-    const controlType = this._config.control_type || "generic";
+    if (!entityId) return;
 
-    if (
-      controlType === ControlType.THERMOMETER ||
-      controlType === ControlType.MEDIA_PLAYER
-    ) {
-      fireEvent(this, "hass-more-info", { entityId });
-    } else {
-      this.hass.callService("homeassistant", "toggle", {
+    const domain = entityId.split(".")[0];
+    const controlType = this._config.control_type ?? "generic";
+
+    const toggleDomains = [
+      "light",
+      "switch",
+      "fan",
+      "climate",
+      "input_boolean",
+      "cover",
+      "script",
+    ];
+
+    const isDefaultToggle = this._config.use_default_toggle ?? true;
+
+    if (isDefaultToggle) {
+      const isToggleable =
+        toggleDomains.includes(domain) &&
+        controlType != ControlType.THERMOMETER &&
+        controlType != ControlType.MEDIA_PLAYER;
+
+      if (isToggleable) {
+        return this.hass.callService("homeassistant", "toggle", {
+          entity_id: entityId,
+        });
+      } else {
+        return fireEvent(this, "hass-more-info", { entityId });
+      }
+    }
+
+    const actionOnTap = this._config.tap_action;
+
+    if (actionOnTap === Action.CLICK) {
+      return this.hass.callService("homeassistant", "toggle", {
         entity_id: entityId,
       });
     }
+
+    return fireEvent(this, "hass-more-info", { entityId });
   }
+
+  //private _toggle() {
+  //  if (navigator.vibrate) {
+  //    navigator.vibrate(50);
+  //  }
+  //
+  //  if (!this._config || !this.hass) return;
+  //
+  //  // Capisco se ha le azioni automatiche attive
+  //  const auto = this._config.use_default_toggle;
+  //  const entityId = this._config.entity;
+  //
+  //  if (auto) {
+  //    const domain = entityId?.split(".")[0] || "";
+  //
+  //    // Lista dei domini che supportano "toggle"
+  //    const toggleDomains = [
+  //      "light",
+  //      "switch",
+  //      "fan",
+  //      "climate",
+  //      "input_boolean",
+  //      "cover",
+  //      "script",
+  //    ];
+  //
+  //    const controlType = this._config.control_type || "generic";
+  //
+  //    if (
+  //      !toggleDomains.includes(domain) ||
+  //      controlType === ControlType.THERMOMETER ||
+  //      controlType === ControlType.MEDIA_PLAYER
+  //    ) {
+  //      return fireEvent(this, "hass-more-info", { entityId });
+  //    } else {
+  //      return this.hass.callService("homeassistant", "toggle", {
+  //        entity_id: entityId,
+  //      });
+  //    }
+  //  } else {
+  //    const actionOnTap = this._config.tap_action;
+  //    if (actionOnTap == Action.CLICK)
+  //      return this.hass.callService("homeassistant", "toggle", {
+  //        entity_id: entityId,
+  //      });
+  //    else return fireEvent(this, "hass-more-info", { entityId });
+  //  }
+  //}
 
   private _pressTimer?: number;
   private _startX?: number;
@@ -142,18 +223,101 @@ export class GoogleButtonCard extends LitElement {
   }
 
   private _handleHold() {
-    if (!this._config || !this.hass) return;
-    const entityId = this._config.entity;
-    const controlType = this._config.control_type || "generic";
+    // Feedback tattile (se supportato)
+    navigator.vibrate?.(50);
 
-    if (controlType === ControlType.MEDIA_PLAYER) {
-      this.hass.callService("homeassistant", "toggle", {
-        entity_id: entityId,
-      });
+    // Se la configurazione o Home Assistant non sono disponibili, esci
+    if (!this._config || !this.hass) return;
+
+    const entityId = this._config.entity;
+    const controlType = this._config.control_type ?? "generic";
+    const useDefaultToggle = this._config.use_default_toggle ?? true;
+
+    // Se non è definito un entityId, esci
+    if (!entityId) return;
+
+    const domain = entityId.split(".")[0];
+    const toggleDomains = [
+      "light",
+      "switch",
+      "fan",
+      "climate",
+      "input_boolean",
+      "cover",
+      "script",
+    ];
+
+    const toggleEntity = toggleDomains.includes(domain);
+    const isMediaPlayer = controlType === ControlType.MEDIA_PLAYER;
+
+    if (useDefaultToggle) {
+      // Se il dominio supporta il toggle o non è un media_player, mostra le info
+      if (toggleEntity || !isMediaPlayer) {
+        fireEvent(this, "hass-more-info", { entityId });
+      } else {
+        // Altrimenti esegui toggle
+        this.hass.callService("homeassistant", "toggle", {
+          entity_id: entityId,
+        });
+      }
     } else {
-      fireEvent(this, "hass-more-info", { entityId: this._config.entity });
+      // Se non usa il comportamento automatico, usa quello definito in hold_action
+      const actionOnHold = this._config.hold_action;
+      if (actionOnHold === Action.CLICK) {
+        this.hass.callService("homeassistant", "toggle", {
+          entity_id: entityId,
+        });
+      } else {
+        fireEvent(this, "hass-more-info", { entityId });
+      }
     }
   }
+
+  //private _handleHold() {
+  //  if (navigator.vibrate) {
+  //    navigator.vibrate(50);
+  //  }
+  //  if (!this._config || !this.hass) return;
+  //
+  //  // Capisco se ha le azioni automatiche attive
+  //  const auto = this._config.use_default_toggle;
+  //  const entityId = this._config.entity;
+  //
+  //  if (auto) {
+  //    const domain = entityId?.split(".")[0] || "";
+  //
+  //    // Lista dei domini che supportano "toggle"
+  //    const toggleDomains = [
+  //      "light",
+  //      "switch",
+  //      "fan",
+  //      "climate",
+  //      "input_boolean",
+  //      "cover",
+  //      "script",
+  //    ];
+  //
+  //    const controlType = this._config.control_type || "generic";
+  //
+  //    if (
+  //      toggleDomains.includes(domain) ||
+  //      controlType != ControlType.MEDIA_PLAYER
+  //    ) {
+  //      return fireEvent(this, "hass-more-info", { entityId });
+  //    } else {
+  //      return this.hass.callService("homeassistant", "toggle", {
+  //        entity_id: entityId,
+  //      });
+  //    }
+  //  } else {
+  //    const actionOnHold = this._config.hold_action;
+  //    if (actionOnHold == Action.CLICK)
+  //      return this.hass.callService("homeassistant", "toggle", {
+  //        entity_id: entityId,
+  //      });
+  //    else return fireEvent(this, "hass-more-info", { entityId });
+  //  }
+  //}
 
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;
@@ -186,11 +350,15 @@ export class GoogleButtonCard extends LitElement {
       stateObj.state,
       this._config.control_type!
     );
+
+    const device_class = getValidDeviceClass(stateObj.attributes);
+
     const stateDisplay = mapStateDisplay(
       stateObj,
       this._config.control_type!,
       isOffline,
-      this._config.fix_temperature
+      this._config.fix_temperature,
+      device_class == DeviceType.MOTION
     );
 
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";

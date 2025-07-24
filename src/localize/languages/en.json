@@ -12,7 +12,9 @@
     "heat": "Heat",
     "cool": "Cool",
     "playing": "Playing",
-    "idle": "Cast"
+    "idle": "Cast",
+    "presence": "Motion",
+    "off_presence": "No motion"
   },
   "google_dashboard_card": {
     "description": "Configure the navigation path when a card is tapped.",
@@ -54,12 +56,18 @@
       "generic": "Generic (Switch, Button...)",
       "thermometer": "Thermometer",
       "scene": "Autonomation and scene",
-      "media": "Device such Google, Alexa...",
-      "other": "Altri dispositivi"
+      "media": "Multimedia (Google, Alexa...)"
     },
     "dual_icon": {
       "default": "Use default icon",
       "options": "Use dual icon (Element On and Element Off)."
+    },
+    "toggle": {
+      "title": "Enable automatic actions",
+      "press": "Action on click",
+      "hold": "Action on long press",
+      "click": "Single click (On/Off)",
+      "info": "Show information"
     }
   }
 }

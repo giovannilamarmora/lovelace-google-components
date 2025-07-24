@@ -40,10 +40,23 @@ export function isOfflineState(
   state: string,
   control_type: string = ""
 ): boolean {
+  const stateNum = Number.parseInt(state);
+
+  if (!isNaN(stateNum) && stateNum !== 0) {
+    // Se è un numero diverso da 0, non è offline
+    return false;
+  }
+
   if (control_type == "scene" && state == "unknown") {
     return false;
   }
+
   return !isDeviceOnline(state);
+}
+
+export enum Action {
+  CLICK = "toggle",
+  HOLD = "info",
 }
 
 export function getOrDefault<T>(value: T | undefined | null, defValue: T): T {

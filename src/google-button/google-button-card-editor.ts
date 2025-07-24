@@ -4,6 +4,7 @@ import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { localize } from "../localize/localize";
 import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
+import { Action } from "../shared/utils";
 
 @customElement("google-button-card-editor")
 export class GoogleButtonCardEditor
@@ -82,12 +83,10 @@ export class GoogleButtonCardEditor
     }
 
     this._config.use_default_icon = this._config.use_default_icon ?? true;
+    this._config.use_default_toggle = this._config.use_default_toggle ?? true;
 
     return html`
       <div class="form">
-        <span class="switch-label"
-          >${localize("google_button_card.control_type")}</span
-        >
         <ha-select
           label="${localize("google_button_card.control_type")}"
           .value=${this._config.control_type || "generic"}
@@ -106,9 +105,6 @@ export class GoogleButtonCardEditor
           </mwc-list-item>
           <mwc-list-item value="media_player">
             ${localize("google_button_card.type.media")}
-          </mwc-list-item>
-          <mwc-list-item value="other">
-            ${localize("google_button_card.type.other")}
           </mwc-list-item>
         </ha-select>
 
@@ -207,6 +203,48 @@ export class GoogleButtonCardEditor
                   @change=${this._valueChanged}
                 />
               </div>`}
+
+        <div class="switch-row">
+          <span class="switch-label"
+            >${localize("google_button_card.toggle.title")}</span
+          >
+          <ha-switch
+            .checked=${this._config.use_default_toggle ?? true}
+            configValue="use_default_toggle"
+            @change=${this._valueChanged}
+          />
+        </div>
+        ${this._config.use_default_toggle
+          ? html``
+          : html`<ha-select
+                label="${localize("google_button_card.toggle.press")}"
+                .value=${this._config.tap_action || Action.CLICK}
+                configValue="tap_action"
+                @selected=${this._valueChanged}
+                @closed=${(ev: Event) => ev.stopPropagation()}
+              >
+                <mwc-list-item value="${Action.CLICK}">
+                  ${localize("google_button_card.toggle.click")}
+                </mwc-list-item>
+                <mwc-list-item value="${Action.HOLD}">
+                  ${localize("google_button_card.toggle.info")}
+                </mwc-list-item>
+              </ha-select>
+
+              <ha-select
+                label="${localize("google_button_card.toggle.hold")}"
+                .value=${this._config.hold_action || Action.HOLD}
+                configValue="hold_action"
+                @selected=${this._valueChanged}
+                @closed=${(ev: Event) => ev.stopPropagation()}
+              >
+                <mwc-list-item value="${Action.CLICK}">
+                  ${localize("google_button_card.toggle.click")}
+                </mwc-list-item>
+                <mwc-list-item value="${Action.HOLD}">
+                  ${localize("google_button_card.toggle.info")}
+                </mwc-list-item>
+              </ha-select>`}
       </div>
     `;
   }

@@ -1,4 +1,9 @@
-import { ControlType } from "../google-button/google-button-const";
+import {
+  ControlType,
+  DeviceType,
+  DomainType,
+  getValidDeviceClass,
+} from "../google-button/google-button-const";
 import { localize } from "../localize/localize";
 import { GoogleDevice } from "./google_model";
 import {
@@ -82,6 +87,27 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
             return idDeviceTurnOn ? "m3rf:tv-gen" : "m3r:tv-gen";
         }
       }
+      break;
+    case ControlType.GENERIC: {
+      const deviceOn = isDeviceOn(state);
+      if (domain == DomainType.BINARY_SENSOR) {
+        const device_class = getValidDeviceClass(stateObj.attributes);
+        switch (device_class) {
+          case DeviceType.CONNECTIVITY:
+            if (deviceOn) return "m3of:nest-wifi-router";
+            else return "m3o:nest-wifi-router";
+          case DeviceType.MOTION:
+            if (deviceOn) return "m3rf:sensors-krx";
+            else return "m3r:sensors-krx";
+          case DeviceType.MEASUREMENT:
+            return "mdi:scale-bathroom";
+        }
+      }
+      if (domain == DomainType.SWITCH) {
+        if (deviceOn) return "m3rf:switch";
+        else return "m3r:switch";
+      }
+    }
   }
 
   const entity = hass.entities[config.entity!];
@@ -94,7 +120,8 @@ export function mapStateDisplay(
   stateObj: any,
   control_type: string,
   isOffline: boolean,
-  fix_temperature: boolean = false
+  fix_temperature: boolean = false,
+  is_presence_sensor: boolean = false
 ) {
   let text = "";
   if (control_type === ControlType.THERMOMETER && !isOffline)
@@ -112,17 +139,25 @@ export function mapStateDisplay(
     // text = app_name ? " • " + app_name : "" + title ? " • " + title : "";
     text = app_name ? " • " + app_name : "";
   }
-  return getStateDisplay(stateObj.state, text);
+  return getStateDisplay(stateObj.state, text, is_presence_sensor);
 }
 
-export function getStateDisplay(state: string, text: string = ""): string {
+export function getStateDisplay(
+  state: string,
+  text: string = "",
+  is_presence_sensor: boolean = false
+): string {
   if (!isDeviceOnline(state)) {
     return localize("common.offline");
   }
 
   const stateMap: Record<string, string> = {
-    [OnlineStates.ON]: localize("common.on"),
-    [OnlineStates.OFF]: localize("common.off"),
+    [OnlineStates.ON]: is_presence_sensor
+      ? localize("common.presence")
+      : localize("common.on"),
+    [OnlineStates.OFF]: is_presence_sensor
+      ? localize("common.off_presence")
+      : localize("common.off"),
     [OnlineStates.AUTO]: localize("common.auto"),
     [OnlineStates.HEAT]: localize("common.heat"),
     [OnlineStates.COOL]: localize("common.cool"),

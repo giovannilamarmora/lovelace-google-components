@@ -353,13 +353,24 @@ export class GoogleButtonCard extends LitElement {
 
     const device_class = getValidDeviceClass(stateObj.attributes);
 
-    const stateDisplay = mapStateDisplay(
-      stateObj,
-      this._config.control_type!,
-      isOffline,
-      this._config.fix_temperature,
-      device_class == DeviceType.MOTION
-    );
+    let stateDisplay: string;
+
+    if (this._config.use_default_text) {
+      stateDisplay = mapStateDisplay(
+        stateObj,
+        this._config.control_type!,
+        isOffline,
+        this._config.fix_temperature,
+        device_class == DeviceType.MOTION
+      );
+    } else {
+      if (isOn) stateDisplay = this._config.text_on!;
+      else stateDisplay = this._config.text_off!;
+
+      if (isOfflineState(stateObj.state)) {
+        stateDisplay = localize("common.offline");
+      }
+    }
 
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
 
@@ -386,7 +397,8 @@ export class GoogleButtonCard extends LitElement {
           <div class="text">
             <div class="name">${name}</div>
             ${device_class == DeviceType.MEASUREMENT ||
-            this._config.control_type == ControlType.SCENE ||
+            (this._config.control_type == ControlType.SCENE &&
+              !this._config.use_default_text) ||
             (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
               ? html``
               : html`<div class="state-wrapper">

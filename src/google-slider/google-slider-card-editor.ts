@@ -1,20 +1,21 @@
-import { html, css, LitElement, TemplateResult } from "lit";
+/*import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
-import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
+import { DEFAULT_CONFIG } from "./const";
 import { localize } from "../localize/localize";
-import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
+import { ControlType } from "../google-button/google-button-const";
 import { Action } from "../shared/utils";
+import { GoogleSliderCardConfig } from "./types";
 
-@customElement("google-button-card-editor")
-export class GoogleButtonCardEditor
+@customElement("google-slider-card-editor")
+export class GoogleSliderCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
-  @state() private _config: GoogleButtonCardConfig = DEFAULT_BTN_CONFIG;
+  @state() private _config: GoogleSliderCardConfig = DEFAULT_CONFIG;
 
-  public setConfig(config: GoogleButtonCardConfig): void {
+  public setConfig(config: GoogleSliderCardConfig): void {
     this._config = { ...config };
   }
 
@@ -69,7 +70,7 @@ export class GoogleButtonCardEditor
       case ControlType.THERMOMETER:
         return ["climate"];
       case ControlType.SCENE:
-        return ["scene"];
+        return ["scene", "automation"];
       case ControlType.MEDIA_PLAYER:
         return ["media_player"];
       default:
@@ -84,7 +85,6 @@ export class GoogleButtonCardEditor
 
     this._config.use_default_icon = this._config.use_default_icon ?? true;
     this._config.use_default_toggle = this._config.use_default_toggle ?? true;
-    this._config.use_default_text = this._config.use_default_text ?? true;
 
     return html`
       <div class="form">
@@ -181,38 +181,6 @@ export class GoogleButtonCardEditor
                       placeholder="mdi:lightbulb"
                     />
                   `}
-            `}
-
-        <div class="switch-row">
-          <span class="switch-label"
-            >${localize("google_button_card.dual_text.default")}</span
-          >
-          <ha-switch
-            .checked=${this._config.use_default_text ?? true}
-            configValue="use_default_text"
-            @change=${this._valueChanged}
-          />
-        </div>
-
-        ${this._config.use_default_text
-          ? html``
-          : html`
-              <div class="dual-icons">
-                <ha-textfield
-                  label="${localize("google_button_card.dual_text.text_on")}"
-                  .value=${this._config.text_on || ""}
-                  configValue="text_on"
-                  @input=${this._valueChanged}
-                  placeholder="On"
-                ></ha-textfield>
-                <ha-textfield
-                  label="${localize("google_button_card.dual_text.text_off")}"
-                  .value=${this._config.text_off || ""}
-                  configValue="text_off"
-                  @input=${this._valueChanged}
-                  placeholder="Off"
-                ></ha-textfield>
-              </div>
             `}
         ${this._config.control_type != ControlType.THERMOMETER
           ? html``
@@ -311,9 +279,4 @@ export class GoogleButtonCardEditor
     }
   `;
 }
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "google-button-card-editor": GoogleButtonCardEditor;
-  }
-}
+*/

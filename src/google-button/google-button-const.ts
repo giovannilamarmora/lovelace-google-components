@@ -54,6 +54,9 @@ export interface GoogleButtonCardConfig extends LovelaceCardConfig {
   dual_icon?: boolean;
   icon_on?: string;
   icon_off?: string;
+  use_default_text?: boolean;
+  text_on?: string;
+  text_off?: string;
   height?: number;
   control_type?: ControlType;
   fix_temperature?: boolean;

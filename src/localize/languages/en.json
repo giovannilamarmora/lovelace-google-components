@@ -47,6 +47,11 @@
       "default": "Use Default Icon",
       "options": "Use Dual Icon (On and Off states)."
     },
+    "dual_text": {
+      "default": "Use Default Text",
+      "text_on": "Text On",
+      "text_off": "Text Off"
+    },
     "fix_temperature": "Enable if temperature is not correct"
   },
   "google_button_card": {

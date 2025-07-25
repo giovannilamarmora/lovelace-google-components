@@ -1,6 +1,6 @@
 import { CARD_VERSION } from "./google-slider/const";
 import { GoogleButtonCard } from "./google-button/google-button-card";
-import { GoogleButtonCardEditor } from "./google-button/google-button-card-editor";
+import { GoogleButtonCardEditor } from "./google-slider/google-slider-card-editor";
 import { GoogleDashboardCard } from "./google-dashboard/google-dashboard-card";
 import { GoogleDashboardCardEditor } from "./google-dashboard/google-dashboard-card-editor";
 import { GoogleSliderCard } from "./google-slider/google-slider-card";

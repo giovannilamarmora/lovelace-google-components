@@ -355,7 +355,9 @@ export class GoogleButtonCard extends LitElement {
 
     let stateDisplay: string;
 
-    if (this._config.use_default_text) {
+    const default_text = this._config.use_default_text ?? true;
+
+    if (default_text) {
       stateDisplay = mapStateDisplay(
         stateObj,
         this._config.control_type!,

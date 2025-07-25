@@ -400,7 +400,7 @@ export class GoogleButtonCard extends LitElement {
             <div class="name">${name}</div>
             ${device_class == DeviceType.MEASUREMENT ||
             (this._config.control_type == ControlType.SCENE &&
-              !this._config.use_default_text) ||
+              this._config.use_default_text) ||
             (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
               ? html``
               : html`<div class="state-wrapper">

@@ -62,6 +62,11 @@
       "default": "Usa Icona di default",
       "options": "Usa doppia icona (Elemento acceso e spento)."
     },
+    "dual_text": {
+      "default": "Usa Testo di Default",
+      "text_on": "Testo On",
+      "text_off": "Testo Off"
+    },
     "toggle": {
       "title": "Attiva azioni automatiche",
       "press": "Azione al clic",

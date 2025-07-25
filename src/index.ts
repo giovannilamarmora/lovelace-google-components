@@ -1,6 +1,5 @@
 import { CARD_VERSION } from "./google-slider/const";
 import { GoogleButtonCard } from "./google-button/google-button-card";
-import { GoogleButtonCardEditor } from "./google-slider/google-slider-card-editor";
 import { GoogleDashboardCard } from "./google-dashboard/google-dashboard-card";
 import { GoogleDashboardCardEditor } from "./google-dashboard/google-dashboard-card-editor";
 import { GoogleSliderCard } from "./google-slider/google-slider-card";
@@ -9,6 +8,7 @@ import { GoogleClimateCard } from "./google-climate/google-climate-card";
 import { GoogleClimateCardEditor } from "./google-climate/google-climate-card-editor";
 import { GoogleControlCard } from "./google-control/google-control-card";
 import { GoogleControlCardEditor } from "./google-control/google-control-card-editor";
+import { GoogleButtonCardEditor } from "./google-button/google-button-card-editor";
 
 /* eslint no-console: 0 */
 console.info(

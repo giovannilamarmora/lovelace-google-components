@@ -69,7 +69,7 @@ export class GoogleButtonCardEditor
       case ControlType.THERMOMETER:
         return ["climate"];
       case ControlType.SCENE:
-        return ["scene"];
+        return ["scene", "automation"];
       case ControlType.MEDIA_PLAYER:
         return ["media_player"];
       default:

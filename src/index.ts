@@ -9,6 +9,7 @@ import { GoogleClimateCardEditor } from "./google-climate/google-climate-card-ed
 import { GoogleControlCard } from "./google-control/google-control-card";
 import { GoogleControlCardEditor } from "./google-control/google-control-card-editor";
 import { GoogleButtonCardEditor } from "./google-button/google-button-card-editor";
+import { GoogleSliderCardEditor } from "./google-slider/google-slider-card-editor";
 
 /* eslint no-console: 0 */
 console.info(
@@ -18,6 +19,10 @@ console.info(
 );
 
 customElements.define("google-slider-card", GoogleSliderCard);
+
+if (!customElements.get("google-slider-card-editor")) {
+  customElements.define("google-slider-card-editor", GoogleSliderCardEditor);
+}
 
 if (!customElements.get("google-button-card")) {
   customElements.define("google-button-card", GoogleButtonCard);
@@ -57,9 +62,10 @@ if (!customElements.get("google-control-card-editor")) {
 (window as any).customCards = (window as any).customCards ?? [];
 (window as any).customCards.push({
   type: "google-slider-card",
-  name: "Google Slider Card (Beta 2)",
+  name: "Google Slider Card",
   preview: true,
-  description: "Google Slider Card for light entities.",
+  description:
+    "A custom slider card inspired by Google Home UI, offering smooth control and visual feedback for dimmers, lights, and other numeric entities. Designed with a clean and modern interface to blend into any dashboard.",
 });
 
 (window as any).customCards.push({
@@ -88,7 +94,8 @@ if (!customElements.get("google-control-card-editor")) {
 
 (window as any).customCards.push({
   type: "google-control-card",
-  name: "Google Control Card (Preview)",
+  name: "Google Control Card",
   preview: true,
-  description: "Google-style Control card.",
+  description:
+    "A control card inspired by Google's design, offering a sleek interface to interact with entities like switches, lights, and scenes in Home Assistant.",
 });

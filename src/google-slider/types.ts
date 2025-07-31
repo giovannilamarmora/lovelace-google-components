@@ -2,12 +2,18 @@ import {
   ActionConfig,
   LovelaceCard,
   LovelaceCardConfig,
-  LovelaceCardEditor,
+  //LovelaceCardEditor,
 } from "custom-card-helpers";
+
+//declare global {
+//  interface HTMLElementTagNameMap {
+//    "google-slider-card-editor": LovelaceCardEditor;
+//    "hui-error-card": LovelaceCard;
+//  }
+//}
 
 declare global {
   interface HTMLElementTagNameMap {
-    "google-slider-card-editor": LovelaceCardEditor;
     "hui-error-card": LovelaceCard;
   }
 }

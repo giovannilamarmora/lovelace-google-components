@@ -816,3 +816,9 @@ export class GoogleSliderCard extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "google-slider-card": GoogleSliderCard;
+  }
+}

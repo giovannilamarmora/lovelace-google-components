@@ -10,7 +10,7 @@ import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
 import { google_color } from "../shared/color";
 import { isDeviceOn, isOfflineState } from "../shared/utils";
-import { getIcon, mapStateDisplay } from "../shared/mapper";
+import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 
 @customElement("google-climate-card")
 export class GoogleClimateCard extends LitElement {
@@ -215,8 +215,7 @@ export class GoogleClimateCard extends LitElement {
       >`;
     }
 
-    console.log("CLIMATE", stateObj, this.hass);
-    const name = this._config.name || stateObj.attributes.friendly_name;
+    const name = getName(this._config, this.hass);
     const isOffline = isOfflineState(stateObj.state);
 
     const stateDisplay = mapStateDisplay(

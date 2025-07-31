@@ -13,7 +13,7 @@ import {
 } from "./google-button-const";
 import { Action, isDeviceOn, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
-import { getIcon, mapStateDisplay } from "../shared/mapper";
+import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -124,54 +124,6 @@ export class GoogleButtonCard extends LitElement {
     return fireEvent(this, "hass-more-info", { entityId });
   }
 
-  //private _toggle() {
-  //  if (navigator.vibrate) {
-  //    navigator.vibrate(50);
-  //  }
-  //
-  //  if (!this._config || !this.hass) return;
-  //
-  //  // Capisco se ha le azioni automatiche attive
-  //  const auto = this._config.use_default_toggle;
-  //  const entityId = this._config.entity;
-  //
-  //  if (auto) {
-  //    const domain = entityId?.split(".")[0] || "";
-  //
-  //    // Lista dei domini che supportano "toggle"
-  //    const toggleDomains = [
-  //      "light",
-  //      "switch",
-  //      "fan",
-  //      "climate",
-  //      "input_boolean",
-  //      "cover",
-  //      "script",
-  //    ];
-  //
-  //    const controlType = this._config.control_type || "generic";
-  //
-  //    if (
-  //      !toggleDomains.includes(domain) ||
-  //      controlType === ControlType.THERMOMETER ||
-  //      controlType === ControlType.MEDIA_PLAYER
-  //    ) {
-  //      return fireEvent(this, "hass-more-info", { entityId });
-  //    } else {
-  //      return this.hass.callService("homeassistant", "toggle", {
-  //        entity_id: entityId,
-  //      });
-  //    }
-  //  } else {
-  //    const actionOnTap = this._config.tap_action;
-  //    if (actionOnTap == Action.CLICK)
-  //      return this.hass.callService("homeassistant", "toggle", {
-  //        entity_id: entityId,
-  //      });
-  //    else return fireEvent(this, "hass-more-info", { entityId });
-  //  }
-  //}
-
   private _pressTimer?: number;
   private _startX?: number;
   private _startY?: number;
@@ -273,52 +225,6 @@ export class GoogleButtonCard extends LitElement {
     }
   }
 
-  //private _handleHold() {
-  //  if (navigator.vibrate) {
-  //    navigator.vibrate(50);
-  //  }
-  //  if (!this._config || !this.hass) return;
-  //
-  //  // Capisco se ha le azioni automatiche attive
-  //  const auto = this._config.use_default_toggle;
-  //  const entityId = this._config.entity;
-  //
-  //  if (auto) {
-  //    const domain = entityId?.split(".")[0] || "";
-  //
-  //    // Lista dei domini che supportano "toggle"
-  //    const toggleDomains = [
-  //      "light",
-  //      "switch",
-  //      "fan",
-  //      "climate",
-  //      "input_boolean",
-  //      "cover",
-  //      "script",
-  //    ];
-  //
-  //    const controlType = this._config.control_type || "generic";
-  //
-  //    if (
-  //      toggleDomains.includes(domain) ||
-  //      controlType != ControlType.MEDIA_PLAYER
-  //    ) {
-  //      return fireEvent(this, "hass-more-info", { entityId });
-  //    } else {
-  //      return this.hass.callService("homeassistant", "toggle", {
-  //        entity_id: entityId,
-  //      });
-  //    }
-  //  } else {
-  //    const actionOnHold = this._config.hold_action;
-  //    if (actionOnHold == Action.CLICK)
-  //      return this.hass.callService("homeassistant", "toggle", {
-  //        entity_id: entityId,
-  //      });
-  //    else return fireEvent(this, "hass-more-info", { entityId });
-  //  }
-  //}
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;
 
@@ -332,7 +238,7 @@ export class GoogleButtonCard extends LitElement {
     const isOn = isDeviceOn(stateObj.state);
 
     //const domain = this._config.entity!.split(".")[0];
-    const name = this._config.name || stateObj.attributes.friendly_name;
+    const name = getName(this._config, this.hass);
     const icon = getIcon(stateObj, this._config, this.hass);
     //let icon = "";
     //if (this._config.icon && this._config.icon.trim() !== "") {

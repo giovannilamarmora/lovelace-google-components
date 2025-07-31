@@ -8,6 +8,7 @@ import {
   googleControlTemplate,
 } from "./google-control-const";
 import jsyaml from "js-yaml";
+import { getName } from "../shared/mapper";
 
 @customElement("google-control-card")
 export class GoogleControlCard extends LitElement {
@@ -57,11 +58,63 @@ export class GoogleControlCard extends LitElement {
     return document.createElement("google-control-card-editor");
   }
 
+  //private mapAction(actions: any) {
+  //  if (actions == undefined) return actions;
+  //
+  //  // Crea una copia dell'oggetto
+  //  const newActions = { ...actions };
+  //
+  //  if (newActions.action === "navigate") {
+  //    newActions.navigation_path = this.evalTripleBrackets(
+  //      newActions.navigation_path
+  //    );
+  //  }
+  //
+  //  if (newActions.action === "url") {
+  //    newActions.url_path = this.evalTripleBrackets(newActions.url_path);
+  //  }
+  //
+  //  return newActions;
+  //}
+
+  private mapAction(actions: any): any {
+    if (!actions || typeof actions !== "object") return actions;
+
+    const mapped = { ...actions };
+
+    for (const key of ["navigation_path", "url_path"]) {
+      if (key in mapped && typeof mapped[key] === "string") {
+        mapped[key] = this.evalTripleBrackets(mapped[key]);
+      }
+    }
+
+    return mapped;
+  }
+
   private mapTemplate() {
-    const stateObj = this.hass.states[this._config.entity!];
-    const name = this._config.name || stateObj.attributes.friendly_name;
-    const text = googleControlTemplate(name!, this._config.icon!);
+    const name = getName(this._config, this.hass);
+
+    // Cloniamo l’oggetto per renderlo modificabile
+    const newConfig = { ...this._config, name };
+    newConfig.tap_action = this.mapAction(newConfig.tap_action);
+    newConfig.hold_action = this.mapAction(newConfig.hold_action);
+    const text = googleControlTemplate(newConfig);
+
     return text;
+  }
+
+  private evalTripleBrackets(input: string): any {
+    const tripleBracketRegex = /^\s*\[\[\[\s*([\s\S]*?)\s*\]\]\]\s*$/;
+    const match = input.match(tripleBracketRegex);
+    if (match) {
+      try {
+        const fn = new Function(match[1]);
+        return fn();
+      } catch (err) {
+        console.error("Eval error:", err);
+      }
+    }
+    return input;
   }
 
   protected render(): TemplateResult {

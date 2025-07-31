@@ -20,6 +20,7 @@ export enum DomainType {
 
 export enum DeviceType {
   MOTION = "motion",
+  DOOR = "door",
   CONNECTIVITY = "connectivity",
   MEASUREMENT = "measurement",
 }

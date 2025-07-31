@@ -74,5 +74,32 @@
       "click": "Clic singolo (Accensione/Spegnimento)",
       "info": "Visualizza informazioni"
     }
+  },
+  "google_control_card": {
+    "name": "Card Name",
+    "entity_card": "Use card as entity",
+    "entity": "Entity",
+    "dual_icon": {
+      "default": "Use Default Icon",
+      "options": "Use Dual Icon (On and Off states)."
+    },
+    "actions": {
+      "hold": "Azione alla pressione prolungata",
+      "press": "Azione al clic",
+      "more_info": "Più informazioni",
+      "toggle": "Attiva/Disattiva",
+      "navigate": "Naviga",
+      "url": "URL",
+      "none": "Nessuna azione",
+      "google_home": "Apri Google Home",
+      "settings": "Apri Impostazioni"
+    }
+  },
+  "google_slider_card": {
+    "name": "Nome della Card",
+    "entity": "Entità da controllare",
+    "icon": "Icona personalizzata (se vuota, cambia automaticamente in base allo stato On/Off)",
+    "percentage": "Mostra la percentuale di valore",
+    "bold_text": "Testo con stile in grassetto"
   }
 }

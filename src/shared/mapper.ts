@@ -97,6 +97,9 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
             else return "m3r:sensors-krx";
           case DeviceType.MEASUREMENT:
             return "mdi:scale-bathroom";
+          case DeviceType.DOOR:
+            if (deviceOn) return "m3rf:sensor-door";
+            else return "m3r:sensor-door";
         }
       }
       if (domain == DomainType.SWITCH) {
@@ -170,4 +173,16 @@ export function getStateDisplay(
   const finalState = stateMap[state] || state;
 
   return text != "" ? finalState + text : finalState;
+}
+
+export function getName(config: any, hass: any) {
+  if (config.name) return config.name;
+  const stateObj = hass.states[config.entity!];
+  if (stateObj && stateObj.attributes.friendly_name)
+    return stateObj.attributes.friendly_name;
+  if (hass && hass.entities && hass.entities[config.entity]) {
+    const device_id = hass.entities[config.entity!].device_id;
+    const device = hass.devices[device_id];
+    return device.name;
+  }
 }

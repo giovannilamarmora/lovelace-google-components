@@ -10,6 +10,8 @@ import { GoogleControlCard } from "./google-control/google-control-card";
 import { GoogleControlCardEditor } from "./google-control/google-control-card-editor";
 import { GoogleButtonCardEditor } from "./google-button/google-button-card-editor";
 import { GoogleSliderCardEditor } from "./google-slider/google-slider-card-editor";
+import { GoogleLightsCard } from "./google-lights-card/google-lights-card";
+import { GoogleLightsCardEditor } from "./google-lights-card/google-lights-card-editor";
 
 /* eslint no-console: 0 */
 console.info(
@@ -18,12 +20,14 @@ console.info(
   "color: white; font-weight: bold; background: dimgray"
 );
 
+/** Google Slider */
 customElements.define("google-slider-card", GoogleSliderCard);
 
 if (!customElements.get("google-slider-card-editor")) {
   customElements.define("google-slider-card-editor", GoogleSliderCardEditor);
 }
 
+/** Google Button */
 if (!customElements.get("google-button-card")) {
   customElements.define("google-button-card", GoogleButtonCard);
 }
@@ -32,6 +36,7 @@ if (!customElements.get("google-button-card-editor")) {
   customElements.define("google-button-card-editor", GoogleButtonCardEditor);
 }
 
+/** Google Dashboard */
 if (!customElements.get("google-dashboard-card")) {
   customElements.define("google-dashboard-card", GoogleDashboardCard);
 }
@@ -43,6 +48,7 @@ if (!customElements.get("google-dashboard-card-editor")) {
   );
 }
 
+/** Google Climate */
 if (!customElements.get("google-climate-card")) {
   customElements.define("google-climate-card", GoogleClimateCard);
 }
@@ -51,12 +57,22 @@ if (!customElements.get("google-climate-card-editor")) {
   customElements.define("google-climate-card-editor", GoogleClimateCardEditor);
 }
 
+/** Google Control */
 if (!customElements.get("google-control-card")) {
   customElements.define("google-control-card", GoogleControlCard);
 }
 
 if (!customElements.get("google-control-card-editor")) {
   customElements.define("google-control-cardeditor", GoogleControlCardEditor);
+}
+
+/** Google Lights */
+if (!customElements.get("google-lights-card")) {
+  customElements.define("google-lights-card", GoogleLightsCard);
+}
+
+if (!customElements.get("google-lights-card-editor")) {
+  customElements.define("google-lights-cardeditor", GoogleLightsCardEditor);
 }
 
 (window as any).customCards = (window as any).customCards ?? [];
@@ -98,4 +114,12 @@ if (!customElements.get("google-control-card-editor")) {
   preview: true,
   description:
     "A control card inspired by Google's design, offering a sleek interface to interact with entities like switches, lights, and scenes in Home Assistant.",
+});
+
+(window as any).customCards.push({
+  type: "google-lights-card",
+  name: "Google Lights Control",
+  preview: true,
+  description:
+    "A control card inspired by Google's design, offering a sleek interface to interact with lights in Home Assistant.",
 });

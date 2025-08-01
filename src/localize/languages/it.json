@@ -101,5 +101,9 @@
     "icon": "Icona personalizzata (se vuota, cambia automaticamente in base allo stato On/Off)",
     "percentage": "Mostra la percentuale di valore",
     "bold_text": "Testo con stile in grassetto"
+  },
+  "google_lights_card": {
+    "on_text": "Testo per Luci Accese",
+    "off_text": "Testo per Luci Spente"
   }
 }

@@ -18,6 +18,12 @@ export const DEFAULT_CONFIG: GoogleControlCardConfig = {
   type: "custom:google-control-card",
   name: "Control Card",
   icon: "mdi:link",
+  tap_action: {
+    action: "more-info",
+  },
+  hold_action: {
+    action: "more-info",
+  },
 };
 
 export function googleControlTemplate(config: GoogleControlCardConfig) {

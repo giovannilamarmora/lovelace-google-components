@@ -28,6 +28,12 @@ export class GoogleControlCard extends LitElement {
       type: "custom:google-control-card",
       name: "Control Card",
       icon: "mdi:link",
+      tap_action: {
+        action: "more-info",
+      },
+      hold_action: {
+        action: "more-info",
+      },
     };
   }
 

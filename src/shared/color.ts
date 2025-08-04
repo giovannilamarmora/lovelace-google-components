@@ -1,6 +1,186 @@
 export const google_color = {
   dark: {
     offline: {
+      // (Updated on 04/08/2025)
+      climate: {
+        title: "var(--md-sys-color-outline, #717173)",
+        icon: "var(--md-sys-color-outline, #717173)",
+        background: "var(--md-sys-color-surface-container-highest, #2c2c2e)",
+      },
+      // (Updated on 04/08/2025)
+      button: {
+        title: "var(--md-sys-color-outline, #717173)",
+        icon: "var(--md-sys-color-outline, #717173)",
+        percentage: "var(--md-sys-color-outline, #717173)",
+        background: "var(--md-sys-color-surface-container-highest, #2c2c2e)",
+      },
+      // (Updated on 04/08/2025)
+      light: {
+        title: "var(--md-sys-color-outline, #717173)",
+        icon: "var(--md-sys-color-outline, #717173)",
+        percentage: "var(--md-sys-color-outline, #717173)",
+        slider: "var(--md-sys-color-surface-container-highest, #2c2c2e)",
+        background: "var(--md-sys-color-surface-container-highest, #2c2c2e)",
+      },
+    },
+    on: {
+      climate: {
+        // (Updated on 04/08/2025)
+        material: {
+          title: "#fedcca",
+          subtitle: "#e6c0b2",
+          icon: "#fedcca",
+          button: "#4b332b",
+          background: "rgba(92, 64, 53, 0.85)",
+        },
+        // (Updated on 04/08/2025)
+        default: {
+          title: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
+          subtitle: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
+          icon: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
+          button: "var(--md-sys-color-surface-variant, #5c5b60)",
+          background:
+            "var(--md-sys-color-surface-container, rgba(65, 66, 70, 0.83))",
+        },
+      },
+      // (Updated on 04/08/2025)
+      button: {
+        title: "var(--md-sys-color-on-secondary-container, #d8e3f7)",
+        icon: "var(--md-sys-color-on-secondary-container, #d8e3f7)",
+        percentage: "var(--md-sys-color-on-secondary-container, #d8e3f7)",
+        background: "var(--md-sys-color-secondary-container, #3e4758)",
+      },
+      // (Updated on 04/08/2025)
+      light: {
+        title: "#ffe083",
+        icon: "#ffe083",
+        percentage: "#ffe083",
+        slider: "#50472a",
+        background: "#333029",
+      },
+    },
+    off: {
+      climate: {
+        // (Updated on 04/08/2025)
+        default: {
+          title: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
+          subtitle: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
+          icon: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
+          button: "var(--md-sys-color-surface-variant, #5c5b60)",
+          background: "var(--md-sys-color-surface-container, #414246)",
+        },
+      },
+      // (Updated on 04/08/2025)
+      button: {
+        title: "var(--md-sys-color-on-surface-variant, #e3e3e5)",
+        icon: "var(--md-sys-color-on-surface-variant, #e3e3e5)",
+        percentage: "var(--md-sys-color-on-surface-variant, #e3e3e5)",
+        background: "var(--md-sys-color-surface-container, #292a2e)",
+      },
+      // (Updated on 04/08/2025)
+      light: {
+        title: "var(--md-sys-color-on-surface-variant, #e3e3e5)",
+        icon: "var(--md-sys-color-on-surface-variant, #e3e3e5)",
+        percentage: "var(--md-sys-color-on-surface-variant, #e3e3e5)",
+        slider: "var(--md-sys-color-surface-container, #292a2e)",
+        background: "var(--md-sys-color-surface-container, #292a2e)",
+      },
+    },
+  },
+  light: {
+    offline: {
+      // (Updated on 04/08/2025)
+      climate: {
+        title: "var(--md-sys-color-outline, #949496)",
+        icon: "var(--md-sys-color-outline, #949496)",
+        background:
+          "var(--md-sys-color-surface-container-highest, rgba(223, 223, 225, 0.85))",
+      },
+      // (Updated on 04/08/2025)
+      button: {
+        title: "var(--md-sys-color-outline, #949496)",
+        icon: "var(--md-sys-color-outline, #949496)",
+        percentage: "var(--md-sys-color-outline, #949496)",
+        background: "var(--md-sys-color-surface-container-highest, #dfdfe1)",
+      },
+      // (Updated on 04/08/2025)
+      light: {
+        title: "var(--md-sys-color-outline, #959597)",
+        icon: "var(--md-sys-color-outline, #959597)",
+        percentage: "var(--md-sys-color-outline, #959597)",
+        slider: "var(--md-sys-color-surface-container-highest, #dfdfe1)",
+        background: "var(--md-sys-color-surface-container-highest, #dfdfe1)",
+      },
+    },
+    on: {
+      climate: {
+        // (Updated on 04/08/2025)
+        material: {
+          title: "#812800",
+          subtitle: "#812800",
+          icon: "#812800",
+          button: "rgba(245, 180, 150, 0.6)",
+          background: "rgba(258, 193.8, 166, 0.3)",
+        },
+        // (Updated on 04/08/2025)
+        default: {
+          title: "var(--md-sys-color-on-surface-variant, #525252)",
+          subtitle: "var(--md-sys-color-on-surface-variant, #525252)",
+          icon: "var(--md-sys-color-on-surface-variant, #525252)",
+          button: "var(--md-sys-color-surface-variant, #c1c1c3)",
+          background:
+            "var(--md-sys-color-surface-container, rgba(221, 221, 223, 0.83))",
+        },
+      },
+      // (Updated on 04/08/2025)
+      button: {
+        title: "var(--md-sys-color-on-secondary-container, #131c2b)",
+        icon: "var(--md-sys-color-on-secondary-container, #131c2b)",
+        percentage: "var(--md-sys-color-on-secondary-container, #131c2b)",
+        background: "var(--md-sys-color-secondary-container, #d8e3f7)",
+      },
+      // (Updated on 04/08/2025)
+      light: {
+        title: "#745b00",
+        icon: "#745b00",
+        percentage: "#745b00",
+        slider: "#ffe083",
+        background: "#feefc8",
+      },
+    },
+    off: {
+      climate: {
+        // (Updated on 04/08/2025)
+        default: {
+          title: "var(--md-sys-color-on-surface-variant, #525252)",
+          subtitle: "var(--md-sys-color-on-surface-variant, #525252)",
+          icon: "var(--md-sys-color-on-surface-variant, #525252)",
+          button: "var(--md-sys-color-surface-variant, #c1c1c3)",
+          background: "var(--md-sys-color-surface-container, #dddddf)",
+        },
+      },
+      // (Updated on 04/08/2025)
+      button: {
+        title: "var(--md-sys-color-on-surface-variant, #1b1b1d)",
+        icon: "var(--md-sys-color-on-surface-variant, #1b1b1d)",
+        percentage: "var(--md-sys-color-on-surface-variant, #1b1b1d)",
+        background: "var(--md-sys-color-surface-container, #e8e8ea)",
+      },
+      // (Updated on 04/08/2025)
+      light: {
+        title: "var(--md-sys-color-on-surface-variant, #1b1b1d)",
+        icon: "var(--md-sys-color-on-surface-variant, #1b1b1d)",
+        percentage: "var(--md-sys-color-on-surface-variant, #1b1b1d)",
+        slider: "var(--md-sys-color-surface-container, #e8e8ea)",
+        background: "var(--md-sys-color-surface-container, #e8e8ea)",
+      },
+    },
+  },
+};
+
+export const google_color_old = {
+  dark: {
+    offline: {
       // (Updated on 21/07/2025)
       climate: {
         title: "#717173",

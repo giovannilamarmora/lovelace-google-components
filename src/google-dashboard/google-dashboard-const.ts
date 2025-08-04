@@ -92,10 +92,10 @@ cards:
         - border-radius: 30px
         - box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.05),
             0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
+        #- background: |
+        #    [[[
+        #      return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
+        #    ]]]
       name:
         - font-size: 1rem
         - font-weight: bold
@@ -193,12 +193,10 @@ cards:
         - border-radius: 30px
         - box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.05),
             0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
-
-
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
+        #- background: |
+        #    [[[
+        #      return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
+        #    ]]]
       name:
         - font-size: 1rem
         - font-weight: bold
@@ -308,12 +306,10 @@ cards:
         - border-radius: 30px
         - box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.05),
             0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
-
-
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
+        #- background: |
+        #    [[[
+        #      return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
+        #    ]]]
       name:
         - font-size: 1rem
         - font-weight: bold
@@ -428,10 +424,10 @@ cards:
         - border-radius: 30px
         - box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.05),
             0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
-        - background: |
-            [[[
-              return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
-            ]]]
+        #- background: |
+        #    [[[
+        #      return hass.themes.darkMode ? '#1F1F1F' : '#F8F9FA';
+        #    ]]]
       name:
         - font-size: 1rem
         - font-weight: bold

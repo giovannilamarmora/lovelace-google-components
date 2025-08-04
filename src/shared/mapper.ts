@@ -47,9 +47,12 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
         case "cool":
           return "mdi:snowflake";
         case "off":
-          return "mdi:thermometer-off";
+        case "unavailable":
+          return "m3s:thermometer";
+        //return "mdi:thermometer-off";
         default:
-          return "mdi:thermometer";
+          return "m3of:thermometer";
+        //return "mdi:thermometer";
       }
     }
     case ControlType.SCENE:

@@ -57,18 +57,24 @@ card:
                       const on = Object.values(hass.states)
                         .filter(e => e.entity_id.startsWith('light.') && e.state === 'on')
                         .length > 0;
+                      //return on
+                      //  ? (hass.themes.darkMode ? "#fae093": "#745b00")
+                      //  : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
                       return on
                         ? (hass.themes.darkMode ? "#fae093": "#745b00")
-                        : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
+                        : 'var(--md-sys-color-surface-container)';
                     ]]]
                 - background-color: |
                     [[[
                       const on = Object.values(hass.states)
                         .filter(e => e.entity_id.startsWith('light.') && e.state === 'on')
                         .length > 0;
+                      //return on
+                      //  ? (hass.themes.darkMode ? "#50472a": "#ffe083")
+                      //  : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
                       return on
                         ? (hass.themes.darkMode ? "#50472a": "#ffe083")
-                        : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
+                        : 'var(--md-sys-color-surface-container)';
                     ]]]
               name:
                 - color: |
@@ -76,9 +82,12 @@ card:
                       const on = Object.values(hass.states)
                         .filter(e => e.entity_id.startsWith('light.') && e.state === 'on')
                         .length > 0;
+                      //return on
+                      //  ? (hass.themes.darkMode ? "#fce08c" : "#745b00")
+                      //  : (hass.themes.darkMode ? "#e3e3e5" : 'var(--md-sys-color-on-surface-variant)');
                       return on
                         ? (hass.themes.darkMode ? "#fce08c" : "#745b00")
-                        : (hass.themes.darkMode ? "#e3e3e5" : 'var(--md-sys-color-on-surface-variant)');
+                        : 'var(--md-sys-color-on-surface-variant)';
                     ]]]
             tap_action:
               action: call-service
@@ -112,18 +121,24 @@ card:
                       const allOff = Object.values(hass.states)
                         .filter(e => e.entity_id.startsWith('light.') && e.state === 'on')
                         .length === 0;
+                      //return allOff
+                      //  ? (hass.themes.darkMode ? "#fae093": "#745b00")
+                      //  : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
                       return allOff
                         ? (hass.themes.darkMode ? "#fae093": "#745b00")
-                        : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
+                        : 'var(--md-sys-color-surface-container)';
                     ]]]
                 - background-color: |
                     [[[
                       const allOff = Object.values(hass.states)
                         .filter(e => e.entity_id.startsWith('light.') && e.state === 'on')
                         .length === 0;
+                      //return allOff
+                      //  ? (hass.themes.darkMode ? "#50472a": "#ffe083")
+                      //  : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
                       return allOff
                         ? (hass.themes.darkMode ? "#50472a": "#ffe083")
-                        : (hass.themes.darkMode ? "#1f2022": 'var(--md-sys-color-surface-variant)');
+                        : "var(--md-sys-color-surface-container)";
                     ]]]
               name:
                 - color: |
@@ -131,9 +146,12 @@ card:
                       const allOff = Object.values(hass.states)
                         .filter(e => e.entity_id.startsWith('light.') && e.state === 'on')
                         .length === 0;
+                      //return allOff
+                      //  ? (hass.themes.darkMode ? "#fce08c" : "#745b00")
+                      //  : (hass.themes.darkMode ? "#e3e3e5" : 'var(--md-sys-color-on-surface-variant)');
                       return allOff
                         ? (hass.themes.darkMode ? "#fce08c" : "#745b00")
-                        : (hass.themes.darkMode ? "#e3e3e5" : 'var(--md-sys-color-on-surface-variant)');
+                        : 'var(--md-sys-color-on-surface-variant)';
                     ]]]
             tap_action:
               action: call-service

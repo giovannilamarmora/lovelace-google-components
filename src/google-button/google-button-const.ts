@@ -60,7 +60,7 @@ export interface GoogleButtonCardConfig extends LovelaceCardConfig {
   text_off?: string;
   height?: number;
   control_type?: ControlType;
-  fix_temperature?: boolean;
+  fix_temperature?: "true" | "false" | "auto";
   use_material_color?: boolean;
   use_default_toggle?: boolean;
   tap_action?: Action;

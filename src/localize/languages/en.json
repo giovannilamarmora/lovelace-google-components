@@ -11,6 +11,8 @@
     "auto": "Auto",
     "heat": "Heat",
     "cool": "Cool",
+    "dry": "Dry",
+    "fan": "Fan",
     "playing": "Playing",
     "idle": "Cast",
     "presence": "Motion",
@@ -47,7 +49,10 @@
       "default": "Use Default Icon",
       "options": "Use Dual Icon (On and Off states)."
     },
-    "fix_temperature": "Enable if temperature is not correct"
+    "fix_temperature": "Enable if temperature is not correct",
+    "false": "Not Active",
+    "true": "Actve",
+    "auto": "Auto"
   },
   "google_button_card": {
     "name": "Entity Name",

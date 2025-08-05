@@ -4,6 +4,7 @@ import {
   DomainType,
   getValidDeviceClass,
 } from "../google-button/google-button-const";
+import { adjustTempAuto } from "../google-climate/google-climate-mapper";
 import { localize } from "../localize/localize";
 import { GoogleDevice } from "./google_model";
 import {
@@ -45,6 +46,10 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
         case "heat":
           return "mdi:fire";
         case "cool":
+          return "m3of:cool-to-dry";
+        case "fan_only":
+          return "m3of:mode-fan";
+        case "dry":
           return "mdi:snowflake";
         case "off":
         case "unavailable":
@@ -126,16 +131,24 @@ export function mapStateDisplay(
   stateObj: any,
   control_type: string,
   isOffline: boolean,
-  fix_temperature: boolean = false,
+  fix_temperature: "true" | "false" | "auto" = "false",
   is_presence_sensor: boolean = false
 ) {
   let text = "";
   if (control_type === ControlType.THERMOMETER && !isOffline)
+    //text = stateObj.attributes.current_temperature
+    //  ? " • " +
+    //    (fix_temperature
+    //      ? stateObj.attributes.current_temperature * 5
+    //      : stateObj.attributes.current_temperature) +
+    //    "°"
+    //  : "";
     text = stateObj.attributes.current_temperature
       ? " • " +
-        (fix_temperature
-          ? stateObj.attributes.current_temperature * 5
-          : stateObj.attributes.current_temperature) +
+        adjustTempAuto(
+          fix_temperature,
+          stateObj.attributes.current_temperature
+        ) +
         "°"
       : "";
   if (control_type === ControlType.MEDIA_PLAYER && !isOffline) {
@@ -167,6 +180,9 @@ export function getStateDisplay(
     [OnlineStates.AUTO]: localize("common.auto"),
     [OnlineStates.HEAT]: localize("common.heat"),
     [OnlineStates.COOL]: localize("common.cool"),
+    [OnlineStates.DRY]: localize("common.dry"),
+    [OnlineStates.FAN]: localize("common.fan"),
+    [OnlineStates.FAN_ONLY]: localize("common.fan"),
     [OnlineStates.HEAT_COOL]: localize("common.auto"),
     [OnlineStates.IDLE]: localize("common.idle"),
     [OnlineStates.PAUSE]: localize("common.idle"),

@@ -176,7 +176,7 @@ export class GoogleClimateCardEditor
           placeholder="e.g. 0.5"
         ></ha-textfield>
 
-        <div class="switch-row">
+        <!--<div class="switch-row">
           <span class="switch-label"
             >${localize("google_climate_card.fix_temperature")}</span
           >
@@ -185,7 +185,25 @@ export class GoogleClimateCardEditor
             configValue="fix_temperature"
             @change=${this._valueChanged}
           />
-        </div>
+        </div>-->
+
+        <ha-select
+          label="${localize("google_climate_card.fix_temperature")}"
+          .value=${this._config.fix_temperature ?? "false"}
+          configValue="fix_temperature"
+          @selected=${this._valueChanged}
+          @closed=${(ev: Event) => ev.stopPropagation()}
+        >
+          <mwc-list-item value="false">
+            ${localize("google_climate_card.false")}
+          </mwc-list-item>
+          <mwc-list-item value="true">
+            ${localize("google_climate_card.true")}
+          </mwc-list-item>
+          <mwc-list-item value="auto">
+            ${localize("google_climate_card.auto")}
+          </mwc-list-item>
+        </ha-select>
       </div>
     `;
   }

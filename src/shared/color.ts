@@ -33,6 +33,13 @@ export const google_color = {
           button: "#4b332b",
           background: "rgba(92, 64, 53, 0.85)",
         },
+        material_dry: {
+          title: "#cbe5fe",
+          subtitle: "#b3d7f0",
+          icon: "#cbe5fe",
+          button: "#143546",
+          background: "rgba(26, 61, 82, 0.85)",
+        },
         // (Updated on 04/08/2025)
         default: {
           title: "var(--md-sys-color-on-surface-variant, #c3c3c5)",
@@ -121,6 +128,13 @@ export const google_color = {
           icon: "#812800",
           button: "rgba(245, 180, 150, 0.6)",
           background: "rgba(258, 193.8, 166, 0.3)",
+        },
+        material_dry: {
+          title: "#006b9c",
+          subtitle: "#006b9c",
+          icon: "#006b9c",
+          button: "#cbe5fe",
+          background: "#e8f1ff",
         },
         // (Updated on 04/08/2025)
         default: {

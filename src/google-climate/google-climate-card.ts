@@ -11,6 +11,11 @@ import { applyRippleEffect } from "../utils";
 import { google_color } from "../shared/color";
 import { isDeviceOn, isOfflineState } from "../shared/utils";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
+import {
+  adjustNewTempAuto,
+  adjustTempAuto,
+  isAirConditioning,
+} from "./google-climate-mapper";
 
 @customElement("google-climate-card")
 export class GoogleClimateCard extends LitElement {
@@ -73,16 +78,27 @@ export class GoogleClimateCard extends LitElement {
     if (!this.hass || !this._config?.entity) return;
 
     const stateObj = this.hass.states[this._config.entity];
+    //const current = Number(
+    //  this._config.fix_temperature
+    //    ? stateObj.attributes.temperature * 5
+    //    : stateObj?.attributes?.temperature
+    //);
     const current = Number(
-      this._config.fix_temperature
-        ? stateObj.attributes.temperature * 5
-        : stateObj?.attributes?.temperature
+      adjustTempAuto(
+        this._config.fix_temperature!,
+        stateObj.attributes.temperature
+      )
     );
     if (isNaN(current)) return;
 
-    const newTemp = this._config.fix_temperature
-      ? (current + delta) / 5
-      : current + delta;
+    //const newTemp = this._config.fix_temperature
+    //  ? (current + delta) / 5
+    //  : current + delta;
+
+    const newTemp = adjustNewTempAuto(
+      this._config.fix_temperature!,
+      current + delta
+    );
 
     this.hass.states[this._config.entity]!.attributes!.temperature! = newTemp;
 
@@ -101,7 +117,8 @@ export class GoogleClimateCard extends LitElement {
     use_material_color: boolean,
     theme: string,
     isOffline: boolean,
-    isOn: boolean
+    isOn: boolean,
+    isConditioner: boolean
   ) {
     let nameColor = "";
     let iconColor = "";
@@ -127,14 +144,28 @@ export class GoogleClimateCard extends LitElement {
       // Acceso, tema dark
       if (theme === "dark") {
         if (use_material_color) {
-          nameColor = iconColor =
-            this.google_color_scheme.dark.on.climate.material.title;
-          adjustTemp = this.google_color_scheme.dark.on.climate.material.button;
-          internalTemp =
-            this.google_color_scheme.dark.on.climate.material.subtitle;
-          containerColor =
-            this.google_color_scheme.dark.on.climate.material.background;
-          //containerColor = "#5c4035";
+          if (isConditioner) {
+            nameColor =
+              this.google_color_scheme.dark.on.climate.material_dry.title;
+            iconColor =
+              this.google_color_scheme.dark.on.climate.material_dry.icon;
+            adjustTemp =
+              this.google_color_scheme.dark.on.climate.material_dry.button;
+            internalTemp =
+              this.google_color_scheme.dark.on.climate.material_dry.subtitle;
+            containerColor =
+              this.google_color_scheme.dark.on.climate.material_dry.background;
+          } else {
+            nameColor = this.google_color_scheme.dark.on.climate.material.title;
+            iconColor = this.google_color_scheme.dark.on.climate.material.icon;
+            adjustTemp =
+              this.google_color_scheme.dark.on.climate.material.button;
+            internalTemp =
+              this.google_color_scheme.dark.on.climate.material.subtitle;
+            containerColor =
+              this.google_color_scheme.dark.on.climate.material.background;
+            //containerColor = "#5c4035";
+          }
         } else {
           nameColor = iconColor =
             this.google_color_scheme.dark.on.climate.default.title;
@@ -148,14 +179,28 @@ export class GoogleClimateCard extends LitElement {
       } else {
         // Acceso, tema light
         if (use_material_color) {
-          nameColor =
+          if (isConditioner) {
+            nameColor =
+              this.google_color_scheme.light.on.climate.material_dry.title;
             iconColor =
+              this.google_color_scheme.light.on.climate.material_dry.icon;
             internalTemp =
+              this.google_color_scheme.light.on.climate.material_dry.subtitle;
+            adjustTemp =
+              this.google_color_scheme.light.on.climate.material_dry.button;
+            containerColor =
+              this.google_color_scheme.light.on.climate.material_dry.background;
+          } else {
+            nameColor =
               this.google_color_scheme.light.on.climate.material.title;
-          adjustTemp =
-            this.google_color_scheme.light.on.climate.material.button;
-          containerColor =
-            this.google_color_scheme.light.on.climate.material.background;
+            iconColor = this.google_color_scheme.light.on.climate.material.icon;
+            internalTemp =
+              this.google_color_scheme.light.on.climate.material.subtitle;
+            adjustTemp =
+              this.google_color_scheme.light.on.climate.material.button;
+            containerColor =
+              this.google_color_scheme.light.on.climate.material.background;
+          }
         } else {
           nameColor =
             iconColor =
@@ -226,8 +271,15 @@ export class GoogleClimateCard extends LitElement {
     );
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
     const isOn = isDeviceOn(stateObj.state);
+    const isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
 
-    this.setColorCard(this._config.use_material_color, theme, isOffline, isOn);
+    this.setColorCard(
+      this._config.use_material_color,
+      theme,
+      isOffline,
+      isOn,
+      isConditioner
+    );
 
     const config = {
       control_type: "thermometer",
@@ -296,9 +348,14 @@ export class GoogleClimateCard extends LitElement {
                   −
                 </button>
                 <div class="temperature-display" id="tempDisplay">
-                  ${this._config.fix_temperature
-                    ? stateObj.attributes.temperature * 5
-                    : stateObj.attributes.temperature}
+                  ${
+                    adjustTempAuto(
+                      this._config.fix_temperature!,
+                      stateObj.attributes.temperature
+                    ) //this._config.fix_temperature
+                    //? stateObj.attributes.temperature * 5
+                    //: stateObj.attributes.temperature
+                  }
                 </div>
                 <button
                   class="control-btn plus-btn"

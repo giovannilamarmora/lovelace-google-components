@@ -10,7 +10,9 @@
     "offline": "Offline",
     "auto": "Auto",
     "heat": "Riscalda",
-    "cool": "Raffresca",
+    "cool": "Deumidificatore",
+    "dry": "Raffresca",
+    "fan": "Ventilazione",
     "playing": "Riproduzione",
     "idle": "Cast",
     "presence": "Movimento",
@@ -47,7 +49,10 @@
       "default": "Usa Icona di default",
       "options": "Usa doppia icona (Elemento acceso e spento)."
     },
-    "fix_temperature": "Abilita se la temperatura non è corretta"
+    "fix_temperature": "Abilita se la temperatura non è corretta",
+    "false": "Non attivo",
+    "true": "Attivo",
+    "auto": "Automatico"
   },
   "google_button_card": {
     "name": "Nome Entità",

@@ -23,6 +23,7 @@ export enum DeviceType {
   DOOR = "door",
   CONNECTIVITY = "connectivity",
   MEASUREMENT = "measurement",
+  BATTERY = "battery",
 }
 
 function isDeviceType(value: string): value is DeviceType {

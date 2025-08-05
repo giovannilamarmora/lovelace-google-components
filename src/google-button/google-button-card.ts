@@ -312,7 +312,7 @@ export class GoogleButtonCard extends LitElement {
         <div class="content">
           <ha-icon .icon=${icon} class="icon"></ha-icon>
           <div class="text">
-            <div class="name">${name}</div>
+            <div class="name ellipsis">${name}</div>
             ${device_class == DeviceType.MEASUREMENT ||
             (this._config.control_type == ControlType.SCENE && default_text) ||
             (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
@@ -505,6 +505,11 @@ export class GoogleButtonCard extends LitElement {
       font-size: 15px;
       font-weight: 550;
       line-height: 1.35;
+    }
+
+    .ellipsis {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .state {

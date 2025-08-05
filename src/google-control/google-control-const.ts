@@ -51,9 +51,13 @@ styles:
     - border-radius: 30px
     - margin-bottom: 1px
     - box-shadow: 0px 0.5px 1px rgba(0, 0, 0, 0.05), 0px 0.5px 1.5px rgba(0, 0, 0, 0.07);
+    #- background-color: |
+    #    [[[
+    #      return hass.themes.darkMode ? '#1f2022' : '#eeedf2';
+    #    ]]]
     - background-color: |
         [[[
-          return hass.themes.darkMode ? '#1f2022' : '#eeedf2';
+          return hass.themes.darkMode ? "var(--md-sys-color-surface-container, '#1f2022')" : "var(--md-sys-color-surface-container, '#eeedf2')";
         ]]]
   name:
     - font-size: 1rem
@@ -68,12 +72,12 @@ styles:
     - word-break: break-word
     - color: |
         [[[
-          return hass.themes.darkMode ? '#e3e3e5' : '#1b1b1d';
+          return hass.themes.darkMode ? "var(--md-sys-color-on-surface-variant,'#e3e3e5')" : "var(--md-sys-color-on-surface-variant,'#1b1b1d')";
         ]]]
   icon:
     - color: |
         [[[
-          return hass.themes.darkMode ? '#c4c7d0' : '#43484e';
+          return hass.themes.darkMode ? "var(--md-sys-color-on-surface-variant,'#c4c7d0')" : "var(--md-sys-color-on-surface-variant,'#43484e')";
         ]]]
 `;
 }

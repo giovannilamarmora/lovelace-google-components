@@ -11,6 +11,7 @@ import {
   getOrDefault,
   isDeviceOn,
   isDeviceOnline,
+  isOfflineState,
   OnlineStates,
 } from "./utils";
 
@@ -45,11 +46,11 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
           return "mdi:thermostat-auto";
         case "heat":
           return "mdi:fire";
-        case "cool":
+        case "dry":
           return "m3of:cool-to-dry";
         case "fan_only":
           return "m3of:mode-fan";
-        case "dry":
+        case "cool":
           return "mdi:snowflake";
         case "off":
         case "unavailable":
@@ -93,25 +94,43 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
       }
       break;
     case ControlType.GENERIC: {
-      const deviceOn = isDeviceOn(state);
+      const deviceOnline = !isOfflineState(state, controlType);
       if (domain == DomainType.BINARY_SENSOR || domain == DomainType.SENSOR) {
         const device_class = getValidDeviceClass(stateObj.attributes);
         switch (device_class) {
           case DeviceType.CONNECTIVITY:
-            if (deviceOn) return "m3of:nest-wifi-router";
+            if (idDeviceTurnOn) return "m3of:nest-wifi-router";
             else return "m3o:nest-wifi-router";
           case DeviceType.MOTION:
-            if (deviceOn) return "m3rf:sensors-krx";
+            if (idDeviceTurnOn) return "m3rf:sensors-krx";
             else return "m3r:sensors-krx";
+          case DeviceType.BATTERY:
+            if (deviceOnline) {
+              const batteryLevel = Number.parseInt(state);
+              if (batteryLevel >= 90 && batteryLevel <= 100)
+                return "m3of:battery-android-full";
+              if (batteryLevel >= 70 && batteryLevel < 90)
+                return "m3of:battery-android-5";
+              if (batteryLevel >= 50 && batteryLevel < 70)
+                return "m3of:battery-android-4";
+              if (batteryLevel >= 30 && batteryLevel < 50)
+                return "m3of:battery-android-3";
+              if (batteryLevel >= 10 && batteryLevel < 30)
+                return "m3of:battery-android-2";
+              if (batteryLevel >= 5 && batteryLevel < 10)
+                return "m3of:battery-android-1";
+              if (batteryLevel < 5) return "m3of:battery-android-0";
+              return "m3of:battery-android-5";
+            } else return "m3r:battery-android-alert";
           case DeviceType.MEASUREMENT:
             return "mdi:scale-bathroom";
           case DeviceType.DOOR:
-            if (deviceOn) return "m3rf:sensor-door";
+            if (idDeviceTurnOn) return "m3rf:sensor-door";
             else return "m3r:sensor-door";
         }
       }
       if (domain == DomainType.SWITCH) {
-        if (deviceOn) return "m3rf:switch";
+        if (idDeviceTurnOn) return "m3rf:switch";
         else return "m3r:switch";
       }
     }
@@ -157,6 +176,18 @@ export function mapStateDisplay(
     //const title = getOrDefault(stateObj.attributes.media_title, "");
     // text = app_name ? " • " + app_name : "" + title ? " • " + title : "";
     text = app_name ? " • " + app_name : "";
+  }
+  if (control_type === ControlType.GENERIC && !isOffline) {
+    const device_class = getValidDeviceClass(stateObj.attributes);
+    if (device_class == DeviceType.BATTERY) {
+      const batteryLevel = stateObj.state;
+      return batteryLevel + "%";
+    }
+    // TODO: Testo Sensore porta
+    //if (device_class == DeviceType.DOOR) {
+    //  const batteryLevel = stateObj.state;
+    //  return batteryLevel + "%";
+    //}
   }
   return getStateDisplay(stateObj.state, text, is_presence_sensor);
 }

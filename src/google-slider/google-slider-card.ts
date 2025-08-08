@@ -260,7 +260,10 @@ export class GoogleSliderCard extends LitElement {
   _updateSlider(): void {
     this.style.setProperty("--bsc-percent", this.currentValue + "%");
     const percentage = this?.shadowRoot?.getElementById("percentage");
-    percentage && (percentage.innerText = Math.round(this.currentValue) + "%");
+    if (this._state && this._state.attributes.brightness)
+      percentage &&
+        (percentage.innerText = Math.round(this.currentValue) + "%");
+    else percentage && (percentage.innerText = localize("common.on"));
   }
 
   _updateColors(): void {

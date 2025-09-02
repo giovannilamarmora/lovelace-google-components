@@ -115,6 +115,10 @@
     "media_card": {
       "no_content": "Nessun contenuto in riproduzione"
     },
-    "remote": "Apri il telecomando"
+    "remote": "Apri il telecomando",
+    "cast": "Trasmetti schermo",
+    "stop_cast": "Interrompi trasmissione",
+    "open": "Apri",
+    "open_google": "Apri Google Home"
   }
 }

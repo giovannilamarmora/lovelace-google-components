@@ -239,22 +239,60 @@ export class GoogleButtonCard extends LitElement {
     }
   }
 
-  private _openMediaOverlay() {
+  _openMediaOverlay() {
     const overlay = document.createElement(
       "google-media-overlay"
     ) as GoogleMediaOverlay;
+
     overlay.hass = this.hass;
     overlay.entity = this._config.entity!;
-    overlay.style.position = "fixed";
-    overlay.style.inset = "0";
-    overlay.style.zIndex = "9999";
+
+    // Riferimento reattivo
+    const updateHass = () => {
+      if (!overlay) {
+        // Non è possibile aggiornare un elemento che non esiste
+        return;
+      }
+
+      overlay.hass = this.hass;
+      overlay.requestUpdate();
+    };
+
+    // ogni volta che il componente padre si aggiorna, chiama updateHass
+    const observer = new MutationObserver(updateHass);
+    observer.observe(this, {
+      attributes: true,
+      childList: false,
+      subtree: false,
+    });
 
     overlay.addEventListener("close-overlay", () => {
+      observer.disconnect();
       overlay.remove();
     });
 
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.zIndex = "9999";
     document.body.appendChild(overlay);
   }
+
+  //private _openMediaOverlay() {
+  //  const overlay = document.createElement(
+  //    "google-media-overlay"
+  //  ) as GoogleMediaOverlay;
+  //  overlay.hass = this.hass;
+  //  overlay.entity = this._config.entity!;
+  //  overlay.style.position = "fixed";
+  //  overlay.style.inset = "0";
+  //  overlay.style.zIndex = "9999";
+  //
+  //  overlay.addEventListener("close-overlay", () => {
+  //    overlay.remove();
+  //  });
+  //
+  //  document.body.appendChild(overlay);
+  //}
 
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;

@@ -216,7 +216,7 @@ export function getStateDisplay(
     [OnlineStates.FAN_ONLY]: localize("common.fan"),
     [OnlineStates.HEAT_COOL]: localize("common.auto"),
     [OnlineStates.IDLE]: localize("common.idle"),
-    [OnlineStates.PAUSE]: localize("common.idle"),
+    [OnlineStates.PAUSED]: localize("common.idle"),
     [OnlineStates.PLAYING]: localize("common.playing"),
   };
 

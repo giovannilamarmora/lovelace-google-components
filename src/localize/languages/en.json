@@ -115,6 +115,10 @@
     "media_card": {
       "no_content": "Nothing is playing"
     },
-    "remote": "Open Remote"
+    "remote": "Open Remote",
+    "cast": "Cast screen",
+    "stop_cast": "Stop casting",
+    "open": "Open ",
+    "open_google": "Open Google Home"
   }
 }

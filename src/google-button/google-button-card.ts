@@ -15,6 +15,7 @@ import { Action, isDeviceOn, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 import { isAirConditioning } from "../google-climate/google-climate-mapper";
+import { GoogleMediaOverlay } from "../google-media-overlay/google-media-overlay";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -110,6 +111,13 @@ export class GoogleButtonCard extends LitElement {
           entity_id: entityId,
         });
       } else {
+        if (
+          domain === "media_player" ||
+          controlType == ControlType.MEDIA_PLAYER
+        ) {
+          this._openMediaOverlay();
+          return;
+        }
         return fireEvent(this, "hass-more-info", { entityId });
       }
     }
@@ -120,6 +128,11 @@ export class GoogleButtonCard extends LitElement {
       return this.hass.callService("homeassistant", "toggle", {
         entity_id: entityId,
       });
+    }
+
+    if (domain === "media_player" || controlType == ControlType.MEDIA_PLAYER) {
+      this._openMediaOverlay();
+      return;
     }
 
     return fireEvent(this, "hass-more-info", { entityId });
@@ -224,6 +237,23 @@ export class GoogleButtonCard extends LitElement {
         fireEvent(this, "hass-more-info", { entityId });
       }
     }
+  }
+
+  private _openMediaOverlay() {
+    const overlay = document.createElement(
+      "google-media-overlay"
+    ) as GoogleMediaOverlay;
+    overlay.hass = this.hass;
+    overlay.entity = this._config.entity!;
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.zIndex = "9999";
+
+    overlay.addEventListener("close-overlay", () => {
+      overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
   }
 
   protected render(): TemplateResult {

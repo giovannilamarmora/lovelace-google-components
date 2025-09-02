@@ -110,5 +110,11 @@
   "google_lights_card": {
     "on_text": "Text for Lights ON",
     "off_text": "Text for Lights OFF"
+  },
+  "google_media_overlay": {
+    "media_card": {
+      "no_content": "Nothing is playing"
+    },
+    "remote": "Open Remote"
   }
 }

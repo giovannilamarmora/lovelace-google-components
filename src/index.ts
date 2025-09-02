@@ -12,6 +12,7 @@ import { GoogleButtonCardEditor } from "./google-button/google-button-card-edito
 import { GoogleSliderCardEditor } from "./google-slider/google-slider-card-editor";
 import { GoogleLightsCard } from "./google-lights-card/google-lights-card";
 import { GoogleLightsCardEditor } from "./google-lights-card/google-lights-card-editor";
+import { GoogleMediaOverlay } from "./google-media-overlay/google-media-overlay";
 
 /* eslint no-console: 0 */
 console.info(
@@ -73,6 +74,10 @@ if (!customElements.get("google-lights-card")) {
 
 if (!customElements.get("google-lights-card-editor")) {
   customElements.define("google-lights-cardeditor", GoogleLightsCardEditor);
+}
+
+if (!customElements.get("google-media-overlay")) {
+  customElements.define("google-media-overlay", GoogleMediaOverlay);
 }
 
 (window as any).customCards = (window as any).customCards ?? [];

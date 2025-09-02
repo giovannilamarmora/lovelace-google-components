@@ -571,7 +571,7 @@ export class GoogleMediaOverlay extends LitElement {
                 class="animate"
                 style="width: ${this._volume * 100}%"
               ></div>
-              <ha-icon icon="m3rf:volume-up"></ha-icon>
+              <ha-icon class="volume-icon" icon="m3rf:volume-up"></ha-icon>
               <span class="volume-text" id="volumeText">${volume}%</span>
             </div>`
           : html``}
@@ -591,7 +591,11 @@ export class GoogleMediaOverlay extends LitElement {
                 >${localize("google_media_overlay.cast")}</span
               >
             </div>`
-          : html`<div class="menu-card cast" @click=${this._stopCast}>
+          : html`<div
+              class="menu-card cast"
+              style="color: var(--md-sys-color-on-secondary-container)"
+              @click=${this._stopCast}
+            >
               <ha-icon icon="m3rf:cast"></ha-icon>
               <span class="menu-text"
                 >${localize("google_media_overlay.stop_cast")}</span
@@ -745,7 +749,7 @@ export class GoogleMediaOverlay extends LitElement {
       border-radius: 12px;
       padding: 12px 12px;
       font-size: 24px;
-      color: #1d1b20;
+      color: var(--md-sys-color-on-secondary-container)
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -865,14 +869,13 @@ export class GoogleMediaOverlay extends LitElement {
     }
 
     .volume-icon {
-      font-size: 24px;
-      color: #1d1b20;
+      color: var(--md-sys-color-on-secondary-container);
     }
 
     .volume-text {
       font-size: 16px;
       font-weight: 500;
-      color: #1d1b20;
+      color: var(--md-sys-color-on-secondary-container);
     }
 
     #slider {
@@ -925,8 +928,8 @@ export class GoogleMediaOverlay extends LitElement {
 
     .menu-text {
       font-size: 16px;
-      color: var(--md-sys-color-on-secondary-container)
-      font-weight: 400;
+      font-weight: 500;
+      letter-spacing: 0.2px;
     }
 
     .ripple {

@@ -3,7 +3,7 @@ export function getGoogleHomeURL(): string {
 
   if (/Android/i.test(ua)) {
     // Su Android prova ad aprire l'app nativa
-    return "intent://#Intent;package=com.google.android.apps.chromecast.app;end";
+    return "app://com.google.android.apps.chromecast.app";
   } else if (/iPhone|iPad|iPod/i.test(ua)) {
     // Su iOS usa lo schema URL dell'app
     return "googlehome://";
@@ -18,7 +18,7 @@ export function getYouTubeURL(): string {
 
   if (/Android/i.test(ua)) {
     // Su Android prova ad aprire l'app nativa
-    return "intent://#Intent;package=com.google.android.youtube;end";
+    return "app://com.google.android.youtube";
   } else if (/iPhone|iPad|iPod/i.test(ua)) {
     // Su iOS usa lo schema URL dell'app
     return "youtube://";
@@ -33,7 +33,7 @@ export function getSpotifyURL(): string {
 
   if (/Android/i.test(ua)) {
     // Intent per aprire Spotify app su Android
-    return "intent://#Intent;package=com.spotify.music;end";
+    return "app://com.spotify.music";
   } else if (/iPhone|iPad|iPod/i.test(ua)) {
     // URL schema per Spotify su iOS
     return "spotify://";

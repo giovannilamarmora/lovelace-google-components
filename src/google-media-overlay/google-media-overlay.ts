@@ -925,7 +925,7 @@ export class GoogleMediaOverlay extends LitElement {
 
     .menu-text {
       font-size: 16px;
-      color: #1d1b20;
+      color: var(--md-sys-color-on-secondary-container)
       font-weight: 400;
     }
 

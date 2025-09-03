@@ -189,6 +189,9 @@ export function mapStateDisplay(
     //  return batteryLevel + "%";
     //}
   }
+  if (control_type === ControlType.STATE && !isOffline) {
+    return stateObj.state;
+  }
   return getStateDisplay(stateObj.state, text, is_presence_sensor);
 }
 

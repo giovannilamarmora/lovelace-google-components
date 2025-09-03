@@ -1,3 +1,5 @@
+import { ControlType } from "../google-button/google-button-const";
+
 export enum OnStates {
   // Lights
   ON = "on",
@@ -53,7 +55,10 @@ export function isOfflineState(
     return false;
   }
 
-  if (control_type == "scene" && state == "unknown") {
+  if (
+    (control_type == ControlType.SCENE && state == "unknown") ||
+    control_type == ControlType.STATE
+  ) {
     return false;
   }
 

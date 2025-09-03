@@ -241,37 +241,48 @@ export class GoogleMediaOverlay extends LitElement {
 
   // Variabili per swipe
   private _touchStartX: number | null = null;
-  private _touchEndX: number | null = null;
+  private _touchCurrentX: number | null = null;
 
-  private _onTouchStart(e: TouchEvent) {
+  // Threshold di swipe (px)
+  private _swipeThreshold = 80;
+  private _swipeEdge = 50; // solo swipe da bordo sinistro
+
+  private _onTouchStart = (e: TouchEvent) => {
     this._touchStartX = e.changedTouches[0].clientX;
-  }
+    this._touchCurrentX = this._touchStartX;
+  };
 
-  private _onTouchMove(e: TouchEvent) {
-    this._touchEndX = e.changedTouches[0].clientX;
-  }
+  private _onTouchMove = (e: TouchEvent) => {
+    this._touchCurrentX = e.changedTouches[0].clientX;
 
-  private _onTouchEnd() {
-    if (this._touchStartX === null || this._touchEndX === null) return;
+    // Previeni scroll indietro solo se partenza dal bordo
+    if (this._touchStartX !== null && this._touchStartX < this._swipeEdge) {
+      e.preventDefault(); // fondamentale per iOS
+    }
+  };
 
-    const diffX = this._touchEndX - this._touchStartX;
+  private _onTouchEnd = () => {
+    if (this._touchStartX === null || this._touchCurrentX === null) return;
 
-    // se swipe > 80px da sinistra a destra => chiudi overlay
-    if (diffX > 80 && this._touchStartX < 50) {
-      this._close();
+    const diffX = this._touchCurrentX - this._touchStartX;
+
+    if (this._touchStartX < this._swipeEdge && diffX > this._swipeThreshold) {
+      this._close(); // chiudi overlay
     }
 
     this._touchStartX = null;
-    this._touchEndX = null;
-  }
+    this._touchCurrentX = null;
+  };
 
+  // Aggiungi i listener
   connectedCallback() {
     super.connectedCallback();
     this.addEventListener("touchstart", this._onTouchStart, { passive: true });
-    this.addEventListener("touchmove", this._onTouchMove, { passive: true });
+    this.addEventListener("touchmove", this._onTouchMove, { passive: false }); // passive:false per preventDefault
     this.addEventListener("touchend", this._onTouchEnd);
   }
 
+  // Rimuovi i listener
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("touchstart", this._onTouchStart);

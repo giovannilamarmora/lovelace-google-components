@@ -107,6 +107,9 @@ export class GoogleButtonCardEditor
           <mwc-list-item value="media_player">
             ${localize("google_button_card.type.media")}
           </mwc-list-item>
+          <mwc-list-item value="state">
+            ${localize("google_button_card.type.state")}
+          </mwc-list-item>
         </ha-select>
 
         <ha-textfield

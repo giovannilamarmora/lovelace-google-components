@@ -61,7 +61,8 @@
       "generic": "Generic (Switch, Button...)",
       "thermometer": "Thermometer",
       "scene": "Autonomation and scene",
-      "media": "Multimedia (Google, Alexa...)"
+      "media": "Multimedia (Google, Alexa...)",
+      "state": "State"
     },
     "dual_icon": {
       "default": "Use default icon",

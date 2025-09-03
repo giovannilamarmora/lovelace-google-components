@@ -10,6 +10,7 @@ export enum ControlType {
   THERMOMETER = "thermometer",
   SCENE = "scene",
   MEDIA_PLAYER = "media_player",
+  STATE = "state",
 }
 
 export enum DomainType {

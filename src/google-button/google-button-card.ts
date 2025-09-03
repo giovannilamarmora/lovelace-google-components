@@ -149,7 +149,7 @@ export class GoogleButtonCard extends LitElement {
 
     if (
       // as of 2025, TouchEvent constructor is not available in Firefox and Safari
-      typeof TouchEvent !== 'undefined' &&
+      typeof TouchEvent !== "undefined" &&
       event instanceof TouchEvent &&
       event.touches.length > 0
     ) {

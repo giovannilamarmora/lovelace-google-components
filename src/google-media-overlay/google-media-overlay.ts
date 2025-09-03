@@ -239,9 +239,45 @@ export class GoogleMediaOverlay extends LitElement {
     updateProgress(e);
   }
 
-  // Assicurati di cancellare la RAF quando il componente viene rimosso
+  // Variabili per swipe
+  private _touchStartX: number | null = null;
+  private _touchEndX: number | null = null;
+
+  private _onTouchStart(e: TouchEvent) {
+    this._touchStartX = e.changedTouches[0].clientX;
+  }
+
+  private _onTouchMove(e: TouchEvent) {
+    this._touchEndX = e.changedTouches[0].clientX;
+  }
+
+  private _onTouchEnd() {
+    if (this._touchStartX === null || this._touchEndX === null) return;
+
+    const diffX = this._touchEndX - this._touchStartX;
+
+    // se swipe > 80px da sinistra a destra => chiudi overlay
+    if (diffX > 80 && this._touchStartX < 50) {
+      this._close();
+    }
+
+    this._touchStartX = null;
+    this._touchEndX = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("touchstart", this._onTouchStart, { passive: true });
+    this.addEventListener("touchmove", this._onTouchMove, { passive: true });
+    this.addEventListener("touchend", this._onTouchEnd);
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeEventListener("touchstart", this._onTouchStart);
+    this.removeEventListener("touchmove", this._onTouchMove);
+    this.removeEventListener("touchend", this._onTouchEnd);
+
     if (this._animationFrameId !== null) {
       cancelAnimationFrame(this._animationFrameId);
       this._animationFrameId = null;
@@ -314,7 +350,7 @@ export class GoogleMediaOverlay extends LitElement {
 
   public _onClick(event: MouseEvent) {
     // Feedback tattile (se supportato)
-    navigator.vibrate?.(50);
+    //navigator.vibrate?.(50);
     applyRippleEffect(event.currentTarget as HTMLElement, event);
   }
 
@@ -453,6 +489,12 @@ export class GoogleMediaOverlay extends LitElement {
      filter: brightness(0.4);` // scurisce l'immagine
       : "";
     const isOff = this._isOff;
+    const theme = this.hass?.themes?.darkMode ? "dark" : "light";
+
+    this._setStyleProperty(
+      "--volume-brightness",
+      theme == "dark" ? "brightness(0.7)" : "brightness(1.05)"
+    );
 
     return html`
       <div class="overlay ${this._closing ? "closing" : ""}">
@@ -491,35 +533,43 @@ export class GoogleMediaOverlay extends LitElement {
           <div class="video-card-bg" style="${videoCardStyle}"></div>
           <ha-icon
             icon="m3r:play-circle"
-            style="${cover
-              ? "color: #e3e3e5;"
-              : "color: var(--md-sys-color-on-secondary-container)"}"
+            style="${
+              cover
+                ? "color: #e3e3e5;"
+                : "color: var(--md-sys-color-on-secondary-container)"
+            }"
             title="Play"
           ></ha-icon>
-          ${isOff
-            ? html``
-            : html`<ha-icon
-                class="pause-button"
-                icon=${isPlaying ? "mdi:pause" : "mdi:play"}
-                @click=${(e: Event) => this._togglePlay(e)}
-                title=${isPlaying ? "Pause" : "Play"}
-              >
-              </ha-icon>`}
+          ${
+            isOff
+              ? html``
+              : html`<ha-icon
+                  class="pause-button"
+                  icon=${isPlaying ? "mdi:pause" : "mdi:play"}
+                  @click=${(e: Event) => this._togglePlay(e)}
+                  title=${isPlaying ? "Pause" : "Play"}
+                >
+                </ha-icon>`
+          }
 
           <div class="video-info">
             <div
               class="video-title ellipsis"
-              style="${cover
-                ? "color: #e3e3e5;"
-                : "color: var(--md-sys-color-on-secondary-container)"}"
+              style="${
+                cover
+                  ? "color: #e3e3e5;"
+                  : "color: var(--md-sys-color-on-secondary-container)"
+              }"
             >
               ${mediaTitle}
             </div>
             <div
               class="video-channel"
-              style="${cover
-                ? "color: #e3e3e5;"
-                : "color: var(--md-sys-color-on-secondary-container)"}"
+              style="${
+                cover
+                  ? "color: #e3e3e5;"
+                  : "color: var(--md-sys-color-on-secondary-container)"
+              }"
             >
               ${mediaArtist}
             </div>
@@ -529,9 +579,11 @@ export class GoogleMediaOverlay extends LitElement {
           <div class="video-controls">
             <ha-icon
               class="${isOff ? "disabled" : ""}"
-              style="cursor: pointer; ${cover
-                ? "color: #e3e3e5;"
-                : "color: var(--md-sys-color-on-secondary-container)"}"
+              style="cursor: pointer; ${
+                cover
+                  ? "color: #e3e3e5;"
+                  : "color: var(--md-sys-color-on-secondary-container)"
+              }"
               icon="m3r:skip-previous"
               @click=${() => this._callService("media_previous_track")}
             ></ha-icon>
@@ -542,39 +594,51 @@ export class GoogleMediaOverlay extends LitElement {
             >
               <div
                 class="progress-fill"
-                style="width: ${this._progress}%"
+                style="width: ${this._progress}%; ${
+                  cover
+                    ? "background-color: #fff;"
+                    : "background-color: var(--md-sys-color-on-secondary-container);"
+                }"
               ></div>
               <div
                 class="progress-thumb"
-                style="left: calc(${this._progress}% - 6px)"
+                style="left: calc(${this._progress}% - 6px); ${
+                  cover
+                    ? "background-color: #fff; border: 1px solid #fff;"
+                    : "background-color: var(--md-sys-color-on-secondary-container); border: 1px solid var(--md-sys-color-on-secondary-container);"
+                }""
               ></div>
             </div>
             <ha-icon
               class="${isOff ? "disabled" : ""}"
-              style="cursor: pointer; ${cover
-                ? "color: #e3e3e5;"
-                : "color: var(--md-sys-color-on-secondary-container)"}"
+              style="cursor: pointer; ${
+                cover
+                  ? "color: #e3e3e5;"
+                  : "color: var(--md-sys-color-on-secondary-container)"
+              }"
               icon="m3r:skip-next"
               @click=${() => this._callService("media_next_track")}
             ></ha-icon>
           </div>
         </div>
 
-        ${volume
-          ? html`<div
-              class="volume-card"
-              @mousedown=${this._startDrag}
-              @touchstart=${this._startDrag}
-            >
-              <div
-                id="slider"
-                class="animate"
-                style="width: ${this._volume * 100}%"
-              ></div>
-              <ha-icon class="volume-icon" icon="m3rf:volume-up"></ha-icon>
-              <span class="volume-text" id="volumeText">${volume}%</span>
-            </div>`
-          : html``}
+        ${
+          volume
+            ? html`<div
+                class="volume-card"
+                @mousedown=${this._startDrag}
+                @touchstart=${this._startDrag}
+              >
+                <div
+                  id="slider"
+                  class="animate"
+                  style="width: ${this._volume * 100}%"
+                ></div>
+                <ha-icon class="volume-icon" icon="m3rf:volume-up"></ha-icon>
+                <span class="volume-text" id="volumeText">${volume}%</span>
+              </div>`
+            : html``
+        }
 
         <!-- Menu Cards -->
         <div class="menu-card remote" @click=${this._onRemoteClick}>
@@ -584,34 +648,38 @@ export class GoogleMediaOverlay extends LitElement {
           >
         </div>
 
-        ${isOff || !this._isConnected
-          ? html`<div class="menu-card link" @click=${this._turnOnDevice}>
-              <ha-icon icon="m3r:cast"></ha-icon>
-              <span class="menu-text"
-                >${localize("google_media_overlay.cast")}</span
+        ${
+          isOff || !this._isConnected
+            ? html`<div class="menu-card link" @click=${this._turnOnDevice}>
+                <ha-icon icon="m3r:cast"></ha-icon>
+                <span class="menu-text"
+                  >${localize("google_media_overlay.cast")}</span
+                >
+              </div>`
+            : html`<div
+                class="menu-card cast"
+                style="color: var(--md-sys-color-on-secondary-container)"
+                @click=${this._stopCast}
               >
-            </div>`
-          : html`<div
-              class="menu-card cast"
-              style="color: var(--md-sys-color-on-secondary-container)"
-              @click=${this._stopCast}
-            >
-              <ha-icon icon="m3rf:cast"></ha-icon>
-              <span class="menu-text"
-                >${localize("google_media_overlay.stop_cast")}</span
+                <ha-icon icon="m3rf:cast"></ha-icon>
+                <span class="menu-text"
+                  >${localize("google_media_overlay.stop_cast")}</span
+                >
+              </div>`
+        }
+        ${
+          appName == "YouTube" || appName == "Spotify"
+            ? html`<div
+                class="menu-card link"
+                @click=${(e: Event) => this.openLinks(e, appName)}
               >
-            </div>`}
-        ${appName == "YouTube" || appName == "Spotify"
-          ? html`<div
-              class="menu-card link"
-              @click=${(e: Event) => this.openLinks(e, appName)}
-            >
-              <ha-icon icon="m3rf:open-in-new"></ha-icon>
-              <span class="menu-text"
-                >${localize("google_media_overlay.open")} ${appName}</span
-              >
-            </div>`
-          : html``}
+                <ha-icon icon="m3rf:open-in-new"></ha-icon>
+                <span class="menu-text"
+                  >${localize("google_media_overlay.open")} ${appName}</span
+                >
+              </div>`
+            : html``
+        }
         <div class="menu-card link" @click=${this.openGoogleHome}>
           <ha-icon icon="m3of:home-app-logo"></ha-icon>
           <span class="menu-text"
@@ -622,18 +690,30 @@ export class GoogleMediaOverlay extends LitElement {
     `;
   }
 
+  _setStyleProperty(
+    name: string,
+    value: any,
+    transform = (value: any): string => value
+  ): void {
+    if (value !== undefined && value !== null && value !== "") {
+      this.style.setProperty(name, transform(value));
+    }
+  }
+
   static styles = css`
     .overlay {
+      font-family: "Google Sans", "Roboto", "Inter", sans-serif;
       position: fixed;
       inset: 0;
-      background: var(--card-background-color, #121212);
+      /*background: var(--card-background-color, #121212);*/
+      background:  var(--view-background,var(--lovelace-background,var(--primary-background-color)));
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px; /* aggiornato */
+      padding: 14px; /* aggiornato */
       z-index: 9999;
       animation: fadeIn 0.3s ease;
-      gap: 16px; /* spazio verticale tra blocchi */
+      gap: 18px; /* spazio verticale tra blocchi */
     }
 
     .overlay.closing {
@@ -655,8 +735,8 @@ export class GoogleMediaOverlay extends LitElement {
 
     .header-left .friendly-name {
       color: var(--primary-text-color);
-      font-size: 18px;
-      font-weight: 500;
+      font-size: 20px;
+      font-weight: 450;
     }
 
     .header-right {
@@ -702,7 +782,7 @@ export class GoogleMediaOverlay extends LitElement {
       border-radius: 28px;
       padding: 18px;
       position: relative;
-      height: 180px;
+      height: 160px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -754,6 +834,7 @@ export class GoogleMediaOverlay extends LitElement {
       display: flex;
       align-items: center;
       gap: 4px;
+      cursor: pointer;
     }
 
     .video-info {
@@ -774,7 +855,7 @@ export class GoogleMediaOverlay extends LitElement {
     }
 
     .video-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 500;
       /*color: #1d1b20;*/
       margin-bottom: 4px;
@@ -807,7 +888,7 @@ export class GoogleMediaOverlay extends LitElement {
 
     .progress-bar {
       flex: 1;
-      height: 6px;
+      height: 2px;
       background-color: #ccc;
       border-radius: 50px;
       position: relative;
@@ -817,7 +898,8 @@ export class GoogleMediaOverlay extends LitElement {
 
     .progress-fill {
       height: 100%;
-      background-color: #6750a4;
+      /*background-color: #6750a4;
+      background-color: var(--md-sys-color-on-secondary-container);*/
       width: 0%;
       transition: width 0s linear;
       border-radius: 50px 0px 0px 50px;
@@ -830,8 +912,8 @@ export class GoogleMediaOverlay extends LitElement {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background-color: #fff;
-      border: 2px solid #6750a4;
+      background-color: var(--md-sys-color-on-secondary-container);
+      border: 1px solid var(--md-sys-color-on-secondary-container);
       pointer-events: none; /* il drag si gestisce sul parent */
     }
 
@@ -857,7 +939,7 @@ export class GoogleMediaOverlay extends LitElement {
       position: absolute;
       inset: 0;
       background-color: var(--md-sys-color-secondary-container);
-      filter: brightness(1.05); /* schiarisce solo il background */
+      filter: var(--volume-brightness); /* schiarisce solo il background */
       border-radius: inherit;
       z-index: 0; /* resta dietro */
     }
@@ -927,9 +1009,9 @@ export class GoogleMediaOverlay extends LitElement {
     }
 
     .menu-text {
-      font-size: 16px;
-      font-weight: 500;
-      letter-spacing: 0.2px;
+      font-size: 15px;
+      font-weight: 410;
+      letter-spacing: 0.1px;
     }
 
     .ripple {

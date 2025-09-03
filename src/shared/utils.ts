@@ -73,3 +73,26 @@ export enum Action {
 export function getOrDefault<T>(value: T | undefined | null, defValue: T): T {
   return value !== undefined && value !== null ? value : defValue;
 }
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+
+  // Verifica se è una data valida
+  if (isNaN(date.getTime())) {
+    return dateString; // fallback: puoi mettere anche "" o un testo tipo "Data non valida"
+  }
+
+  const formatted = new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+
+  // Capitalizza il mese (Intl lo mette in minuscolo, es. "set")
+  return formatted.replace(
+    /([a-zàèéìòù]+)/,
+    (m) => m.charAt(0).toUpperCase() + m.slice(1)
+  );
+}

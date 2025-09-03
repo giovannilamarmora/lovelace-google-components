@@ -8,6 +8,7 @@ import { adjustTempAuto } from "../google-climate/google-climate-mapper";
 import { localize } from "../localize/localize";
 import { GoogleDevice } from "./google_model";
 import {
+  formatDate,
   getOrDefault,
   isDeviceOn,
   isDeviceOnline,
@@ -155,13 +156,6 @@ export function mapStateDisplay(
 ) {
   let text = "";
   if (control_type === ControlType.THERMOMETER && !isOffline)
-    //text = stateObj.attributes.current_temperature
-    //  ? " • " +
-    //    (fix_temperature
-    //      ? stateObj.attributes.current_temperature * 5
-    //      : stateObj.attributes.current_temperature) +
-    //    "°"
-    //  : "";
     text = stateObj.attributes.current_temperature
       ? " • " +
         adjustTempAuto(
@@ -173,8 +167,6 @@ export function mapStateDisplay(
   if (control_type === ControlType.MEDIA_PLAYER && !isOffline) {
     if (!isDeviceOn(stateObj.state)) return "";
     const app_name = getOrDefault(stateObj.attributes.app_name, "");
-    //const title = getOrDefault(stateObj.attributes.media_title, "");
-    // text = app_name ? " • " + app_name : "" + title ? " • " + title : "";
     text = app_name ? " • " + app_name : "";
   }
   if (control_type === ControlType.GENERIC && !isOffline) {
@@ -191,6 +183,10 @@ export function mapStateDisplay(
   }
   if (control_type === ControlType.STATE && !isOffline) {
     return stateObj.state;
+  }
+  const domain = stateObj.entity_id!.split(".")[0];
+  if (domain == "event") {
+    return formatDate(stateObj.state);
   }
   return getStateDisplay(stateObj.state, text, is_presence_sensor);
 }

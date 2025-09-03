@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "custom-card-helpers";
+import { ActionConfig, LovelaceCardConfig } from "custom-card-helpers";
 import { Action } from "../shared/utils";
 
 export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
@@ -65,6 +65,6 @@ export interface GoogleButtonCardConfig extends LovelaceCardConfig {
   fix_temperature?: "true" | "false" | "auto";
   use_material_color?: boolean;
   use_default_toggle?: boolean;
-  tap_action?: Action;
-  hold_action?: Action;
+  tap_action?: ActionConfig | Action;
+  hold_action?: ActionConfig | Action;
 }

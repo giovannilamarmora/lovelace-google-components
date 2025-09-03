@@ -152,18 +152,33 @@ export function mapStateDisplay(
   control_type: string,
   isOffline: boolean,
   fix_temperature: "true" | "false" | "auto" = "false",
-  is_presence_sensor: boolean = false
+  is_presence_sensor: boolean = false,
+  is_climate_card: boolean = false
 ) {
   let text = "";
-  if (control_type === ControlType.THERMOMETER && !isOffline)
-    text = stateObj.attributes.current_temperature
-      ? " • " +
+  if (control_type === ControlType.THERMOMETER && !isOffline) {
+    const isOn = isDeviceOn(stateObj.state);
+    const isOffAndHasTemperature = !isOn && stateObj.attributes.temperature;
+    if (isOn || isOffAndHasTemperature || !is_climate_card)
+      text = stateObj.attributes.current_temperature
+        ? " • " +
+          adjustTempAuto(
+            fix_temperature,
+            stateObj.attributes.current_temperature
+          ) +
+          "°"
+        : "";
+    else
+      return (
+        localize("common.indoor") +
+        " • " +
         adjustTempAuto(
           fix_temperature,
           stateObj.attributes.current_temperature
         ) +
         "°"
-      : "";
+      );
+  }
   if (control_type === ControlType.MEDIA_PLAYER && !isOffline) {
     if (!isDeviceOn(stateObj.state)) return "";
     const app_name = getOrDefault(stateObj.attributes.app_name, "");

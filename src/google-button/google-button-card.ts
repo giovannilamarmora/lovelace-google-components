@@ -2,7 +2,11 @@ import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { localize } from "../localize/localize";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
-import { fireEvent } from "custom-card-helpers";
+import {
+  ActionConfig,
+  fireEvent,
+  handleActionConfig,
+} from "custom-card-helpers";
 import { HomeAssistant } from "../ha-types";
 import { applyRippleEffect } from "../utils";
 import {
@@ -122,6 +126,21 @@ export class GoogleButtonCard extends LitElement {
       }
     }
 
+    // Check if tap_action is defined and is an ActionConfig object
+    if (
+      this._config.tap_action &&
+      typeof this._config.tap_action === "object"
+    ) {
+      // Use the new ActionConfig system
+      handleActionConfig(
+        this,
+        this.hass as any,
+        { entity: entityId },
+        this._config.tap_action as ActionConfig
+      );
+      return;
+    }
+
     const actionOnTap = this._config.tap_action;
 
     if (actionOnTap === Action.CLICK) {
@@ -232,6 +251,20 @@ export class GoogleButtonCard extends LitElement {
         });
       }
     } else {
+      // Check if hold_action is defined and is an ActionConfig object
+      if (
+        this._config.hold_action &&
+        typeof this._config.hold_action === "object"
+      ) {
+        // Use the new ActionConfig system
+        handleActionConfig(
+          this,
+          this.hass as any,
+          { entity: entityId },
+          this._config.hold_action as ActionConfig
+        );
+        return;
+      }
       // Se non usa il comportamento automatico, usa quello definito in hold_action
       const actionOnHold = this._config.hold_action;
       if (actionOnHold === Action.CLICK) {

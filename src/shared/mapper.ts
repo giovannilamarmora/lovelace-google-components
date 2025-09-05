@@ -24,6 +24,25 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
   const useDefault = config.use_default_icon ?? true;
   const idDeviceTurnOn = isDeviceOn(state);
 
+  // 🟢 Supporto template stile [[[ ... ]]]
+  if (
+    typeof config.icon === "string" &&
+    config.icon.trim().startsWith("[[[") &&
+    config.icon.trim().endsWith("]]]")
+  ) {
+    try {
+      const code = config.icon.trim().slice(3, -3); // rimuove [[[ e ]]]
+      const fn = new Function("entity", "state", "hass", code);
+      const result = fn(stateObj, state, hass);
+      if (result && typeof result === "string") {
+        return result;
+      }
+    } catch (e) {
+      console.warn("Error evaluating icon template:", e);
+      return "mdi:alert-circle-outline";
+    }
+  }
+
   if (!useDefault) {
     // Se non si usa l'icona di default, si segue la configurazione personalizzata
     if (config.dual_icon) {

@@ -28,7 +28,22 @@ export const DEFAULT_CONFIG: GoogleControlCardConfig = {
 
 export function googleControlTemplate(config: GoogleControlCardConfig) {
   const name = config.name;
-  const icon = config.icon;
+  let icon = config.icon;
+  // Se è una template string [[[ ... ]]], gestiscila correttamente
+  if (
+    typeof icon === "string" &&
+    icon.trim().startsWith("[[[") &&
+    icon.trim().endsWith("]]]")
+  ) {
+    // Indenta ogni riga del template di 2 spazi
+    const indented = icon
+      .trim()
+      .split("\n")
+      .map((line) => "  " + line) // aggiunge 2 spazi davanti
+      .join("\n");
+
+    icon = `|\n${indented}`;
+  }
   const entity =
     config.use_card_entity && config.entity ? "entity: " + config.entity : "";
   return `type: custom:button-card

@@ -459,9 +459,6 @@ export class GoogleSliderCard extends LitElement {
     const nameMargin = "-20px";
     const iconMargin = "-10px";
     const percentageMargin = "-20px";
-    //const nameMargin = '-18%';
-    //const iconMargin = '-2%';
-    //const percentageMargin = '-18%';
 
     if (isOffline) {
       // Offline, tema light
@@ -482,9 +479,6 @@ export class GoogleSliderCard extends LitElement {
     } else if (isOn) {
       // Acceso, tema dark
       if (theme === "dark") {
-        //nameColor = iconColor = percentageColor = "#ffe083";
-        //sliderColor = "#6d5300";
-        //containerColor = "#333029";
         nameColor = this.color.dark.on.light.title;
         iconColor = this.color.dark.on.light.icon;
         percentageColor = this.color.dark.on.light.percentage;
@@ -492,9 +486,6 @@ export class GoogleSliderCard extends LitElement {
         containerColor = this.color.dark.on.light.background;
         // Acceso, tema light
       } else {
-        //nameColor = iconColor = percentageColor = "#745b01";
-        //sliderColor = "#ffbf00";
-        //containerColor = "#feefc8";
         nameColor = this.color.light.on.light.title;
         iconColor = this.color.light.on.light.icon;
         percentageColor = this.color.light.on.light.percentage;
@@ -504,10 +495,6 @@ export class GoogleSliderCard extends LitElement {
     } else {
       // Spento, tema dark
       if (theme === "dark") {
-        //nameColor = iconColor = percentageColor = '#9e9e9e';
-        //nameColor = iconColor = percentageColor = "#e3e3e5";
-        //sliderColor = "#cccccc";
-        //containerColor = "#292a2e";
         nameColor = this.color.dark.off.light.title;
         iconColor = this.color.dark.off.light.icon;
         percentageColor = this.color.dark.off.light.percentage;
@@ -521,46 +508,6 @@ export class GoogleSliderCard extends LitElement {
         containerColor = this.color.light.off.light.background;
       }
     }
-
-    //// On, Dark Theme
-    //if (isOn && theme === "dark") {
-    //  //nameColor = iconColor = percentageColor = "#ffe083";
-    //  //sliderColor = "#6d5300";
-    //  //containerColor = "#333029";
-    //  nameColor = this.color.dark.on.light.title;
-    //  iconColor = this.color.dark.on.light.icon;
-    //  percentageColor = this.color.dark.on.light.percentage;
-    //  sliderColor = this.color.dark.on.light.slider;
-    //  containerColor = this.color.dark.on.light.background;
-    //  // On, Light Theme
-    //} else if (isOn) {
-    //  //nameColor = iconColor = percentageColor = "#745b01";
-    //  //sliderColor = "#ffbf00";
-    //  //containerColor = "#feefc8";
-    //  nameColor = this.color.light.on.light.title;
-    //  iconColor = this.color.light.on.light.icon;
-    //  percentageColor = this.color.light.on.light.percentage;
-    //  sliderColor = this.color.light.on.light.slider;
-    //  containerColor = this.color.light.on.light.background;
-    //  // Off, Dark Theme
-    //} else if (theme === "dark") {
-    //  //nameColor = iconColor = percentageColor = '#9e9e9e';
-    //  //nameColor = iconColor = percentageColor = "#e3e3e5";
-    //  //sliderColor = "#cccccc";
-    //  //containerColor = "#292a2e";
-    //  nameColor = this.color.dark.off.light.title;
-    //  iconColor = this.color.dark.off.light.icon;
-    //  percentageColor = this.color.dark.off.light.percentage;
-    //  sliderColor = this.color.dark.off.light.slider;
-    //  containerColor = this.color.dark.off.light.background;
-    //  // On, Light Theme
-    //} else {
-    //  nameColor = this.color.light.off.light.title;
-    //  iconColor = this.color.light.off.light.icon;
-    //  percentageColor = this.color.light.off.light.percentage;
-    //  sliderColor = this.color.light.off.light.slider;
-    //  containerColor = this.color.light.off.light.background;
-    //}
 
     this._setStyleProperty("--bsc-name-color", nameColor);
     this._setStyleProperty("--bsc-icon-color", iconColor);
@@ -583,7 +530,7 @@ export class GoogleSliderCard extends LitElement {
       (h) => `${h}px`
     );
 
-    const iconName =
+    let iconName =
       this._config.icon == undefined ||
       this._config.icon === "m3of:lightbulb" ||
       this._config.icon === "m3r:lightbulb"
@@ -591,6 +538,25 @@ export class GoogleSliderCard extends LitElement {
           ? "m3of:lightbulb"
           : "m3r:lightbulb"
         : this._config.icon;
+
+    // 🟢 Supporto template stile [[[ ... ]]]
+    if (
+      typeof this._config.icon === "string" &&
+      this._config.icon.trim().startsWith("[[[") &&
+      this._config.icon.trim().endsWith("]]]")
+    ) {
+      try {
+        const code = this._config.icon.trim().slice(3, -3); // rimuove [[[ e ]]]
+        const fn = new Function("entity", "state", "hass", code);
+        const result = fn(state, state?.state, this.hass);
+        if (result && typeof result === "string") {
+          iconName = result;
+        }
+      } catch (e) {
+        console.warn("Error evaluating icon template:", e);
+        iconName = "mdi:alert-circle-outline";
+      }
+    }
 
     return html`
       <ha-card

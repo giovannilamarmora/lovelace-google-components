@@ -363,7 +363,7 @@ export class GoogleClimateCard extends LitElement {
                   class="temperature-display"
                   id="tempDisplay"
                   style="${isOn || isOffAndHasTemperature
-                    ? "font-size: 72px;"
+                    ? ""
                     : "font-size: 65px; margin-bottom: 7px;"}"
                 >
                   ${isOn || isOffAndHasTemperature

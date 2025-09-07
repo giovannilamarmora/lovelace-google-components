@@ -10,6 +10,8 @@ export enum ControlType {
   SCENE = "scene",
   MEDIA_PLAYER = "media_player",
   STATE = "state",
+  ACTION = "action",
+  APP_VERSION = "app_version",
 }
 
 export enum DomainType {
@@ -24,6 +26,7 @@ export enum DeviceType {
   CONNECTIVITY = "connectivity",
   MEASUREMENT = "measurement",
   BATTERY = "battery",
+  NONE = "none",
 }
 
 function isDeviceType(value: string): value is DeviceType {

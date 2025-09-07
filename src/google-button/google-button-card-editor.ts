@@ -30,28 +30,55 @@ export class GoogleButtonCardEditor
     this._configLoaded = true;
   }
 
-  private _valueChanged = (ev: Event): void => {
+  private _valueChanged(ev: CustomEvent): void {
+    if (!this._config) return;
     const target = ev.target as any;
     const configValue = target.getAttribute("configValue");
-
-    const value =
-      ev instanceof CustomEvent && ev.detail?.value !== undefined
-        ? ev.detail.value
-        : (target.checked ?? target.value);
-
-    if (!configValue || this._config[configValue] === value) return;
-
-    this._config = {
+    const newConfig = {
       ...this._config,
-      [configValue]: value,
+      [configValue]: target.checked ?? target.value,
     };
 
+    // 👇 rimuovi entity se non serve più
+    if (
+      newConfig.control_type === ControlType.APP_VERSION ||
+      newConfig.control_type === ControlType.ACTION
+    ) {
+      delete newConfig.entity;
+    }
+
+    if (newConfig.use_default_toggle) {
+      delete newConfig.tap_action;
+      delete newConfig.hold_action;
+    }
+
     this.dispatchEvent(
-      new CustomEvent("config-changed", {
-        detail: { config: this._config },
-      })
+      new CustomEvent("config-changed", { detail: { config: newConfig } })
     );
-  };
+  }
+
+  //private _valueChanged = (ev: Event): void => {
+  //  const target = ev.target as any;
+  //  const configValue = target.getAttribute("configValue");
+  //
+  //  const value =
+  //    ev instanceof CustomEvent && ev.detail?.value !== undefined
+  //      ? ev.detail.value
+  //      : (target.checked ?? target.value);
+  //
+  //  if (!configValue || this._config[configValue] === value) return;
+  //
+  //  this._config = {
+  //    ...this._config,
+  //    [configValue]: value,
+  //  };
+  //
+  //  this.dispatchEvent(
+  //    new CustomEvent("config-changed", {
+  //      detail: { config: this._config },
+  //    })
+  //  );
+  //};
 
   private _entityChanged(ev: CustomEvent): void {
     const value = ev.detail.value;
@@ -149,6 +176,13 @@ export class GoogleButtonCardEditor
     }
 
     this._config.use_default_icon = this._config.use_default_icon ?? true;
+    if (
+      this._config.control_type == ControlType.APP_VERSION ||
+      this._config.control_type == ControlType.ACTION
+    )
+      this._config.use_default_icon = false;
+    if (this._config.control_type == ControlType.ACTION)
+      this._config.use_default_toggle = false;
     this._config.use_default_toggle = this._config.use_default_toggle ?? true;
     this._config.use_default_text = this._config.use_default_text ?? true;
 
@@ -176,6 +210,12 @@ export class GoogleButtonCardEditor
           <mwc-list-item value="state">
             ${localize("google_button_card.type.state")}
           </mwc-list-item>
+          <mwc-list-item value="action">
+            ${localize("google_button_card.type.action")}
+          </mwc-list-item>
+          <mwc-list-item value="app_version">
+            ${localize("google_button_card.type.app_version")}
+          </mwc-list-item>
         </ha-select>
 
         <ha-textfield
@@ -186,83 +226,88 @@ export class GoogleButtonCardEditor
           placeholder="e.g. Cooler"
         ></ha-textfield>
 
-        <ha-entity-picker
-          label="Entity"
-          .value=${this._config.entity || ""}
-          .hass=${this.hass}
-          .includeDomains=${this.setEntityFilter()}
-          allow-custom-entity
-          configValue="entity"
-          @value-changed=${this._entityChanged}
-          required
-        ></ha-entity-picker>
-
-        <div class="switch-row">
-          <span class="switch-label"
-            >${localize("google_button_card.dual_icon.default")}</span
-          >
-          <ha-switch
-            .checked=${this._config.use_default_icon ?? true}
-            configValue="use_default_icon"
-            @change=${this._valueChanged}
-          />
-        </div>
-
+        ${this._config.control_type == ControlType.APP_VERSION ||
+        this._config.control_type == ControlType.ACTION
+          ? html``
+          : html`<ha-entity-picker
+              label="Entity"
+              .value=${this._config.entity || ""}
+              .hass=${this.hass}
+              .includeDomains=${this.setEntityFilter()}
+              allow-custom-entity
+              configValue="entity"
+              @value-changed=${this._entityChanged}
+              required
+            ></ha-entity-picker>`}
+        ${this._config.control_type == ControlType.APP_VERSION ||
+        this._config.control_type == ControlType.ACTION
+          ? html``
+          : html`<div class="switch-row">
+              <span class="switch-label"
+                >${localize("google_button_card.dual_icon.default")}</span
+              >
+              <ha-switch
+                .checked=${this._config.use_default_icon ?? true}
+                configValue="use_default_icon"
+                @change=${this._valueChanged}
+              />
+            </div>`}
         ${this._config.use_default_icon
           ? html``
-          : html`
-              <div class="switch-row">
-                <span class="switch-label"
-                  >${localize("google_button_card.dual_icon.options")}</span
-                >
-                <ha-switch
-                  .checked=${this._config.dual_icon ?? false}
-                  configValue="dual_icon"
-                  @change=${this._valueChanged}
-                />
-              </div>
-
-              ${this._config.dual_icon
-                ? html`
-                    <div class="dual-icons">
-                      <ha-icon-picker
-                        label="Icon ON"
-                        .value=${this._config.icon_on || ""}
-                        configValue="icon_on"
-                        @value-changed=${this._valueChanged}
-                        placeholder="mdi:lightbulb-on"
-                      ></ha-icon-picker>
-                      <ha-icon-picker
-                        label="Icon OFF"
-                        .value=${this._config.icon_off || ""}
-                        configValue="icon_off"
-                        @value-changed=${this._valueChanged}
-                        placeholder="mdi:lightbulb-off"
-                      ></ha-icon-picker>
-                    </div>
-                  `
-                : html`
+          : html`${this._config.control_type == ControlType.APP_VERSION ||
+            this._config.control_type == ControlType.ACTION
+              ? html``
+              : html`<div class="switch-row">
+                  <span class="switch-label"
+                    >${localize("google_button_card.dual_icon.options")}</span
+                  >
+                  <ha-switch
+                    .checked=${this._config.dual_icon ?? false}
+                    configValue="dual_icon"
+                    @change=${this._valueChanged}
+                  />
+                </div>`}
+            ${this._config.dual_icon
+              ? html`
+                  <div class="dual-icons">
                     <ha-icon-picker
-                      label="Icon"
-                      .value=${this._config.icon || ""}
-                      configValue="icon"
+                      label="Icon ON"
+                      .value=${this._config.icon_on || ""}
+                      configValue="icon_on"
                       @value-changed=${this._valueChanged}
-                      placeholder="mdi:lightbulb"
-                    />
-                  `}
-            `}
-
-        <div class="switch-row">
-          <span class="switch-label"
-            >${localize("google_button_card.dual_text.default")}</span
-          >
-          <ha-switch
-            .checked=${this._config.use_default_text ?? true}
-            configValue="use_default_text"
-            @change=${this._valueChanged}
-          />
-        </div>
-
+                      placeholder="mdi:lightbulb-on"
+                    ></ha-icon-picker>
+                    <ha-icon-picker
+                      label="Icon OFF"
+                      .value=${this._config.icon_off || ""}
+                      configValue="icon_off"
+                      @value-changed=${this._valueChanged}
+                      placeholder="mdi:lightbulb-off"
+                    ></ha-icon-picker>
+                  </div>
+                `
+              : html`
+                  <ha-icon-picker
+                    label="Icon"
+                    .value=${this._config.icon || ""}
+                    configValue="icon"
+                    @value-changed=${this._valueChanged}
+                    placeholder="mdi:lightbulb"
+                  />
+                `} `}
+        ${this._config.control_type == ControlType.APP_VERSION ||
+        this._config.control_type == ControlType.ACTION
+          ? html``
+          : html`<div class="switch-row">
+              <span class="switch-label"
+                >${localize("google_button_card.dual_text.default")}</span
+              >
+              <ha-switch
+                .checked=${this._config.use_default_text ?? true}
+                configValue="use_default_text"
+                @change=${this._valueChanged}
+              />
+            </div>`}
         ${this._config.use_default_text
           ? html``
           : html`
@@ -322,17 +367,18 @@ export class GoogleButtonCardEditor
                   ${localize("google_climate_card.auto")}
                 </mwc-list-item>
               </ha-select>`}
-
-        <div class="switch-row">
-          <span class="switch-label"
-            >${localize("google_button_card.toggle.title")}</span
-          >
-          <ha-switch
-            .checked=${this._config.use_default_toggle ?? true}
-            configValue="use_default_toggle"
-            @change=${this._valueChanged}
-          />
-        </div>
+        ${this._config.control_type == ControlType.ACTION
+          ? html``
+          : html`<div class="switch-row">
+              <span class="switch-label"
+                >${localize("google_button_card.toggle.title")}</span
+              >
+              <ha-switch
+                .checked=${this._config.use_default_toggle ?? true}
+                configValue="use_default_toggle"
+                @change=${this._valueChanged}
+              />
+            </div>`}
         ${this._config.use_default_toggle
           ? html``
           : html`<ha-select

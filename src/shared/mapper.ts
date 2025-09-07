@@ -5,6 +5,7 @@ import {
   getValidDeviceClass,
 } from "../google-button/google-button-const";
 import { adjustTempAuto } from "../google-climate/google-climate-mapper";
+import { CARD_VERSION } from "../google-slider/const";
 import { localize } from "../localize/localize";
 import { GoogleDevice } from "./google_model";
 import {
@@ -175,6 +176,10 @@ export function mapStateDisplay(
   is_presence_sensor: boolean = false,
   is_climate_card: boolean = false
 ) {
+  if (control_type === ControlType.APP_VERSION) {
+    return "V".concat(CARD_VERSION);
+  }
+
   let text = "";
   if (control_type === ControlType.THERMOMETER && !isOffline) {
     const isOn = isDeviceOn(stateObj.state);
@@ -220,7 +225,9 @@ export function mapStateDisplay(
   if (control_type === ControlType.STATE && !isOffline) {
     return stateObj.state;
   }
-  const domain = stateObj.entity_id!.split(".")[0];
+  const domain = isNullOrEmpty(stateObj)
+    ? ""
+    : stateObj.entity_id!.split(".")[0];
   if (domain == "event") {
     return formatDate(stateObj.state);
   }

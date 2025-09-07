@@ -27,7 +27,6 @@ export const DEFAULT_CONFIG: GoogleSliderCardConfig = {
 };
 export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
   type: "custom:google-button-card",
-  attribute: DEFAULT_ATTRIBUTE,
   hold_time: HOLD_TIME,
   settle_time: SETTLE_TIME,
   min_slide_time: MIN_SLIDE_TIME,

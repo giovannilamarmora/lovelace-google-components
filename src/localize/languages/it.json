@@ -63,7 +63,9 @@
       "thermometer": "Termometro",
       "scene": "Autonomazioni e scene",
       "media": "Multimedia (Google, Alexa...)",
-      "state": "Stato"
+      "state": "Stato",
+      "action": "Azioni",
+      "app_version": "Versione Google Components"
     },
     "dual_icon": {
       "default": "Usa Icona di default",

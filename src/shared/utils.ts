@@ -96,3 +96,27 @@ export function formatDate(dateString: string): string {
     (m) => m.charAt(0).toUpperCase() + m.slice(1)
   );
 }
+
+export function isNullOrEmpty(value: any): boolean {
+  if (value === null || value === undefined) {
+    return true;
+  }
+
+  if (typeof value === "string") {
+    return value.trim().length === 0;
+  }
+
+  if (typeof value === "number") {
+    return value === 0 || Number.isNaN(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+
+  if (typeof value === "object") {
+    return Object.keys(value).length === 0;
+  }
+
+  return false;
+}

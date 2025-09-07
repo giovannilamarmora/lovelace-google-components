@@ -9,7 +9,7 @@ import {
 import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
 import { google_color } from "../shared/color";
-import { isDeviceOn, isOfflineState } from "../shared/utils";
+import { isDeviceOn, isNullOrEmpty, isOfflineState } from "../shared/utils";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 import {
   adjustNewTempAuto,
@@ -267,11 +267,15 @@ export class GoogleClimateCard extends LitElement {
       stateObj,
       "thermometer",
       isOffline,
-      this._config.fix_temperature
+      this._config.fix_temperature,
+      false,
+      true
     );
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
     const isOn = isDeviceOn(stateObj.state);
     const isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
+    const isOffAndHasTemperature =
+      !isOn && !isNullOrEmpty(stateObj.attributes.temperature);
 
     this.setColorCard(
       this._config.use_material_color,
@@ -336,36 +340,53 @@ export class GoogleClimateCard extends LitElement {
               </div>
             `
           : html`
-              <div class="temperature-control">
-                <button
-                  class="control-btn minus-btn"
-                  @click=${() =>
-                    this._adjustTemp(
-                      -this._config.decrease_temp |
-                        -DEFAULT_CONFIG.decrease_temp
-                    )}
+              <div
+                class="temperature-control"
+                style="${isOn || isOffAndHasTemperature
+                  ? "justify-content: space-between;"
+                  : "justify-content: center;"}"
+              >
+                ${isOn || isOffAndHasTemperature
+                  ? html`<button
+                      class="control-btn minus-btn"
+                      @click=${() =>
+                        this._adjustTemp(
+                          -this._config.decrease_temp |
+                            -DEFAULT_CONFIG.decrease_temp
+                        )}
+                    >
+                      −
+                    </button>`
+                  : html``}
+
+                <div
+                  class="temperature-display"
+                  id="tempDisplay"
+                  style="${isOn || isOffAndHasTemperature
+                    ? "font-size: 72px;"
+                    : "font-size: 65px; margin-bottom: 7px;"}"
                 >
-                  −
-                </button>
-                <div class="temperature-display" id="tempDisplay">
-                  ${
-                    adjustTempAuto(
-                      this._config.fix_temperature!,
-                      stateObj.attributes.temperature
-                    ) //this._config.fix_temperature
-                    //? stateObj.attributes.temperature * 5
-                    //: stateObj.attributes.temperature
-                  }
+                  ${isOn || isOffAndHasTemperature
+                    ? adjustTempAuto(
+                        this._config.fix_temperature!,
+                        stateObj.attributes.temperature
+                      ) //this._config.fix_temperature
+                    : //? stateObj.attributes.temperature * 5
+                      //: stateObj.attributes.temperature
+                      localize("common.off")}
                 </div>
-                <button
-                  class="control-btn plus-btn"
-                  @click=${() =>
-                    this._adjustTemp(
-                      this._config.decrease_temp | DEFAULT_CONFIG.increase_temp
-                    )}
-                >
-                  +
-                </button>
+                ${isOn || isOffAndHasTemperature
+                  ? html`<button
+                      class="control-btn plus-btn"
+                      @click=${() =>
+                        this._adjustTemp(
+                          this._config.decrease_temp |
+                            DEFAULT_CONFIG.increase_temp
+                        )}
+                    >
+                      +
+                    </button>`
+                  : html``}
               </div>
 
               <div class="internal-temp">

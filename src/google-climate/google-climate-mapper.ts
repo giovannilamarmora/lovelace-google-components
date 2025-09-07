@@ -1,9 +1,10 @@
-import { OnStates } from "../shared/utils";
+import { isNullOrEmpty, OnStates } from "../shared/utils";
 
 export function adjustTempAuto(
   fix_temperature: "true" | "false" | "auto",
   temperature: number
 ) {
+  if (isNullOrEmpty(temperature)) return temperature;
   if (fix_temperature == "true") {
     return temperature * 5;
   } else if (fix_temperature == "auto") {
@@ -18,6 +19,7 @@ export function adjustNewTempAuto(
   fix_temperature: "true" | "false" | "auto",
   temperature: number
 ) {
+  if (isNullOrEmpty(temperature)) return temperature;
   if (fix_temperature == "true") {
     return temperature / 5;
   } else if (fix_temperature == "auto") {

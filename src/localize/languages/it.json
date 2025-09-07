@@ -79,7 +79,10 @@
       "press": "Azione al clic",
       "hold": "Azione alla pressione prolungata",
       "click": "Clic singolo (Accensione/Spegnimento)",
-      "info": "Visualizza informazioni"
+      "info": "Visualizza informazioni",
+      "navigate": "Naviga",
+      "url": "URL",
+      "none": "Nessuna azione"
     }
   },
   "google_control_card": {

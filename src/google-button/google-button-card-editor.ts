@@ -1,10 +1,15 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
+import {
+  ActionConfig,
+  HomeAssistant,
+  LovelaceCardEditor,
+  NavigateActionConfig,
+  UrlActionConfig,
+} from "custom-card-helpers";
 import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { localize } from "../localize/localize";
 import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
-import { Action } from "../shared/utils";
 
 @customElement("google-button-card-editor")
 export class GoogleButtonCardEditor
@@ -13,9 +18,16 @@ export class GoogleButtonCardEditor
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @state() private _config: GoogleButtonCardConfig = DEFAULT_BTN_CONFIG;
+  @state() private _configLoaded: boolean = false;
 
   public setConfig(config: GoogleButtonCardConfig): void {
-    this._config = { ...config };
+    this._config = {
+      ...DEFAULT_BTN_CONFIG,
+      ...config,
+      tap_action: config.tap_action,
+      hold_action: config.hold_action,
+    };
+    this._configLoaded = true;
   }
 
   private _valueChanged = (ev: Event): void => {
@@ -52,6 +64,60 @@ export class GoogleButtonCardEditor
       new CustomEvent("config-changed", {
         detail: { config: this._config },
       })
+    );
+  }
+  // Ritorna "toggle" se assente; se è stringa la usa, se è oggetto usa .action
+  private _getActionValue(a?: any): string {
+    if (!a) return "toggle";
+    return typeof a === "string" ? a : (a.action ?? "toggle");
+  }
+
+  private _setAction(which: "tap_action" | "hold_action", action: string) {
+    if (!this._configLoaded) return;
+
+    const defaults: Record<string, any> = {
+      toggle: { action: "toggle" },
+      "more-info": { action: "more-info" },
+      navigate: { action: "navigate", navigation_path: "/" },
+      url: { action: "url", url_path: "" },
+      none: { action: "none" },
+    };
+    const next = defaults[action] || { action };
+
+    this._config = { ...this._config, [which]: next };
+    this.dispatchEvent(
+      new CustomEvent("config-changed", { detail: { config: this._config } })
+    );
+  }
+
+  private _onTapSelected = (ev: CustomEvent) => {
+    const value = (ev.target as any).value as string;
+    if (value == this._config.tap_action?.action) return;
+    this._setAction("tap_action", value);
+  };
+
+  private _onHoldSelected = (ev: CustomEvent) => {
+    const value = (ev.target as any).value as string;
+    if (value == this._config.hold_action?.action) return;
+    this._setAction("hold_action", value);
+  };
+
+  private _setActionValue(
+    which: "tap_action" | "hold_action",
+    key: string,
+    value: any
+  ) {
+    let action = this._config[which];
+
+    if (typeof action === "string") {
+      action = { action } as any as ActionConfig; // cast a ActionConfig
+    }
+
+    const updated = { ...action, [key]: value };
+
+    this._config = { ...this._config, [which]: updated };
+    this.dispatchEvent(
+      new CustomEvent("config-changed", { detail: { config: this._config } })
     );
   }
 
@@ -271,34 +337,93 @@ export class GoogleButtonCardEditor
           ? html``
           : html`<ha-select
                 label="${localize("google_button_card.toggle.press")}"
-                .value=${this._config.tap_action || Action.CLICK}
-                configValue="tap_action"
-                @selected=${this._valueChanged}
+                .value=${this._getActionValue(this._config.tap_action)}
+                @selected=${this._onTapSelected}
                 @closed=${(ev: Event) => ev.stopPropagation()}
               >
-                <mwc-list-item value="${Action.CLICK}">
+                <mwc-list-item value="toggle">
                   ${localize("google_button_card.toggle.click")}
                 </mwc-list-item>
-                <mwc-list-item value="${Action.HOLD}">
+                <mwc-list-item value="more-info">
                   ${localize("google_button_card.toggle.info")}
+                </mwc-list-item>
+                <mwc-list-item value="navigate">
+                  ${localize("google_button_card.toggle.navigate")}
+                </mwc-list-item>
+                <mwc-list-item value="url">
+                  ${localize("google_button_card.toggle.url")}
+                </mwc-list-item>
+                <mwc-list-item value="none">
+                  ${localize("google_button_card.toggle.none")}
                 </mwc-list-item>
               </ha-select>
 
+              ${this._renderExtraField(this._config.tap_action, (key, value) =>
+                this._setActionValue("tap_action", key, value)
+              )}
+
               <ha-select
                 label="${localize("google_button_card.toggle.hold")}"
-                .value=${this._config.hold_action || Action.HOLD}
-                configValue="hold_action"
-                @selected=${this._valueChanged}
+                .value=${this._getActionValue(this._config.hold_action)}
+                @selected=${this._onHoldSelected}
                 @closed=${(ev: Event) => ev.stopPropagation()}
               >
-                <mwc-list-item value="${Action.CLICK}">
+                <mwc-list-item value="toggle">
                   ${localize("google_button_card.toggle.click")}
                 </mwc-list-item>
-                <mwc-list-item value="${Action.HOLD}">
+                <mwc-list-item value="more-info">
                   ${localize("google_button_card.toggle.info")}
                 </mwc-list-item>
-              </ha-select>`}
+                <mwc-list-item value="navigate">
+                  ${localize("google_button_card.toggle.navigate")}
+                </mwc-list-item>
+                <mwc-list-item value="url">
+                  ${localize("google_button_card.toggle.url")}
+                </mwc-list-item>
+                <mwc-list-item value="none">
+                  ${localize("google_button_card.toggle.none")}
+                </mwc-list-item>
+              </ha-select>
+
+              ${this._renderExtraField(this._config.hold_action, (key, value) =>
+                this._setActionValue("hold_action", key, value)
+              )}`}
       </div>
+    `;
+  }
+
+  private _renderExtraField(
+    action: any,
+    onChange: (key: string, value: any) => void
+  ) {
+    const currentAction = action?.action ?? action; // stringa o oggetto
+
+    return html`
+      ${currentAction === "navigate"
+        ? html`
+            <ha-textfield
+              style="display: block; margin-top: 10px;"
+              label="Percorso di navigazione"
+              .value=${(action as NavigateActionConfig)?.navigation_path || ""}
+              @input=${(e: Event) =>
+                onChange(
+                  "navigation_path",
+                  (e.target as HTMLInputElement).value
+                )}
+            ></ha-textfield>
+          `
+        : ""}
+      ${currentAction === "url"
+        ? html`
+            <ha-textfield
+              style="display: block; margin-top: 10px;"
+              label="URL"
+              .value=${(action as UrlActionConfig)?.url_path || ""}
+              @input=${(e: Event) =>
+                onChange("url_path", (e.target as HTMLInputElement).value)}
+            ></ha-textfield>
+          `
+        : ""}
     `;
   }
 

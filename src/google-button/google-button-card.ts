@@ -15,7 +15,7 @@ import {
   getValidDeviceClass,
   GoogleButtonCardConfig,
 } from "./google-button-const";
-import { Action, isDeviceOn, isOfflineState } from "../shared/utils";
+import { isDeviceOn, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 import { isAirConditioning } from "../google-climate/google-climate-mapper";
@@ -141,14 +141,6 @@ export class GoogleButtonCard extends LitElement {
       return;
     }
 
-    const actionOnTap = this._config.tap_action;
-
-    if (actionOnTap === Action.CLICK) {
-      return this.hass.callService("homeassistant", "toggle", {
-        entity_id: entityId,
-      });
-    }
-
     if (domain === "media_player" || controlType == ControlType.MEDIA_PLAYER) {
       this._openMediaOverlay();
       return;
@@ -265,15 +257,6 @@ export class GoogleButtonCard extends LitElement {
         );
         return;
       }
-      // Se non usa il comportamento automatico, usa quello definito in hold_action
-      const actionOnHold = this._config.hold_action;
-      if (actionOnHold === Action.CLICK) {
-        this.hass.callService("homeassistant", "toggle", {
-          entity_id: entityId,
-        });
-      } else {
-        fireEvent(this, "hass-more-info", { entityId });
-      }
     }
   }
 
@@ -314,23 +297,6 @@ export class GoogleButtonCard extends LitElement {
     overlay.style.zIndex = "9999";
     document.body.appendChild(overlay);
   }
-
-  //private _openMediaOverlay() {
-  //  const overlay = document.createElement(
-  //    "google-media-overlay"
-  //  ) as GoogleMediaOverlay;
-  //  overlay.hass = this.hass;
-  //  overlay.entity = this._config.entity!;
-  //  overlay.style.position = "fixed";
-  //  overlay.style.inset = "0";
-  //  overlay.style.zIndex = "9999";
-  //
-  //  overlay.addEventListener("close-overlay", () => {
-  //    overlay.remove();
-  //  });
-  //
-  //  document.body.appendChild(overlay);
-  //}
 
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;

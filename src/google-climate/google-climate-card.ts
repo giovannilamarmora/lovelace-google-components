@@ -9,7 +9,7 @@ import {
 import { fireEvent } from "custom-card-helpers";
 import { applyRippleEffect } from "../utils";
 import { google_color } from "../shared/color";
-import { isDeviceOn, isOfflineState } from "../shared/utils";
+import { isDeviceOn, isNullOrEmpty, isOfflineState } from "../shared/utils";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 import {
   adjustNewTempAuto,
@@ -274,7 +274,8 @@ export class GoogleClimateCard extends LitElement {
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
     const isOn = isDeviceOn(stateObj.state);
     const isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
-    const isOffAndHasTemperature = !isOn && stateObj.attributes.temperature;
+    const isOffAndHasTemperature =
+      !isOn && !isNullOrEmpty(stateObj.attributes.temperature);
 
     this.setColorCard(
       this._config.use_material_color,

@@ -12,6 +12,7 @@ import {
   getOrDefault,
   isDeviceOn,
   isDeviceOnline,
+  isNullOrEmpty,
   isOfflineState,
   OnlineStates,
 } from "./utils";
@@ -177,7 +178,8 @@ export function mapStateDisplay(
   let text = "";
   if (control_type === ControlType.THERMOMETER && !isOffline) {
     const isOn = isDeviceOn(stateObj.state);
-    const isOffAndHasTemperature = !isOn && stateObj.attributes.temperature;
+    const isOffAndHasTemperature =
+      !isOn && !isNullOrEmpty(stateObj.attributes.temperature);
     if (isOn || isOffAndHasTemperature || !is_climate_card)
       text = stateObj.attributes.current_temperature
         ? " • " +

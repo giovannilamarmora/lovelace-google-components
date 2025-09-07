@@ -15,7 +15,7 @@ import {
   getValidDeviceClass,
   GoogleButtonCardConfig,
 } from "./google-button-const";
-import { Action, isDeviceOn, isOfflineState } from "../shared/utils";
+import { isDeviceOn, isNullOrEmpty, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 import { isAirConditioning } from "../google-climate/google-climate-mapper";
@@ -28,10 +28,22 @@ export class GoogleButtonCard extends LitElement {
   private color = google_color;
 
   public setConfig(config: GoogleButtonCardConfig): void {
-    if (!config || !config.entity) {
+    if (!config) {
       throw new Error(localize("common.invalid_configuration"));
     }
-    this._config = config;
+
+    // creiamo una copia mutabile
+    const newConfig = { ...config };
+
+    // se è app_version o action → rimuovi entity
+    if (
+      newConfig.control_type === ControlType.APP_VERSION ||
+      newConfig.control_type === ControlType.ACTION
+    ) {
+      delete newConfig.entity;
+    }
+
+    this._config = newConfig;
   }
 
   public static getStubConfig(
@@ -87,9 +99,9 @@ export class GoogleButtonCard extends LitElement {
     if (!this._config || !this.hass) return;
 
     const entityId = this._config.entity;
-    if (!entityId) return;
+    //if (!entityId) return;
 
-    const domain = entityId.split(".")[0];
+    const domain = !entityId ? "" : entityId.split(".")[0];
     const controlType = this._config.control_type ?? "generic";
 
     const toggleDomains = [
@@ -135,18 +147,10 @@ export class GoogleButtonCard extends LitElement {
       handleActionConfig(
         this,
         this.hass as any,
-        { entity: entityId },
+        isNullOrEmpty(entityId) ? {} : { entity: entityId },
         this._config.tap_action as ActionConfig
       );
       return;
-    }
-
-    const actionOnTap = this._config.tap_action;
-
-    if (actionOnTap === Action.CLICK) {
-      return this.hass.callService("homeassistant", "toggle", {
-        entity_id: entityId,
-      });
     }
 
     if (domain === "media_player" || controlType == ControlType.MEDIA_PLAYER) {
@@ -265,15 +269,6 @@ export class GoogleButtonCard extends LitElement {
         );
         return;
       }
-      // Se non usa il comportamento automatico, usa quello definito in hold_action
-      const actionOnHold = this._config.hold_action;
-      if (actionOnHold === Action.CLICK) {
-        this.hass.callService("homeassistant", "toggle", {
-          entity_id: entityId,
-        });
-      } else {
-        fireEvent(this, "hass-more-info", { entityId });
-      }
     }
   }
 
@@ -315,38 +310,46 @@ export class GoogleButtonCard extends LitElement {
     document.body.appendChild(overlay);
   }
 
-  //private _openMediaOverlay() {
-  //  const overlay = document.createElement(
-  //    "google-media-overlay"
-  //  ) as GoogleMediaOverlay;
-  //  overlay.hass = this.hass;
-  //  overlay.entity = this._config.entity!;
-  //  overlay.style.position = "fixed";
-  //  overlay.style.inset = "0";
-  //  overlay.style.zIndex = "9999";
-  //
-  //  overlay.addEventListener("close-overlay", () => {
-  //    overlay.remove();
-  //  });
-  //
-  //  document.body.appendChild(overlay);
-  //}
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;
 
     const stateObj = this.hass.states[this._config.entity!];
-    if (!stateObj) {
-      return html`<ha-card
-        ><div class="warning">${localize("common.no_entity")}</div></ha-card
-      >`;
+    if (
+      this._config.control_type != ControlType.APP_VERSION &&
+      this._config.control_type != ControlType.ACTION
+    ) {
+      if (!stateObj) {
+        return html`<ha-card
+          ><div class="warning">${localize("common.no_entity")}</div></ha-card
+        >`;
+      }
     }
 
-    const isOn = isDeviceOn(stateObj.state);
+    let isOn: boolean = false;
+    let name: string = this._config.name ?? "";
+    let icon: string = this._config.icon ?? "";
+    let isOffline: boolean = false;
+    let device_class: DeviceType = DeviceType.NONE;
+    let stateDisplay: string;
+    const default_text = this._config.use_default_text ?? true;
+    let isConditioner: boolean = false;
+    if (
+      this._config.control_type != ControlType.APP_VERSION &&
+      this._config.control_type != ControlType.ACTION
+    ) {
+      isOn = isDeviceOn(stateObj.state);
 
-    //const domain = this._config.entity!.split(".")[0];
-    const name = getName(this._config, this.hass);
-    const icon = getIcon(stateObj, this._config, this.hass);
+      //const domain = this._config.entity!.split(".")[0];
+      name = getName(this._config, this.hass);
+
+      icon = getIcon(stateObj, this._config, this.hass);
+
+      isOffline = isOfflineState(stateObj.state, this._config.control_type!);
+      device_class = getValidDeviceClass(stateObj.attributes)!;
+
+      isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
+    }
+
     //let icon = "";
     //if (this._config.icon && this._config.icon.trim() !== "") {
     //  icon = this._config.icon;
@@ -359,25 +362,19 @@ export class GoogleButtonCard extends LitElement {
     //  icon = `mdi:${domain}`;
     //}
 
-    const isOffline = isOfflineState(
-      stateObj.state,
-      this._config.control_type!
-    );
-
-    const device_class = getValidDeviceClass(stateObj.attributes);
-
-    let stateDisplay: string;
-
-    const default_text = this._config.use_default_text ?? true;
+    const theme = this.hass?.themes?.darkMode ? "dark" : "light";
 
     if (default_text) {
-      stateDisplay = mapStateDisplay(
-        stateObj,
-        this._config.control_type!,
-        isOffline,
-        this._config.fix_temperature,
-        device_class == DeviceType.MOTION
-      );
+      stateDisplay =
+        this._config.control_type != ControlType.ACTION
+          ? mapStateDisplay(
+              stateObj,
+              this._config.control_type!,
+              isOffline,
+              this._config.fix_temperature,
+              device_class == DeviceType.MOTION
+            )
+          : "";
     } else {
       if (isOn) stateDisplay = this._config.text_on!;
       else stateDisplay = this._config.text_off!;
@@ -386,10 +383,6 @@ export class GoogleButtonCard extends LitElement {
         stateDisplay = localize("common.offline");
       }
     }
-
-    const theme = this.hass?.themes?.darkMode ? "dark" : "light";
-
-    const isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
 
     this.setColorCard(
       this._config.control_type,
@@ -421,7 +414,8 @@ export class GoogleButtonCard extends LitElement {
             <div class="name ellipsis">${name}</div>
             ${device_class == DeviceType.MEASUREMENT ||
             (this._config.control_type == ControlType.SCENE && default_text) ||
-            (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn)
+            (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn) ||
+            this._config.control_type == ControlType.ACTION
               ? html``
               : html`<div class="state-wrapper">
                   <div class="state">${stateDisplay}</div>

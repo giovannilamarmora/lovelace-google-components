@@ -63,7 +63,9 @@
       "thermometer": "Termometro",
       "scene": "Autonomazioni e scene",
       "media": "Multimedia (Google, Alexa...)",
-      "state": "Stato"
+      "state": "Stato",
+      "action": "Azioni",
+      "app_version": "Versione Google Components"
     },
     "dual_icon": {
       "default": "Usa Icona di default",
@@ -79,7 +81,10 @@
       "press": "Azione al clic",
       "hold": "Azione alla pressione prolungata",
       "click": "Clic singolo (Accensione/Spegnimento)",
-      "info": "Visualizza informazioni"
+      "info": "Visualizza informazioni",
+      "navigate": "Naviga",
+      "url": "URL",
+      "none": "Nessuna azione"
     }
   },
   "google_control_card": {

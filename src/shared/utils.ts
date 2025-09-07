@@ -65,11 +65,6 @@ export function isOfflineState(
   return !isDeviceOnline(state);
 }
 
-export enum Action {
-  CLICK = "toggle",
-  HOLD = "info",
-}
-
 export function getOrDefault<T>(value: T | undefined | null, defValue: T): T {
   return value !== undefined && value !== null ? value : defValue;
 }

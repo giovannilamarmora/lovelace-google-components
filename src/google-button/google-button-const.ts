@@ -1,5 +1,4 @@
 import { ActionConfig, LovelaceCardConfig } from "custom-card-helpers";
-import { Action } from "../shared/utils";
 
 export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
   type: "custom:google-button-card",
@@ -11,6 +10,8 @@ export enum ControlType {
   SCENE = "scene",
   MEDIA_PLAYER = "media_player",
   STATE = "state",
+  ACTION = "action",
+  APP_VERSION = "app_version",
 }
 
 export enum DomainType {
@@ -25,6 +26,7 @@ export enum DeviceType {
   CONNECTIVITY = "connectivity",
   MEASUREMENT = "measurement",
   BATTERY = "battery",
+  NONE = "none",
 }
 
 function isDeviceType(value: string): value is DeviceType {
@@ -65,6 +67,6 @@ export interface GoogleButtonCardConfig extends LovelaceCardConfig {
   fix_temperature?: "true" | "false" | "auto";
   use_material_color?: boolean;
   use_default_toggle?: boolean;
-  tap_action?: ActionConfig | Action;
-  hold_action?: ActionConfig | Action;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }

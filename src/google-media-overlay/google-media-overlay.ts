@@ -497,21 +497,21 @@ export class GoogleMediaOverlay extends LitElement {
     switch (appName) {
       case "Spotify":
         return html`<img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/2048px-Spotify_logo_without_text.svg.png"
+          src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Spotify.webp"
           width="24"
           height="24"
           style="border-radius: 50px; object-fit: cover;z-index: 1;"
         />`;
       case "YouTube":
         return html`<img
-          src="https://static.vecteezy.com/system/resources/previews/023/986/704/non_2x/youtube-logo-youtube-logo-transparent-youtube-icon-transparent-free-free-png.png"
+          src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/YouTube.png"
           width="24"
           height="24"
           style="border-radius: 50px; object-fit: cover;"
         />`;
       case "Netflix":
         return html`<img
-          src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15844974/netflixlogo.0.0.1466448626.png?quality=90&strip=all&crop=1.2535702951444%2C0%2C97.492859409711%2C100&w=2400"
+          src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Netflix.webp"
           width="24"
           height="24"
           style="border-radius: 50px; object-fit: cover;"

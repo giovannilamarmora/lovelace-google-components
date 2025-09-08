@@ -120,7 +120,8 @@
   },
   "google_media_overlay": {
     "media_card": {
-      "no_content": "Nothing is playing"
+      "no_content": "Nothing is playing",
+      "playing": "Now playing"
     },
     "remote": "Open Remote",
     "cast": "Cast screen",

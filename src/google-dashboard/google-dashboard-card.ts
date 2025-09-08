@@ -6,7 +6,7 @@ import {
   googleDashboadTemplate,
   GoogleDashboardCardConfig,
 } from "./google-dashboard-const";
-import { applyRippleEffect } from "../utils";
+import { applyRippleEffect } from "../animations";
 
 @customElement("google-dashboard-card")
 export class GoogleDashboardCard extends LitElement {

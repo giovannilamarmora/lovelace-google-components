@@ -42,3 +42,18 @@ export function getSpotifyURL(): string {
     return "https://open.spotify.com/";
   }
 }
+
+export function getNetflixURL(): string {
+  const ua = navigator.userAgent || "";
+
+  if (/Android/i.test(ua)) {
+    // Intent per aprire l'app Netflix su Android
+    return "app://com.netflix.mediaclient";
+  } else if (/iPhone|iPad|iPod/i.test(ua)) {
+    // URL schema per Netflix su iOS
+    return "nflx://";
+  } else {
+    // Fallback per desktop / browser
+    return "https://www.netflix.com/";
+  }
+}

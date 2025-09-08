@@ -255,7 +255,10 @@ export class GoogleButtonCardEditor
         ${this._config.use_default_icon
           ? html``
           : html`${this._config.control_type == ControlType.APP_VERSION ||
-            this._config.control_type == ControlType.ACTION
+            this._config.control_type == ControlType.ACTION ||
+            this._config.control_type == ControlType.THERMOMETER ||
+            this._config.control_type == ControlType.SCENE ||
+            this._config.control_type == ControlType.STATE
               ? html``
               : html`<div class="switch-row">
                   <span class="switch-label"
@@ -296,7 +299,11 @@ export class GoogleButtonCardEditor
                   />
                 `} `}
         ${this._config.control_type == ControlType.APP_VERSION ||
-        this._config.control_type == ControlType.ACTION
+        this._config.control_type == ControlType.ACTION ||
+        this._config.control_type == ControlType.THERMOMETER ||
+        this._config.control_type == ControlType.SCENE ||
+        this._config.control_type == ControlType.MEDIA_PLAYER ||
+        this._config.control_type == ControlType.STATE
           ? html``
           : html`<div class="switch-row">
               <span class="switch-label"

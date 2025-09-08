@@ -7,7 +7,7 @@ import { localize } from "../localize/localize";
 import { state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { LitElement, html, CSSResult, TemplateResult, css } from "lit";
-import { applyRippleEffect } from "../utils";
+import { applyRippleEffect } from "../animations";
 import { google_color } from "../shared/color";
 
 export class GoogleSliderCard extends LitElement {

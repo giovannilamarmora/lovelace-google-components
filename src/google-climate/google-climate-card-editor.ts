@@ -119,45 +119,13 @@ export class GoogleClimateCardEditor
         ${this._config.use_default_icon
           ? html``
           : html`
-              <div class="switch-row">
-                <span class="switch-label"
-                  >${localize("google_climate_card.dual_icon.options")}</span
-                >
-                <ha-switch
-                  .checked=${this._config.dual_icon ?? false}
-                  configValue="dual_icon"
-                  @change=${this._valueChanged}
-                />
-              </div>
-
-              ${this._config.dual_icon
-                ? html`
-                    <div class="dual-icons">
-                      <ha-icon-picker
-                        label="Icon ON"
-                        .value=${this._config.icon_on || ""}
-                        configValue="icon_on"
-                        @value-changed=${this._valueChanged}
-                        placeholder="mdi:lightbulb-on"
-                      ></ha-icon-picker>
-                      <ha-icon-picker
-                        label="Icon OFF"
-                        .value=${this._config.icon_off || ""}
-                        configValue="icon_off"
-                        @value-changed=${this._valueChanged}
-                        placeholder="mdi:lightbulb-off"
-                      ></ha-icon-picker>
-                    </div>
-                  `
-                : html`
-                    <ha-icon-picker
-                      label="Icon"
-                      .value=${this._config.icon || ""}
-                      configValue="icon"
-                      @value-changed=${this._valueChanged}
-                      placeholder="mdi:lightbulb"
-                    />
-                  `}
+              <ha-icon-picker
+                label="Icon"
+                .value=${this._config.icon || ""}
+                configValue="icon"
+                @value-changed=${this._valueChanged}
+                placeholder="mdi:lightbulb"
+              />
             `}
 
         <ha-textfield

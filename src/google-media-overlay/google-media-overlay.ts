@@ -1,13 +1,16 @@
 import { LitElement, html, css, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant } from "../ha-types";
-import { applyRippleEffect } from "../utils";
+import { applyRippleEffect } from "../animations";
 import { localize } from "../localize/localize";
 import {
   getGoogleHomeURL,
+  getNetflixURL,
   getSpotifyURL,
   getYouTubeURL,
 } from "../shared/url.utils";
+import { navigate } from "custom-card-helpers";
+import { getOrDefault } from "../shared/utils";
 
 @customElement("google-media-overlay")
 export class GoogleMediaOverlay extends LitElement {
@@ -18,6 +21,7 @@ export class GoogleMediaOverlay extends LitElement {
   @state() private _volume = 0; // 0..1
   @state() private _progress = 0; // 0..100
   @state() private _isPlaying = false; // Rimosso @property
+  @state() private _isPaused = false;
   @state() private _isOff = true;
   @state() private _isConnected = false;
   @state() private _isDragging = false;
@@ -115,8 +119,11 @@ export class GoogleMediaOverlay extends LitElement {
   }
 
   changePlyingState(stateObj: any) {
-    const isPlaying = stateObj.state === "playing";
+    const isPlaying =
+      stateObj.state === "playing" && stateObj.attributes.media_title;
+    const isPaused = stateObj.state === "paused";
     const wasPlaying = this._isPlaying;
+    this._isPaused = isPaused;
 
     if (isPlaying !== wasPlaying) {
       this._isPlaying = isPlaying;
@@ -419,6 +426,7 @@ export class GoogleMediaOverlay extends LitElement {
 
     // Aggiorna lo stato locale subito
     this._isPlaying = !this._isPlaying;
+    this._isPaused = !this._isPaused;
     this.requestUpdate();
 
     this.hass
@@ -436,20 +444,18 @@ export class GoogleMediaOverlay extends LitElement {
   private _settings() {
     if (!this.hass || !this.entity) return;
 
-    // trova l'entità nello stato
     const stateObj = this.hass.states[this.entity];
     if (!stateObj) return;
 
-    // cerca il device_id associato all'entità
-    const entity = this.hass.entities[this.entity];
-    const deviceId = entity?.device_id;
+    const entityRegistry = this.hass.entities?.[this.entity];
+    const deviceId = entityRegistry?.device_id;
 
     this._close();
 
     setTimeout(() => {
       if (deviceId) {
-        const settingsUrl = `/config/devices/device/${deviceId}`;
-        window.location.assign(settingsUrl);
+        // navigazione interna (funziona in app mobile e browser)
+        navigate(this, `/config/devices/device/${deviceId}`);
       } else {
         this._moreInfo();
       }
@@ -466,6 +472,7 @@ export class GoogleMediaOverlay extends LitElement {
   openLinks(e: any, appName: string) {
     if (appName == "YouTube") this.openYouTube(e);
     if (appName == "Spotify") this.openSpotify(e);
+    if (appName == "Netflix") this.openNetflix(e);
   }
 
   openYouTube(e: any) {
@@ -480,16 +487,63 @@ export class GoogleMediaOverlay extends LitElement {
     window.location.href = url;
   }
 
+  openNetflix(e: any) {
+    this._onClick(e);
+    const url = getNetflixURL();
+    window.location.href = url;
+  }
+
+  private _renderAppIcon(appName: string, cover?: string) {
+    switch (appName) {
+      case "Spotify":
+        return html`<img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/2048px-Spotify_logo_without_text.svg.png"
+          width="24"
+          height="24"
+          style="border-radius: 50px; object-fit: cover;z-index: 1;"
+        />`;
+      case "YouTube":
+        return html`<img
+          src="https://static.vecteezy.com/system/resources/previews/023/986/704/non_2x/youtube-logo-youtube-logo-transparent-youtube-icon-transparent-free-free-png.png"
+          width="24"
+          height="24"
+          style="border-radius: 50px; object-fit: cover;"
+        />`;
+      case "Netflix":
+        return html`<img
+          src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/15844974/netflixlogo.0.0.1466448626.png?quality=90&strip=all&crop=1.2535702951444%2C0%2C97.492859409711%2C100&w=2400"
+          width="24"
+          height="24"
+          style="border-radius: 50px; object-fit: cover;"
+        />`;
+      default:
+        return html`<ha-icon
+          icon="m3r:play-circle"
+          style="${cover
+            ? "color: #e3e3e5;"
+            : "color: var(--md-sys-color-on-secondary-container)"}"
+        ></ha-icon>`;
+    }
+  }
+
   protected render(): TemplateResult {
     const stateObj = this.hass.states[this.entity];
     if (!stateObj) return html``;
 
     const { attributes } = stateObj;
-    const isPlaying = this._isPlaying;
+    const isPlaying = getOrDefault(
+      this._isPlaying,
+      stateObj.state == "playing"
+    );
+    const isPaused = getOrDefault(this._isPaused, stateObj.state == "paused");
+    const hasControlButton: boolean =
+      (isPlaying || isPaused) && attributes.media_title;
     const volume = Math.round(this._volume * 100);
     const mediaTitle =
       attributes.media_title ??
-      localize("google_media_overlay.media_card.no_content");
+      (getOrDefault(this._isPlaying, stateObj.state == "playing")
+        ? localize("google_media_overlay.media_card.playing")
+        : localize("google_media_overlay.media_card.no_content"));
     const mediaArtist = attributes.media_artist ?? "";
     const appName = attributes.app_name ?? "";
     const cover = attributes.entity_picture_local;
@@ -542,23 +596,30 @@ export class GoogleMediaOverlay extends LitElement {
         <!-- Video Player Card -->
         <div class="video-card">
           <div class="video-card-bg" style="${videoCardStyle}"></div>
-          <ha-icon
-            icon="m3r:play-circle"
-            style="${
-              cover
-                ? "color: #e3e3e5;"
-                : "color: var(--md-sys-color-on-secondary-container)"
-            }"
-            title="Play"
-          ></ha-icon>
+          ${this._renderAppIcon(appName, cover)}
+          
           ${
-            isOff
+            isOff || !hasControlButton
               ? html``
               : html`<ha-icon
                   class="pause-button"
                   icon=${isPlaying ? "mdi:pause" : "mdi:play"}
                   @click=${(e: Event) => this._togglePlay(e)}
                   title=${isPlaying ? "Pause" : "Play"}
+                  style=${`
+                    ${isPlaying ? "" : "border-radius: 50px;"}
+                    transition: width 1s ease-in-out, background-color 1s ease-in-out;
+                    background-color: ${
+                      stateObj.attributes.media_title
+                        ? "var(--md-sys-color-tertiary-container)"
+                        : "var(--md-sys-color-secondary-container)"
+                    };
+                    color: ${
+                      stateObj.attributes.media_title
+                        ? "var(--md-sys-color-on-tertiary-container)"
+                        : "var(--md-sys-color-on-secondary-container)"
+                    };
+                  `}
                 >
                 </ha-icon>`
           }
@@ -589,7 +650,7 @@ export class GoogleMediaOverlay extends LitElement {
           <!-- Video Controls -->
           <div class="video-controls">
             <ha-icon
-              class="${isOff ? "disabled" : ""}"
+              class="${isOff || !hasControlButton ? "disabled" : ""}"
               style="cursor: pointer; ${
                 cover
                   ? "color: #e3e3e5;"
@@ -599,7 +660,7 @@ export class GoogleMediaOverlay extends LitElement {
               @click=${() => this._callService("media_previous_track")}
             ></ha-icon>
             <div
-              class="progress-bar ${isOff ? "disabled" : ""}"
+              class="progress-bar ${isOff || !hasControlButton ? "disabled" : ""}"
               @mousedown=${this._startSeek}
               @touchstart=${this._startSeek}
             >
@@ -621,7 +682,7 @@ export class GoogleMediaOverlay extends LitElement {
               ></div>
             </div>
             <ha-icon
-              class="${isOff ? "disabled" : ""}"
+              class="${isOff || !hasControlButton ? "disabled" : ""}"
               style="cursor: pointer; ${
                 cover
                   ? "color: #e3e3e5;"
@@ -679,7 +740,7 @@ export class GoogleMediaOverlay extends LitElement {
               </div>`
         }
         ${
-          appName == "YouTube" || appName == "Spotify"
+          appName == "YouTube" || appName == "Spotify" || appName == "Netflix"
             ? html`<div
                 class="menu-card link"
                 @click=${(e: Event) => this.openLinks(e, appName)}
@@ -712,12 +773,19 @@ export class GoogleMediaOverlay extends LitElement {
   }
 
   static styles = css`
+    :host {
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .overlay {
       font-family: "Google Sans", "Roboto", "Inter", sans-serif;
       position: fixed;
       inset: 0;
       /*background: var(--card-background-color, #121212);*/
-      background:  var(--view-background,var(--lovelace-background,var(--primary-background-color)));
+      background: var(
+        --view-background,
+        var(--lovelace-background, var(--primary-background-color))
+      );
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -836,11 +904,13 @@ export class GoogleMediaOverlay extends LitElement {
       position: absolute;
       top: calc(50% - 24px);
       right: 20px;
-      background-color: var(--md-sys-color-secondary-container);
+      /*background-color: var(--md-sys-color-secondary-container);
+      background-color: var(--md-sys-color-tertiary-container);*/
       border-radius: 12px;
       padding: 12px 12px;
       font-size: 24px;
-      color: var(--md-sys-color-on-secondary-container)
+      /*color: var(--md-sys-color-on-secondary-container)
+      color: var(--md-sys-color-on-tertiary-container);*/
       cursor: pointer;
       display: flex;
       align-items: center;

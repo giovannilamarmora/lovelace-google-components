@@ -7,7 +7,7 @@ import {
   GoogleClimateCardConfig,
 } from "./google-climate-const";
 import { fireEvent } from "custom-card-helpers";
-import { applyRippleEffect } from "../utils";
+import { applyRippleEffect } from "../animations";
 import { google_color } from "../shared/color";
 import { isDeviceOn, isNullOrEmpty, isOfflineState } from "../shared/utils";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";

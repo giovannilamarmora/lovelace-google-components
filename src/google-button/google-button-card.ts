@@ -8,7 +8,7 @@ import {
   handleActionConfig,
 } from "custom-card-helpers";
 import { HomeAssistant } from "../ha-types";
-import { applyRippleEffect } from "../utils";
+import { applyRippleEffect } from "../animations";
 import {
   ControlType,
   DeviceType,
@@ -430,7 +430,9 @@ export class GoogleButtonCard extends LitElement {
               title="Offline"
             ></ha-icon>`
           : this._config.control_type == ControlType.THERMOMETER ||
-              this._config.control_type == ControlType.MEDIA_PLAYER
+              this._config.control_type == ControlType.MEDIA_PLAYER ||
+              this._config.control_type == ControlType.ACTION ||
+              this._config.control_type == ControlType.STATE
             ? html`<ha-icon
                 icon="m3rf:arrow-forward-ios"
                 style="

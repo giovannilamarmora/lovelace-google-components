@@ -9,9 +9,6 @@ export interface GoogleClimateCardConfig extends LovelaceCardConfig {
   use_material_color: boolean;
   use_default_icon?: boolean;
   icon?: string;
-  dual_icon?: boolean;
-  icon_on?: string;
-  icon_off?: string;
   fix_temperature?: "true" | "false" | "auto";
 }
 

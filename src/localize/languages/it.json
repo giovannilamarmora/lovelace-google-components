@@ -120,7 +120,8 @@
   },
   "google_media_overlay": {
     "media_card": {
-      "no_content": "Nessun contenuto in riproduzione"
+      "no_content": "Nessun contenuto in riproduzione",
+      "playing": "Ora in riproduzione"
     },
     "remote": "Apri il telecomando",
     "cast": "Trasmetti schermo",

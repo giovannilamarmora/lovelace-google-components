@@ -2,7 +2,7 @@ import { LitElement, html, TemplateResult, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import jsyaml from "js-yaml";
-import { applyRippleEffect } from "../utils";
+import { applyRippleEffect } from "../animations";
 import { GoogleLightCardConfig, googleTemplate } from "./google-lights-const";
 
 @customElement("google-lights-card")

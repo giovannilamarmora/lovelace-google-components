@@ -134,7 +134,9 @@ export class GoogleButtonCard extends LitElement {
           this._openMediaOverlay();
           return;
         }
-        return fireEvent(this, "hass-more-info", { entityId });
+        fireEvent(this, "hass-more-info", { entityId });
+        this.applyStyleToModal();
+        return;
       }
     }
 
@@ -248,6 +250,7 @@ export class GoogleButtonCard extends LitElement {
       // Se il dominio supporta il toggle o non è un media_player, mostra le info
       if (toggleEntity || !isMediaPlayer) {
         fireEvent(this, "hass-more-info", { entityId });
+        this.applyStyleToModal();
       } else {
         // Altrimenti esegui toggle
         this.hass.callService("homeassistant", "toggle", {
@@ -554,6 +557,186 @@ export class GoogleButtonCard extends LitElement {
   ): void {
     if (value !== undefined && value !== null && value !== "") {
       this.style.setProperty(name, transform(value));
+    }
+  }
+
+  //applyStyleToModal() {
+  //  const homeAssistant = document.querySelector(
+  //    "home-assistant"
+  //  ) as HTMLElement | null;
+  //  const controlType = this._config.control_type;
+  //  const theme = this.hass?.themes?.darkMode ? "dark" : "light";
+  //
+  //  if (controlType == ControlType.THERMOMETER) {
+  //    setTimeout(() => {
+  //      if (homeAssistant) {
+  //        const moreInfoDialog = homeAssistant.shadowRoot?.querySelector(
+  //          "ha-more-info-dialog"
+  //        );
+  //        if (moreInfoDialog?.shadowRoot) {
+  //          const sheet = new CSSStyleSheet();
+  //          sheet.replaceSync(`
+  //          ha-dialog-header {
+  //            background-color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.background
+  //                : this.color.dark.on.climate.material.background
+  //            } !important;
+  //            color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.title
+  //                : this.color.dark.on.climate.material.title
+  //            } !important;
+  //          }
+  //
+  //          .content {
+  //            background-color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.background
+  //                : this.color.dark.on.climate.material.background
+  //            } !important;
+  //            color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.title
+  //                : this.color.dark.on.climate.material.title
+  //            } !important;
+  //          }
+  //
+  //          ha-state-control-climate-temperature {
+  //            background: aliceblue !important;
+  //          }
+  //
+  //          ha-state-control-climate-temperature ha-outlined-icon-button {
+  //            --mdc-icon-button-size: 48px;
+  //            --mdc-icon-size: 24px;
+  //            --icon-color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.title
+  //                : this.color.dark.on.climate.material.title
+  //            };
+  //          }
+  //
+  //          /* Se il componente espone part="button", possiamo forzare il border-radius */
+  //          ha-state-control-climate-temperature ha-outlined-icon-button::part(button) {
+  //            border-radius: 15px !important;
+  //            background: rgba(0,0,0,0.05) !important;
+  //          }
+  //
+  //          :host {
+  //            --state-climate-heat_cool-color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.title
+  //                : this.color.dark.on.climate.material.title
+  //            } !important;
+  //            --primary-text-color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.title
+  //                : this.color.dark.on.climate.material.title
+  //            } !important;
+  //            --_icon-color: ${
+  //              theme === "light"
+  //                ? this.color.light.on.climate.material.title
+  //                : this.color.dark.on.climate.material.title
+  //            } !important;
+  //          }
+  //        `);
+  //
+  //          (moreInfoDialog.shadowRoot as any).adoptedStyleSheets = [
+  //            ...(moreInfoDialog.shadowRoot as any).adoptedStyleSheets,
+  //            sheet,
+  //          ];
+  //        }
+  //      }
+  //    }, 50);
+  //  }
+  //}
+
+  applyStyleToModal() {
+    const homeAssistant = document.querySelector(
+      "home-assistant"
+    ) as HTMLElement | null;
+    const controlType = this._config.control_type;
+    const theme = this.hass?.themes?.darkMode ? "dark" : "light";
+    console.log(homeAssistant, controlType, theme);
+
+    if (controlType == ControlType.THERMOMETER) {
+      setTimeout(() => {
+        const bg =
+          theme === "light"
+            ? this.color.light.on.climate.material.background
+            : this.color.dark.on.climate.material.background;
+        const title =
+          theme === "light"
+            ? this.color.light.on.climate.material.title
+            : this.color.dark.on.climate.material.title;
+
+        console.log(bg, title, theme);
+
+        const cssText = `
+          ha-dialog-header {
+            background-color: ${bg} !important;
+            color: ${title} !important;
+          }
+          .content {
+            background-color: ${bg} !important;
+            color: ${title} !important;
+          }
+          /* Prova ad applicare variabili al componente host dei bottoni */
+          ha-state-control-climate-temperature ha-outlined-icon-button {
+            --mdc-icon-button-size: 48px;
+            --mdc-icon-size: 24px;
+            --icon-color: ${title};
+          }
+          :host {
+            --state-climate-heat_cool-color: ${title} !important;
+            --primary-text-color: ${title} !important;
+            --secondary-text-color: ${title} !important;
+            --_icon-color: ${title} !important;
+            --mdc-theme-surface: ${bg} !important;
+          }
+          ha-state-control-climate-temperature ha-outlined-icon-button #button {
+            --mdc-icon-button-size: 48px;
+            --mdc-icon-size: 24px;
+            --icon-color: ${title};
+
+            /* workaround per border-radius */
+            border-radius: 15px !important;
+            overflow: hidden !important;
+          }
+        `;
+
+        const getMoreInfo: any =
+          homeAssistant?.shadowRoot?.querySelector("ha-more-info-dialog") ??
+          document.querySelector("ha-more-info-dialog");
+
+        try {
+          console.log(getMoreInfo);
+          const sheet = new CSSStyleSheet();
+          sheet.replaceSync(cssText);
+          (getMoreInfo.shadowRoot as any).adoptedStyleSheets = [
+            ...(getMoreInfo.shadowRoot as any).adoptedStyleSheets,
+            sheet,
+          ];
+          console.debug(
+            "[applyStyleToModal] adoptedStyleSheets applied to more-info-dialog.shadowRoot"
+          );
+        } catch (e) {
+          console.warn(
+            "[applyStyleToModal] could not apply stylesheet via adoptedStyleSheets, falling back to <style>:",
+            e
+          );
+          try {
+            const styleEl2 = document.createElement("style");
+            styleEl2.textContent = cssText;
+            getMoreInfo.appendChild(styleEl2);
+            console.debug(
+              "[applyStyleToModal] <style> appended after error fallback"
+            );
+          } catch (err) {
+            console.error("[applyStyleToModal] final fallback failed:", err);
+          }
+        }
+      }, 50);
     }
   }
 

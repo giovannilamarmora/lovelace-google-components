@@ -1,3 +1,5 @@
+[![My Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=lovelace-google-components&owner=giovannilamarmora&category=Plugin)
+
 # 🏠 Google Home Dashboard Component for Home Assistant
 
 ![Dashboard](https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/img/control.png)

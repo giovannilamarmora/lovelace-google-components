@@ -384,7 +384,10 @@ export class GoogleButtonCard extends LitElement {
       }
     }
     const domain = stateObj.entity_id.split(".")[0];
-    const isButtonControl = domain == "button";
+    const isButtonControl =
+      this._config.control_type == ControlType.GENERIC &&
+      domain == "button" &&
+      this._config.use_default_text;
 
     this.setColorCard(
       this._config.control_type,

@@ -383,6 +383,8 @@ export class GoogleButtonCard extends LitElement {
         stateDisplay = localize("common.offline");
       }
     }
+    const domain = stateObj.entity_id.split(".")[0];
+    const isButtonControl = domain == "button";
 
     this.setColorCard(
       this._config.control_type,
@@ -415,7 +417,8 @@ export class GoogleButtonCard extends LitElement {
             ${device_class == DeviceType.MEASUREMENT ||
             (this._config.control_type == ControlType.SCENE && default_text) ||
             (this._config.control_type == ControlType.MEDIA_PLAYER && !isOn) ||
-            this._config.control_type == ControlType.ACTION
+            this._config.control_type == ControlType.ACTION ||
+            isButtonControl
               ? html``
               : html`<div class="state-wrapper">
                   <div class="state">${stateDisplay}</div>

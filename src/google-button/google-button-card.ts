@@ -383,7 +383,11 @@ export class GoogleButtonCard extends LitElement {
         stateDisplay = localize("common.offline");
       }
     }
-    const domain = stateObj.entity_id.split(".")[0];
+
+    const domain = !isNullOrEmpty(stateObj)
+      ? stateObj.entity_id.split(".")[0]
+      : null;
+
     const isButtonControl =
       this._config.control_type == ControlType.GENERIC &&
       domain == "button" &&

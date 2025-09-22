@@ -1,3 +1,55 @@
+/**
+ * Sets a CSS property on a `style` object, optionally applying a transformation
+ * function to the value before assigning it.
+ *
+ * @param name - The name of the CSS property to set (e.g., `"color"`, `"font-size"`, `"margin"`).
+ * @param value - The value to assign to the property. If `undefined`, `null`, or an empty string, the property is not set.
+ * @param style - The `style` object where the property should be applied (e.g., `element.style`).
+ * @param transform - (Optional) A function that takes `value` and returns a string to be used as the CSS property value.
+ *                    Defaults to the identity function (returns the value as-is).
+ *
+ * @example
+ * // Set the text color to red
+ * _setStyleProperty("color", "red", element.style);
+ *
+ * @example
+ * // Set the width, automatically appending "px"
+ * _setStyleProperty("width", 100, element.style, (v) => `${v}px`);
+ */
+export function _setStyleProperty(
+  name: string,
+  value: any,
+  style: any,
+  transform = (value: any): string => value
+): void {
+  if (value !== undefined && value !== null && value !== "") {
+    style.setProperty(name, transform(value));
+  }
+}
+
+/**
+ * A color configuration object that defines theme-based styles for Google-like UI components.
+ * It supports both **dark** and **light** themes and organizes colors by component state:
+ * - **offline**: When the device or service is unavailable
+ * - **on**: When the component is active or enabled
+ * - **off**: When the component is inactive or disabled
+ *
+ * Each state includes color definitions for:
+ * - **climate**: UI elements related to climate controls (supports `default`, `material`, `material_dry`)
+ * - **button**: Button text, icon, percentage, and background colors
+ * - **light**: Lighting-related UI elements (text, icons, sliders, backgrounds)
+ *
+ * Colors are primarily defined using CSS variables with fallbacks or direct hex/rgba values.
+ * Some groups include multiple variants (e.g., `material`, `material_dry`, `default`).
+ *
+ * @example
+ * // Access dark theme "on" button background
+ * const background = google_color.dark.on.button.background;
+ *
+ * @example
+ * // Access light theme "offline" climate icon
+ * const iconColor = google_color.light.offline.climate.icon;
+ */
 export const google_color = {
   dark: {
     offline: {

@@ -88,12 +88,12 @@
     }
   },
   "google_control_card": {
-    "name": "Card Name",
-    "entity_card": "Use card as entity",
-    "entity": "Entity",
+    "name": "Nome della Scheda",
+    "entity_card": "Usa la scheda come entità",
+    "entity": "Entità",
     "dual_icon": {
-      "default": "Use Default Icon",
-      "options": "Use Dual Icon (On and Off states)."
+      "default": "Usa l'icona predefinita",
+      "options": "Usa icona doppia (stati Attivo e Disattivo)."
     },
     "actions": {
       "hold": "Azione alla pressione prolungata",
@@ -109,6 +109,11 @@
   },
   "google_slider_card": {
     "name": "Nome della Card",
+    "control_type": "Tipo di controllo",
+    "type": {
+      "light": "Luci",
+      "cover": "Tapparelle"
+    },
     "entity": "Entità da controllare",
     "icon": "Icona personalizzata (se vuota, cambia automaticamente in base allo stato On/Off)",
     "percentage": "Mostra la percentuale di valore",

@@ -1,7 +1,7 @@
-import { GoogleButtonCardConfig } from "../google-button/google-button-const";
+import { ControlType } from "../google-button/google-button-const";
 import { GoogleSliderCardConfig } from "./types";
 
-export const CARD_VERSION = "1.8.5";
+export const CARD_VERSION = "1.9.0";
 export const DEFAULT_ATTRIBUTE = "brightness";
 export const SETTLE_TIME = 3000;
 export const HOLD_TIME = 600;
@@ -11,6 +11,7 @@ export const MIN = 0;
 export const MAX = 100;
 export const DEFAULT_CONFIG: GoogleSliderCardConfig = {
   type: "custom:google-slider-card",
+  control_type: ControlType.LIGHT,
   attribute: DEFAULT_ATTRIBUTE,
   tap_action: {
     action: "toggle",
@@ -19,14 +20,6 @@ export const DEFAULT_CONFIG: GoogleSliderCardConfig = {
   hold_action: {
     action: "more-info",
   },
-  hold_time: HOLD_TIME,
-  settle_time: SETTLE_TIME,
-  min_slide_time: MIN_SLIDE_TIME,
-  min: MIN,
-  max: MAX,
-};
-export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
-  type: "custom:google-button-card",
   hold_time: HOLD_TIME,
   settle_time: SETTLE_TIME,
   min_slide_time: MIN_SLIDE_TIME,

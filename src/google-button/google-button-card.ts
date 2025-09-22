@@ -1,7 +1,6 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { localize } from "../localize/localize";
-import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import {
   ActionConfig,
   fireEvent,
@@ -11,6 +10,7 @@ import { HomeAssistant } from "../ha-types";
 import { applyRippleEffect } from "../animations";
 import {
   ControlType,
+  DEFAULT_BTN_CONFIG,
   DeviceType,
   getValidDeviceClass,
   GoogleButtonCardConfig,

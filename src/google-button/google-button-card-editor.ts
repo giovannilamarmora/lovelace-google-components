@@ -7,9 +7,12 @@ import {
   NavigateActionConfig,
   UrlActionConfig,
 } from "custom-card-helpers";
-import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import { localize } from "../localize/localize";
-import { ControlType, GoogleButtonCardConfig } from "./google-button-const";
+import {
+  ControlType,
+  DEFAULT_BTN_CONFIG,
+  GoogleButtonCardConfig,
+} from "./google-button-const";
 
 @customElement("google-button-card-editor")
 export class GoogleButtonCardEditor

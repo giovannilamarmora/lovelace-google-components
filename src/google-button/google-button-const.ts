@@ -12,6 +12,8 @@ export enum ControlType {
   STATE = "state",
   ACTION = "action",
   APP_VERSION = "app_version",
+  LIGHT = "light",
+  COVER = "cover",
 }
 
 export enum DomainType {

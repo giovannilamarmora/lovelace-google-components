@@ -9,6 +9,8 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { LitElement, html, CSSResult, TemplateResult, css } from "lit";
 import { applyRippleEffect } from "../animations";
 import { google_color } from "../shared/color";
+import { setSliderColor } from "./google-slider-mapper";
+import { ControlType } from "../google-button/google-button-const";
 
 export class GoogleSliderCard extends LitElement {
   // @property({ attribute: false }) public hass!: HomeAssistant;
@@ -39,11 +41,11 @@ export class GoogleSliderCard extends LitElement {
     _hass: HomeAssistant
   ): Partial<GoogleSliderCardConfig> {
     const allEntities = Object.keys(_hass.states);
-    const climates = allEntities
+    const lights = allEntities
       .filter((entity) => entity.startsWith("light."))
       .sort();
 
-    const randomLight = climates[Math.floor(Math.random() * climates.length)];
+    const randomLight = lights[Math.floor(Math.random() * lights.length)];
 
     return {
       type: "custom:google-slider-card",
@@ -74,8 +76,22 @@ export class GoogleSliderCard extends LitElement {
       throw new Error(localize("common.no_entity_set"));
     }
 
-    if (!config.entity || config.entity.split(".")[0] !== "light") {
-      throw new Error("Specify an entity from within the light domain");
+    const domain = config.entity.split(".")[0];
+    if (
+      (config.control_type === ControlType.LIGHT && domain !== "light") ||
+      (config.control_type === ControlType.COVER && domain !== "cover")
+    ) {
+      throw new Error(
+        `Entity must match the selected control type (${config.control_type})`
+      );
+    }
+
+    if (!config.attribute) {
+      if (config.control_type === ControlType.LIGHT) {
+        config.attribute = "brightness";
+      } else if (config.control_type === ControlType.COVER) {
+        config.attribute = "current_position";
+      }
     }
 
     this._config = { ...DEFAULT_CONFIG, ...config };
@@ -90,6 +106,13 @@ export class GoogleSliderCard extends LitElement {
     this._hass = hass;
     this._state = hass.states[this._entity];
     this._status = this._state?.state;
+
+    if (this._config.control_type === ControlType.LIGHT) {
+      this.currentValue = this._state?.attributes?.brightness ?? 0;
+    } else if (this._config.control_type === ControlType.COVER) {
+      this.currentValue = this._state?.attributes?.current_position ?? 0;
+    }
+
     this._name =
       this._config.name ??
       this._state?.attributes?.friendly_name ??
@@ -311,6 +334,24 @@ export class GoogleSliderCard extends LitElement {
     if (!this._shouldUpdate) return;
     if (!this._state) return;
 
+    // Se è una cover → leggiamo direttamente la posizione
+    if (this._config.control_type === ControlType.COVER) {
+      this._config.min = 0;
+      this._config.max = 100;
+
+      if (this._status == "unavailable") {
+        this.currentValue = 0;
+        this.style.setProperty("--bsc-opacity", "0.5");
+      } else {
+        this.style.removeProperty("--bsc-opacity");
+        this.currentValue = this._state.attributes.current_position ?? 0;
+      }
+
+      this._updateSlider();
+      return;
+    }
+
+    // Default → gestione light
     const attr = this._config?.attribute;
     let _value = 0;
 
@@ -358,6 +399,16 @@ export class GoogleSliderCard extends LitElement {
   _setValue(): void {
     if (!this._state) return;
 
+    // Se è una cover → gestiamo direttamente la posizione
+    if (this._config.control_type === ControlType.COVER) {
+      this._hass!.callService("cover", "set_cover_position", {
+        entity_id: this._state.entity_id,
+        position: this.currentValue,
+      });
+      return;
+    }
+
+    // Default: gestione light
     let value = this.currentValue;
     let attr = this._config.attribute;
 
@@ -450,85 +501,94 @@ export class GoogleSliderCard extends LitElement {
 
     const isOn = state?.state === "on";
 
-    // Stili dinamici basati su stato entità e tema
-    let nameColor = "";
-    let iconColor = "";
-    let percentageColor = "";
-    let sliderColor = "";
-    let containerColor = "";
-    const nameMargin = "-20px";
-    const iconMargin = "-10px";
-    const percentageMargin = "-20px";
-
-    if (isOffline) {
-      // Offline, tema light
-      if (theme === "light") {
-        nameColor = this.color.light.offline.light.title;
-        iconColor = this.color.light.offline.light.icon;
-        percentageColor = this.color.light.offline.light.percentage;
-        sliderColor = this.color.light.offline.light.slider;
-        containerColor = this.color.light.offline.light.background;
-        // Offline, tema dark
-      } else {
-        nameColor = this.color.dark.offline.light.title;
-        iconColor = this.color.dark.offline.light.icon;
-        percentageColor = this.color.dark.offline.light.percentage;
-        sliderColor = this.color.dark.offline.light.slider;
-        containerColor = this.color.dark.offline.light.background;
-      }
-    } else if (isOn) {
-      // Acceso, tema dark
-      if (theme === "dark") {
-        nameColor = this.color.dark.on.light.title;
-        iconColor = this.color.dark.on.light.icon;
-        percentageColor = this.color.dark.on.light.percentage;
-        sliderColor = this.color.dark.on.light.slider;
-        containerColor = this.color.dark.on.light.background;
-        // Acceso, tema light
-      } else {
-        nameColor = this.color.light.on.light.title;
-        iconColor = this.color.light.on.light.icon;
-        percentageColor = this.color.light.on.light.percentage;
-        sliderColor = this.color.light.on.light.slider;
-        containerColor = this.color.light.on.light.background;
-      }
-    } else {
-      // Spento, tema dark
-      if (theme === "dark") {
-        nameColor = this.color.dark.off.light.title;
-        iconColor = this.color.dark.off.light.icon;
-        percentageColor = this.color.dark.off.light.percentage;
-        sliderColor = this.color.dark.off.light.slider;
-        containerColor = this.color.dark.off.light.background;
-      } else {
-        nameColor = this.color.light.off.light.title;
-        iconColor = this.color.light.off.light.icon;
-        percentageColor = this.color.light.off.light.percentage;
-        sliderColor = this.color.light.off.light.slider;
-        containerColor = this.color.light.off.light.background;
-      }
-    }
-
-    this._setStyleProperty("--bsc-name-color", nameColor);
-    this._setStyleProperty("--bsc-icon-color", iconColor);
-    this._setStyleProperty("--bsc-percentage-color", percentageColor);
-    this._setStyleProperty("--bsc-slider-color", sliderColor);
-    this._setStyleProperty("--bsc-background", containerColor);
-    this._setStyleProperty("--bsc-name-margin", nameMargin);
-    this._setStyleProperty("--bsc-icon-margin", iconMargin);
-    this._setStyleProperty("--bsc-percentage-margin", percentageMargin);
-
-    // Altri stili
-    this._setStyleProperty("--bsc-primary-text-color", this._config.text_color);
-    this._setStyleProperty("--bsc-border-color", this._config.border_color);
-    this._setStyleProperty("--bsc-border-radius", this._config.border_radius);
-    this._setStyleProperty("--bsc-border-style", this._config.border_style);
-    this._setStyleProperty("--bsc-border-width", this._config.border_width);
-    this._setStyleProperty(
-      "--bsc-height",
-      this._config.height,
-      (h) => `${h}px`
+    setSliderColor(
+      this._config,
+      isOffline,
+      theme,
+      isOn,
+      this.color,
+      this.style
     );
+
+    // Stili dinamici basati su stato entità e tema
+    //let nameColor = "";
+    //let iconColor = "";
+    //let percentageColor = "";
+    //let sliderColor = "";
+    //let containerColor = "";
+    //const nameMargin = "-20px";
+    //const iconMargin = "-10px";
+    //const percentageMargin = "-20px";
+    //
+    //if (isOffline) {
+    //  // Offline, tema light
+    //  if (theme === "light") {
+    //    nameColor = this.color.light.offline.light.title;
+    //    iconColor = this.color.light.offline.light.icon;
+    //    percentageColor = this.color.light.offline.light.percentage;
+    //    sliderColor = this.color.light.offline.light.slider;
+    //    containerColor = this.color.light.offline.light.background;
+    //    // Offline, tema dark
+    //  } else {
+    //    nameColor = this.color.dark.offline.light.title;
+    //    iconColor = this.color.dark.offline.light.icon;
+    //    percentageColor = this.color.dark.offline.light.percentage;
+    //    sliderColor = this.color.dark.offline.light.slider;
+    //    containerColor = this.color.dark.offline.light.background;
+    //  }
+    //} else if (isOn) {
+    //  // Acceso, tema dark
+    //  if (theme === "dark") {
+    //    nameColor = this.color.dark.on.light.title;
+    //    iconColor = this.color.dark.on.light.icon;
+    //    percentageColor = this.color.dark.on.light.percentage;
+    //    sliderColor = this.color.dark.on.light.slider;
+    //    containerColor = this.color.dark.on.light.background;
+    //    // Acceso, tema light
+    //  } else {
+    //    nameColor = this.color.light.on.light.title;
+    //    iconColor = this.color.light.on.light.icon;
+    //    percentageColor = this.color.light.on.light.percentage;
+    //    sliderColor = this.color.light.on.light.slider;
+    //    containerColor = this.color.light.on.light.background;
+    //  }
+    //} else {
+    //  // Spento, tema dark
+    //  if (theme === "dark") {
+    //    nameColor = this.color.dark.off.light.title;
+    //    iconColor = this.color.dark.off.light.icon;
+    //    percentageColor = this.color.dark.off.light.percentage;
+    //    sliderColor = this.color.dark.off.light.slider;
+    //    containerColor = this.color.dark.off.light.background;
+    //  } else {
+    //    nameColor = this.color.light.off.light.title;
+    //    iconColor = this.color.light.off.light.icon;
+    //    percentageColor = this.color.light.off.light.percentage;
+    //    sliderColor = this.color.light.off.light.slider;
+    //    containerColor = this.color.light.off.light.background;
+    //  }
+    //}
+    //
+    //this._setStyleProperty("--bsc-name-color", nameColor);
+    //this._setStyleProperty("--bsc-icon-color", iconColor);
+    //this._setStyleProperty("--bsc-percentage-color", percentageColor);
+    //this._setStyleProperty("--bsc-slider-color", sliderColor);
+    //this._setStyleProperty("--bsc-background", containerColor);
+    //this._setStyleProperty("--bsc-name-margin", nameMargin);
+    //this._setStyleProperty("--bsc-icon-margin", iconMargin);
+    //this._setStyleProperty("--bsc-percentage-margin", percentageMargin);
+    //
+    //// Altri stili
+    //this._setStyleProperty("--bsc-primary-text-color", this._config.text_color);
+    //this._setStyleProperty("--bsc-border-color", this._config.border_color);
+    //this._setStyleProperty("--bsc-border-radius", this._config.border_radius);
+    //this._setStyleProperty("--bsc-border-style", this._config.border_style);
+    //this._setStyleProperty("--bsc-border-width", this._config.border_width);
+    //this._setStyleProperty(
+    //  "--bsc-height",
+    //  this._config.height,
+    //  (h) => `${h}px`
+    //);
 
     let iconName =
       this._config.icon == undefined ||
@@ -563,8 +623,8 @@ export class GoogleSliderCard extends LitElement {
         id="container"
         tabindex="0"
         style="position: relative; ${isOffline
-          ? "padding: 12px 35px 12px 12px"
-          : "padding: 12px 12px"}"
+          ? "padding: 12px 35px 12px 12px;"
+          : "padding: 12px 12px;"}"
         @mousedown=${this._onClick}
       >
         <div id="slider" class="animate ${colorize ? "colorize" : ""}"></div>

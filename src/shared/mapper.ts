@@ -196,6 +196,10 @@ export function mapStateDisplay(
   is_presence_sensor: boolean = false,
   is_climate_card: boolean = false
 ) {
+  const domain = isNullOrEmpty(stateObj)
+    ? ""
+    : stateObj.entity_id!.split(".")[0];
+
   if (control_type === ControlType.APP_VERSION) {
     return "V".concat(CARD_VERSION);
   }
@@ -240,6 +244,10 @@ export function mapStateDisplay(
     if (device_class == DeviceType.TIMESTAMP)
       return formatSmartDate(stateObj.state);
 
+    if (domain == "event") {
+      return formatSmartDate(stateObj.state);
+    }
+
     if (
       (control_type === ControlType.STATE && !isOffline) ||
       (!isDeviceOnline(stateObj.state) && !isOffline)
@@ -247,12 +255,7 @@ export function mapStateDisplay(
       return stateObj.state;
     }
   }
-  const domain = isNullOrEmpty(stateObj)
-    ? ""
-    : stateObj.entity_id!.split(".")[0];
-  if (domain == "event") {
-    return formatSmartDate(stateObj.state);
-  }
+
   if (control_type == ControlType.AUTOMATION) {
     if (isDeviceOn(stateObj.state)) return localize("common.active");
     else return localize("common.inactive");

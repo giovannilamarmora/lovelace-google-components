@@ -17,10 +17,13 @@ export enum OnStates {
   IDLE = "idle",
   PLAYING = "playing",
   PAUSED = "paused",
+  // Cover
+  OPEN = "open",
 }
 
 export enum OffStates {
   OFF = "off",
+  CLOSED = "closed",
 }
 
 export const OnlineStates = {

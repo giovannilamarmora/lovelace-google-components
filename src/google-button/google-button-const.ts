@@ -7,7 +7,7 @@ export const DEFAULT_BTN_CONFIG: GoogleButtonCardConfig = {
 export enum ControlType {
   GENERIC = "generic",
   THERMOMETER = "thermometer",
-  AUTOMATION = "automtion",
+  AUTOMATION = "automation",
   SCENE = "scene",
   MEDIA_PLAYER = "media_player",
   STATE = "state",

@@ -164,8 +164,10 @@ export class GoogleButtonCardEditor
     switch (this._config.control_type) {
       case ControlType.THERMOMETER:
         return ["climate"];
+      case ControlType.AUTOMATION:
+        return ["automation"];
       case ControlType.SCENE:
-        return ["scene", "automation"];
+        return ["scene"];
       case ControlType.MEDIA_PLAYER:
         return ["media_player"];
       default:
@@ -203,6 +205,9 @@ export class GoogleButtonCardEditor
           </mwc-list-item>
           <mwc-list-item value="thermometer">
             ${localize("google_button_card.type.thermometer")}
+          </mwc-list-item>
+          <mwc-list-item value="automation">
+            ${localize("google_button_card.type.automation")}
           </mwc-list-item>
           <mwc-list-item value="scene">
             ${localize("google_button_card.type.scene")}

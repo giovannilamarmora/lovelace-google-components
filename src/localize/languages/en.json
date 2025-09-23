@@ -19,7 +19,11 @@
     "presence": "Motion",
     "off_presence": "No motion",
     "today_at": "Today at",
-    "yesterday_at": "Yesterday at"
+    "yesterday_at": "Yesterday at",
+    "open": "Open",
+    "closed": "Closed",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "google_dashboard_card": {
     "description": "Configure the navigation path when a card is tapped.",
@@ -63,7 +67,8 @@
     "type": {
       "generic": "Generic (Switch, Button...)",
       "thermometer": "Thermometer",
-      "scene": "Autonomation and scene",
+      "automation": "Autonomation",
+      "scene": "Scene",
       "media": "Multimedia (Google, Alexa...)",
       "state": "State",
       "action": "Action",

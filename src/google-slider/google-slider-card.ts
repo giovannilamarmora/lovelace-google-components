@@ -11,6 +11,13 @@ import { applyRippleEffect } from "../animations";
 import { google_color } from "../shared/color";
 import { setSliderColor } from "./google-slider-mapper";
 import { ControlType } from "../google-button/google-button-const";
+import {
+  isDeviceOn,
+  isOfflineState,
+  OffStates,
+  OnStates,
+} from "../shared/utils";
+import { getIcon } from "../shared/mapper";
 
 export class GoogleSliderCard extends LitElement {
   // @property({ attribute: false }) public hass!: HomeAssistant;
@@ -286,6 +293,17 @@ export class GoogleSliderCard extends LitElement {
     if (this._state && this._state.attributes.brightness)
       percentage &&
         (percentage.innerText = Math.round(this.currentValue) + "%");
+    else if (
+      this._config.control_type == ControlType.COVER &&
+      this._state &&
+      this._state.attributes.current_position
+    )
+      percentage &&
+        (percentage.innerText =
+          localize("common.open") +
+          " • " +
+          Math.round(this.currentValue) +
+          "%");
     else percentage && (percentage.innerText = localize("common.on"));
   }
 
@@ -296,7 +314,7 @@ export class GoogleSliderCard extends LitElement {
     let isOn = false;
 
     if (this._state) {
-      if (this._status == "on") {
+      if (this._status == OnStates.ON) {
         const stateColor = this._state.attributes?.rgb_color ?? [255, 255, 255];
         const stateBrightness = this._state.attributes?.brightness ?? 255;
         isOn = true;
@@ -307,6 +325,8 @@ export class GoogleSliderCard extends LitElement {
           brightness = `${Math.ceil((100 * stateBrightness) / 255)}%`;
           brightnessUI = `${Math.ceil((100 * stateBrightness) / 510 + 50)}%`;
         }
+      } else if (this._status == OnStates.OPEN) {
+        isOn = true;
       } else {
         color = "var(--bsc-off-color)";
       }
@@ -314,10 +334,14 @@ export class GoogleSliderCard extends LitElement {
 
     const percentage = this?.shadowRoot?.getElementById("percentage");
     if (!isOn) {
-      const isOffline = this._status != "on" && this._status != "off";
-      if (!isOffline)
-        percentage && (percentage.innerText = localize("common.off"));
-      else percentage && (percentage.innerText = localize("common.offline"));
+      //const isOffline = this._status != "on" && this._status != "off";
+      const isOffline = isOfflineState(this._status!);
+      if (!isOffline) {
+        if (this._status == OffStates.OFF)
+          percentage && (percentage.innerText = localize("common.off"));
+        if (this._status == OffStates.CLOSED)
+          percentage && (percentage.innerText = localize("common.closed"));
+      } else percentage && (percentage.innerText = localize("common.offline"));
     }
     this.style.setProperty("--bsc-entity-color", color);
     this.style.setProperty("--bsc-brightness", brightness);
@@ -496,10 +520,12 @@ export class GoogleSliderCard extends LitElement {
     const boldText = (this._config.bold_text && true) ?? false;
 
     const state = this._hass?.states?.[this._entity];
-    const isOffline = state?.state != "on" && state?.state != "off";
+    // const isOffline = state?.state != "on" && state?.state != "off";
+    const isOffline = isOfflineState(state!.state);
     const theme = this._hass?.themes?.darkMode ? "dark" : "light";
 
-    const isOn = state?.state === "on";
+    //const isOn = state?.state === "on";
+    const isOn = isDeviceOn(state!.state);
 
     setSliderColor(
       this._config,
@@ -590,33 +616,41 @@ export class GoogleSliderCard extends LitElement {
     //  (h) => `${h}px`
     //);
 
-    let iconName =
-      this._config.icon == undefined ||
-      this._config.icon === "m3of:lightbulb" ||
-      this._config.icon === "m3r:lightbulb"
-        ? isOn
-          ? "m3of:lightbulb"
-          : "m3r:lightbulb"
-        : this._config.icon;
+    const iconName = getIcon(state, this._config, this.hass);
 
-    // 🟢 Supporto template stile [[[ ... ]]]
-    if (
-      typeof this._config.icon === "string" &&
-      this._config.icon.trim().startsWith("[[[") &&
-      this._config.icon.trim().endsWith("]]]")
-    ) {
-      try {
-        const code = this._config.icon.trim().slice(3, -3); // rimuove [[[ e ]]]
-        const fn = new Function("entity", "state", "hass", code);
-        const result = fn(state, state?.state, this.hass);
-        if (result && typeof result === "string") {
-          iconName = result;
-        }
-      } catch (e) {
-        console.warn("Error evaluating icon template:", e);
-        iconName = "mdi:alert-circle-outline";
-      }
-    }
+    //let iconName =
+    //  this._config.control_type == ControlType.LIGHT
+    //    ? this._config.icon == undefined ||
+    //      this._config.icon === "m3of:lightbulb" ||
+    //      this._config.icon === "m3r:lightbulb"
+    //      ? isOn
+    //        ? "m3of:lightbulb"
+    //        : "m3r:lightbulb"
+    //      : this._config.icon
+    //    : this._config.icon == undefined
+    //      ? isOn
+    //        ? "m3rf:blinds"
+    //        : "m3rf:blinds-closed"
+    //      : this._config.icon;
+    //
+    //// 🟢 Supporto template stile [[[ ... ]]]
+    //if (
+    //  typeof this._config.icon === "string" &&
+    //  this._config.icon.trim().startsWith("[[[") &&
+    //  this._config.icon.trim().endsWith("]]]")
+    //) {
+    //  try {
+    //    const code = this._config.icon.trim().slice(3, -3); // rimuove [[[ e ]]]
+    //    const fn = new Function("entity", "state", "hass", code);
+    //    const result = fn(state, state?.state, this.hass);
+    //    if (result && typeof result === "string") {
+    //      iconName = result;
+    //    }
+    //  } catch (e) {
+    //    console.warn("Error evaluating icon template:", e);
+    //    iconName = "mdi:alert-circle-outline";
+    //  }
+    //}
 
     return html`
       <ha-card

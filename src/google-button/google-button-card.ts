@@ -119,6 +119,7 @@ export class GoogleButtonCard extends LitElement {
     if (isDefaultToggle) {
       const isToggleable =
         toggleDomains.includes(domain) &&
+        controlType != ControlType.AUTOMATION &&
         controlType != ControlType.THERMOMETER &&
         controlType != ControlType.MEDIA_PLAYER;
 

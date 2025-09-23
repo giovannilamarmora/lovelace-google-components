@@ -102,7 +102,7 @@ export class GoogleButtonCard extends LitElement {
     //if (!entityId) return;
 
     const domain = !entityId ? "" : entityId.split(".")[0];
-    const controlType = this._config.control_type ?? "generic";
+    const controlType = this._config.control_type ?? ControlType.GENERIC;
 
     const toggleDomains = [
       "light",
@@ -119,11 +119,10 @@ export class GoogleButtonCard extends LitElement {
     if (isDefaultToggle) {
       const isToggleable =
         toggleDomains.includes(domain) &&
-        controlType != ControlType.AUTOMATION &&
         controlType != ControlType.THERMOMETER &&
         controlType != ControlType.MEDIA_PLAYER;
 
-      if (isToggleable) {
+      if (isToggleable || controlType == ControlType.AUTOMATION) {
         return this.hass.callService("homeassistant", "toggle", {
           entity_id: entityId,
         });

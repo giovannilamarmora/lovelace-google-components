@@ -17,7 +17,9 @@
     "playing": "Playing",
     "idle": "Cast",
     "presence": "Motion",
-    "off_presence": "No motion"
+    "off_presence": "No motion",
+    "today_at": "Today at",
+    "yesterday_at": "Yesterday at"
   },
   "google_dashboard_card": {
     "description": "Configure the navigation path when a card is tapped.",

@@ -57,3 +57,18 @@ export function getNetflixURL(): string {
     return "https://www.netflix.com/";
   }
 }
+
+export function getPrimeVideoURL(): string {
+  const ua = navigator.userAgent || "";
+
+  if (/Android/i.test(ua)) {
+    // Intent to open the Prime Video app on Android
+    return "app://com.amazon.avod.thirdpartyclient";
+  } else if (/iPhone|iPad|iPod/i.test(ua)) {
+    // URL scheme for Prime Video on iOS
+    return "primevideo://";
+  } else {
+    // Fallback for desktop / browser
+    return "https://www.primevideo.com/";
+  }
+}

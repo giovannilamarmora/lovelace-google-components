@@ -17,7 +17,9 @@
     "playing": "Riproduzione",
     "idle": "Cast",
     "presence": "Movimento",
-    "off_presence": "Nessun movimento"
+    "off_presence": "Nessun movimento",
+    "today_at": "Oggi alle",
+    "yesterday_at": "Ieri alle"
   },
   "google_dashboard_card": {
     "description": "Configura il percorso di navigazione quando una card viene cliccata.",

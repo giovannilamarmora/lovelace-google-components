@@ -3,14 +3,15 @@ import { customElement, property, state } from "lit/decorators.js";
 import { HomeAssistant } from "../ha-types";
 import { applyRippleEffect } from "../animations";
 import { localize } from "../localize/localize";
-import {
-  getGoogleHomeURL,
-  getNetflixURL,
-  getSpotifyURL,
-  getYouTubeURL,
-} from "../shared/url.utils";
 import { navigate } from "custom-card-helpers";
 import { getOrDefault } from "../shared/utils";
+import {
+  _renderAppIcon,
+  openGoogleHome,
+  openNetflix,
+  openSpotify,
+  openYouTube,
+} from "./google-media-mapper";
 
 @customElement("google-media-overlay")
 export class GoogleMediaOverlay extends LitElement {
@@ -463,68 +464,83 @@ export class GoogleMediaOverlay extends LitElement {
   }
 
   // Esempio di utilizzo
-  openGoogleHome(e: any) {
-    this._onClick(e);
-    const url = getGoogleHomeURL();
-    window.location.href = url;
-  }
+  //openGoogleHome(e: any) {
+  //  this._onClick(e);
+  //  const url = getGoogleHomeURL();
+  //  window.location.href = url;
+  //}
 
   openLinks(e: any, appName: string) {
-    if (appName == "YouTube") this.openYouTube(e);
-    if (appName == "Spotify") this.openSpotify(e);
-    if (appName == "Netflix") this.openNetflix(e);
-  }
-
-  openYouTube(e: any) {
     this._onClick(e);
-    const url = getYouTubeURL();
-    window.location.href = url;
+    if (appName == "Google") openGoogleHome();
+    if (appName == "YouTube") openYouTube();
+    if (appName == "Spotify") openSpotify();
+    if (appName == "Netflix") openNetflix();
   }
 
-  openSpotify(e: any) {
-    this._onClick(e);
-    const url = getSpotifyURL();
-    window.location.href = url;
-  }
-
-  openNetflix(e: any) {
-    this._onClick(e);
-    const url = getNetflixURL();
-    window.location.href = url;
-  }
-
-  private _renderAppIcon(appName: string, cover?: string) {
-    switch (appName) {
-      case "Spotify":
-        return html`<img
-          src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Spotify.webp"
-          width="24"
-          height="24"
-          style="border-radius: 50px; object-fit: cover;z-index: 1;"
-        />`;
-      case "YouTube":
-        return html`<img
-          src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/YouTube.png"
-          width="24"
-          height="24"
-          style="border-radius: 50px; object-fit: cover;"
-        />`;
-      case "Netflix":
-        return html`<img
-          src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Netflix.webp"
-          width="24"
-          height="24"
-          style="border-radius: 50px; object-fit: cover;"
-        />`;
-      default:
-        return html`<ha-icon
-          icon="m3r:play-circle"
-          style="${cover
-            ? "color: #e3e3e5;"
-            : "color: var(--md-sys-color-on-secondary-container)"}"
-        ></ha-icon>`;
-    }
-  }
+  //openLinks(e: any, appName: string) {
+  //  if (appName == "YouTube") this.openYouTube(e);
+  //  if (appName == "Spotify") this.openSpotify(e);
+  //  if (appName == "Netflix") this.openNetflix(e);
+  //}
+  //
+  //openYouTube(e: any) {
+  //  this._onClick(e);
+  //  const url = getYouTubeURL();
+  //  window.location.href = url;
+  //}
+  //
+  //openSpotify(e: any) {
+  //  this._onClick(e);
+  //  const url = getSpotifyURL();
+  //  window.location.href = url;
+  //}
+  //
+  //openNetflix(e: any) {
+  //  this._onClick(e);
+  //  const url = getNetflixURL();
+  //  window.location.href = url;
+  //}
+  //
+  //private _renderAppIcon(appName: string, cover?: string) {
+  //  switch (appName) {
+  //    case "Spotify":
+  //      return html`<img
+  //        src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Spotify.webp"
+  //        width="24"
+  //        height="24"
+  //        style="border-radius: 50px; object-fit: cover;z-index: 1;"
+  //      />`;
+  //    case "YouTube":
+  //      return html`<img
+  //        src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/YouTube.png"
+  //        width="24"
+  //        height="24"
+  //        style="border-radius: 50px; object-fit: cover;"
+  //      />`;
+  //    case "Netflix":
+  //      return html`<img
+  //        src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Netflix.webp"
+  //        width="24"
+  //        height="24"
+  //        style="border-radius: 50px; object-fit: cover;"
+  //      />`;
+  //    case "Prime Video":
+  //      return html`<img
+  //        src="https://raw.githubusercontent.com/giovannilamarmora/lovelace-google-components/refs/heads/master/src/shared/assets/logo/Netflix.webp"
+  //        width="24"
+  //        height="24"
+  //        style="border-radius: 50px; object-fit: cover;"
+  //      />`;
+  //    default:
+  //      return html`<ha-icon
+  //        icon="m3r:play-circle"
+  //        style="${cover
+  //          ? "color: #e3e3e5;"
+  //          : "color: var(--md-sys-color-on-secondary-container)"}"
+  //      ></ha-icon>`;
+  //  }
+  //}
 
   protected render(): TemplateResult {
     const stateObj = this.hass.states[this.entity];
@@ -596,7 +612,7 @@ export class GoogleMediaOverlay extends LitElement {
         <!-- Video Player Card -->
         <div class="video-card">
           <div class="video-card-bg" style="${videoCardStyle}"></div>
-          ${this._renderAppIcon(appName, cover)}
+          ${_renderAppIcon(appName, cover)}
           
           ${
             isOff || !hasControlButton
@@ -740,7 +756,10 @@ export class GoogleMediaOverlay extends LitElement {
               </div>`
         }
         ${
-          appName == "YouTube" || appName == "Spotify" || appName == "Netflix"
+          appName == "YouTube" ||
+          appName == "Spotify" ||
+          appName == "Netflix" ||
+          appName == "Prime Video"
             ? html`<div
                 class="menu-card link"
                 @click=${(e: Event) => this.openLinks(e, appName)}
@@ -752,7 +771,7 @@ export class GoogleMediaOverlay extends LitElement {
               </div>`
             : html``
         }
-        <div class="menu-card link" @click=${this.openGoogleHome}>
+        <div class="menu-card link" @click=${(e: Event) => this.openLinks(e, "Google")}>
           <ha-icon icon="m3of:home-app-logo"></ha-icon>
           <span class="menu-text"
             >${localize("google_media_overlay.open_google")}</span

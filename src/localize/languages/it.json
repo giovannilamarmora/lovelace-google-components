@@ -19,7 +19,11 @@
     "presence": "Movimento",
     "off_presence": "Nessun movimento",
     "today_at": "Oggi alle",
-    "yesterday_at": "Ieri alle"
+    "yesterday_at": "Ieri alle",
+    "open": "Aperto",
+    "closed": "Chiuso",
+    "active": "Attivo",
+    "inactive": "Inattivo"
   },
   "google_dashboard_card": {
     "description": "Configura il percorso di navigazione quando una card viene cliccata.",
@@ -63,7 +67,8 @@
     "type": {
       "generic": "Generico (Interruttore, Pulsante...)",
       "thermometer": "Termometro",
-      "scene": "Autonomazioni e scene",
+      "automation": "Autonomazioni",
+      "scene": "Scene",
       "media": "Multimedia (Google, Alexa...)",
       "state": "Stato",
       "action": "Azioni",
@@ -90,12 +95,12 @@
     }
   },
   "google_control_card": {
-    "name": "Card Name",
-    "entity_card": "Use card as entity",
-    "entity": "Entity",
+    "name": "Nome della Scheda",
+    "entity_card": "Usa la scheda come entità",
+    "entity": "Entità",
     "dual_icon": {
-      "default": "Use Default Icon",
-      "options": "Use Dual Icon (On and Off states)."
+      "default": "Usa l'icona predefinita",
+      "options": "Usa icona doppia (stati Attivo e Disattivo)."
     },
     "actions": {
       "hold": "Azione alla pressione prolungata",
@@ -111,6 +116,11 @@
   },
   "google_slider_card": {
     "name": "Nome della Card",
+    "control_type": "Tipo di controllo",
+    "type": {
+      "light": "Luci",
+      "cover": "Tapparelle"
+    },
     "entity": "Entità da controllare",
     "icon": "Icona personalizzata (se vuota, cambia automaticamente in base allo stato On/Off)",
     "percentage": "Mostra la percentuale di valore",

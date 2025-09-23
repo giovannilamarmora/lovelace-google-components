@@ -61,6 +61,22 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
   // Se use_default_icon è true, prosegui con la logica predefinita
 
   switch (controlType) {
+    case ControlType.LIGHT: {
+      return config.icon == undefined ||
+        config.icon === "m3of:lightbulb" ||
+        config.icon === "m3r:lightbulb"
+        ? idDeviceTurnOn
+          ? "m3of:lightbulb"
+          : "m3r:lightbulb"
+        : config.icon;
+    }
+    case ControlType.COVER: {
+      return config.icon == undefined
+        ? idDeviceTurnOn
+          ? "m3rf:blinds"
+          : "m3rf:blinds-closed"
+        : config.icon;
+    }
     case ControlType.THERMOMETER: {
       switch (state) {
         case "auto":
@@ -224,7 +240,10 @@ export function mapStateDisplay(
     if (device_class == DeviceType.TIMESTAMP)
       return formatSmartDate(stateObj.state);
 
-    if (control_type === ControlType.STATE && !isOffline) {
+    if (
+      (control_type === ControlType.STATE && !isOffline) ||
+      (!isDeviceOnline(stateObj.state) && !isOffline)
+    ) {
       return stateObj.state;
     }
   }
@@ -233,6 +252,10 @@ export function mapStateDisplay(
     : stateObj.entity_id!.split(".")[0];
   if (domain == "event") {
     return formatSmartDate(stateObj.state);
+  }
+  if (control_type == ControlType.AUTOMATION) {
+    if (isDeviceOn(stateObj.state)) return localize("common.active");
+    else return localize("common.inactive");
   }
   return getStateDisplay(stateObj.state, text, is_presence_sensor);
 }

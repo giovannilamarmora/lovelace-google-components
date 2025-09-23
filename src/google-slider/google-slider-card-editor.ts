@@ -65,71 +65,15 @@ export class GoogleSliderCardEditor
 
   setEntityFilter() {
     switch (this._config.control_type) {
-      case ControlType.THERMOMETER:
-        return ["climate"];
-      case ControlType.SCENE:
-        return ["scene", "automation"];
-      case ControlType.MEDIA_PLAYER:
-        return ["media_player"];
+      case ControlType.LIGHT:
+        return ["light"];
+      case ControlType.COVER:
+        return ["cover"];
       default:
         return undefined;
     }
   }
-  renderNotWork(): TemplateResult {
-    if (!this._config || !this.hass) return html``;
 
-    return html`
-      <div class="form">
-        <ha-entity-picker
-          .hass=${this.hass}
-          .value=${this._config.entity || ""}
-          .includeDomains=${["light"]}
-          allow-custom-entity
-          label="Entity"
-          configValue="entity"
-          @value-changed=${this._entityChanged}
-        ></ha-entity-picker>
-
-        <ha-textfield
-          label="${localize("google_slider_card.name")}"
-          .value=${this._config.name || ""}
-          configValue="name"
-          @input=${this._valueChanged}
-        ></ha-textfield>
-
-        <ha-select
-          label="${localize("google_slider_card.attribute")}"
-          .value=${this._config.attribute || "brightness"}
-          configValue="attribute"
-          @selected=${this._valueChanged}
-          @closed=${(ev: Event) => ev.stopPropagation()}
-        >
-          <mwc-list-item value="brightness">Brightness</mwc-list-item>
-          <mwc-list-item value="red">Red</mwc-list-item>
-          <mwc-list-item value="green">Green</mwc-list-item>
-          <mwc-list-item value="blue">Blue</mwc-list-item>
-          <mwc-list-item value="hue">Hue</mwc-list-item>
-          <mwc-list-item value="saturation">Saturation</mwc-list-item>
-        </ha-select>
-
-        <ha-switch
-          .checked=${this._config.show_percentage ?? true}
-          configValue="show_percentage"
-          @change=${this._valueChanged}
-        >
-        </ha-switch>
-        <span>${localize("google_slider_card.show_percentage")}</span>
-
-        <ha-switch
-          .checked=${this._config.bold_text ?? false}
-          configValue="bold_text"
-          @change=${this._valueChanged}
-        >
-        </ha-switch>
-        <span>${localize("google_slider_card.bold_text")}</span>
-      </div>
-    `;
-  }
   render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -137,6 +81,21 @@ export class GoogleSliderCardEditor
 
     return html`
       <div class="form">
+        <ha-select
+          label="${localize("google_slider_card.control_type")}"
+          .value=${this._config.control_type ?? "light"}
+          configValue="control_type"
+          @selected=${this._valueChanged}
+          @closed=${(ev: Event) => ev.stopPropagation()}
+        >
+          <mwc-list-item value="light">
+            ${localize("google_slider_card.type.light")}
+          </mwc-list-item>
+          <mwc-list-item value="cover">
+            ${localize("google_slider_card.type.cover")}
+          </mwc-list-item>
+        </ha-select>
+
         <ha-textfield
           label="${localize("google_slider_card.name")}"
           .value=${this._config.name || ""}
@@ -149,7 +108,7 @@ export class GoogleSliderCardEditor
           label="${localize("google_slider_card.entity")}"
           .value=${this._config.entity || ""}
           .hass=${this.hass}
-          .includeDomains=${["light"]}
+          .includeDomains=${this.setEntityFilter()}
           allow-custom-entity
           configValue="entity"
           @value-changed=${this._entityChanged}

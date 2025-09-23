@@ -55,6 +55,8 @@ export const google_color = {
         title: "var(--md-sys-color-on-secondary-container, #d8e3f7)",
         icon: "var(--md-sys-color-on-secondary-container, #d8e3f7)",
         percentage: "var(--md-sys-color-on-secondary-container, #d8e3f7)",
+        back_slider_color:
+          "color-mix(in srgb, var(--md-sys-color-secondary-container) 70%, black)",
         background: "var(--md-sys-color-secondary-container, #3e4758)",
       },
       // (Updated on 04/08/2025)
@@ -151,6 +153,8 @@ export const google_color = {
         title: "var(--md-sys-color-on-secondary-container, #131c2b)",
         icon: "var(--md-sys-color-on-secondary-container, #131c2b)",
         percentage: "var(--md-sys-color-on-secondary-container, #131c2b)",
+        back_slider_color:
+          "color-mix(in srgb, var(--md-sys-color-secondary-container) 70%, white)",
         background: "var(--md-sys-color-secondary-container, #d8e3f7)",
       },
       // (Updated on 04/08/2025)

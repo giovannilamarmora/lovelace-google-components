@@ -30,6 +30,7 @@ export enum DeviceType {
   MEASUREMENT = "measurement",
   BATTERY = "battery",
   TEMPERATURE = "temperature",
+  HUMIDITY = "humidity",
   TIMESTAMP = "timestamp",
   NONE = "none",
 }

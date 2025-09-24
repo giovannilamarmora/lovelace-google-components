@@ -14,7 +14,7 @@ import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
 import {
   adjustNewTempAuto,
   adjustTempAuto,
-  isAirConditioning,
+  setColorCard,
 } from "./google-climate-mapper";
 
 @customElement("google-climate-card")
@@ -78,11 +78,7 @@ export class GoogleClimateCard extends LitElement {
     if (!this.hass || !this._config?.entity) return;
 
     const stateObj = this.hass.states[this._config.entity];
-    //const current = Number(
-    //  this._config.fix_temperature
-    //    ? stateObj.attributes.temperature * 5
-    //    : stateObj?.attributes?.temperature
-    //);
+
     const current = Number(
       adjustTempAuto(
         this._config.fix_temperature!,
@@ -90,10 +86,6 @@ export class GoogleClimateCard extends LitElement {
       )
     );
     if (isNaN(current)) return;
-
-    //const newTemp = this._config.fix_temperature
-    //  ? (current + delta) / 5
-    //  : current + delta;
 
     const newTemp = adjustNewTempAuto(
       this._config.fix_temperature!,
@@ -146,15 +138,15 @@ export class GoogleClimateCard extends LitElement {
         if (use_material_color) {
           if (isConditioner) {
             nameColor =
-              this.google_color_scheme.dark.on.climate.material_dry.title;
+              this.google_color_scheme.dark.on.climate.material_cool.title;
             iconColor =
-              this.google_color_scheme.dark.on.climate.material_dry.icon;
+              this.google_color_scheme.dark.on.climate.material_cool.icon;
             adjustTemp =
-              this.google_color_scheme.dark.on.climate.material_dry.button;
+              this.google_color_scheme.dark.on.climate.material_cool.button;
             internalTemp =
-              this.google_color_scheme.dark.on.climate.material_dry.subtitle;
+              this.google_color_scheme.dark.on.climate.material_cool.subtitle;
             containerColor =
-              this.google_color_scheme.dark.on.climate.material_dry.background;
+              this.google_color_scheme.dark.on.climate.material_cool.background;
           } else {
             nameColor = this.google_color_scheme.dark.on.climate.material.title;
             iconColor = this.google_color_scheme.dark.on.climate.material.icon;
@@ -181,15 +173,16 @@ export class GoogleClimateCard extends LitElement {
         if (use_material_color) {
           if (isConditioner) {
             nameColor =
-              this.google_color_scheme.light.on.climate.material_dry.title;
+              this.google_color_scheme.light.on.climate.material_cool.title;
             iconColor =
-              this.google_color_scheme.light.on.climate.material_dry.icon;
+              this.google_color_scheme.light.on.climate.material_cool.icon;
             internalTemp =
-              this.google_color_scheme.light.on.climate.material_dry.subtitle;
+              this.google_color_scheme.light.on.climate.material_cool.subtitle;
             adjustTemp =
-              this.google_color_scheme.light.on.climate.material_dry.button;
+              this.google_color_scheme.light.on.climate.material_cool.button;
             containerColor =
-              this.google_color_scheme.light.on.climate.material_dry.background;
+              this.google_color_scheme.light.on.climate.material_cool
+                .background;
           } else {
             nameColor =
               this.google_color_scheme.light.on.climate.material.title;
@@ -273,17 +266,26 @@ export class GoogleClimateCard extends LitElement {
     );
     const theme = this.hass?.themes?.darkMode ? "dark" : "light";
     const isOn = isDeviceOn(stateObj.state);
-    const isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
+    //const isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
     const isOffAndHasTemperature =
       !isOn && !isNullOrEmpty(stateObj.attributes.temperature);
 
-    this.setColorCard(
-      this._config.use_material_color,
-      theme,
+    setColorCard(
+      this.style,
       isOffline,
       isOn,
-      isConditioner
+      theme,
+      stateObj.state,
+      this._config.use_material_color
     );
+
+    //this.setColorCard(
+    //  this._config.use_material_color,
+    //  theme,
+    //  isOffline,
+    //  isOn,
+    //  isConditioner
+    //);
 
     const config = {
       control_type: "thermometer",

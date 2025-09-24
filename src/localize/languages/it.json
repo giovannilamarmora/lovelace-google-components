@@ -66,7 +66,7 @@
     "control_type": "Tipo di controllo",
     "type": {
       "generic": "Generico (Interruttore, Pulsante...)",
-      "thermometer": "Termometro",
+      "thermometer": "Climatizzazione",
       "automation": "Autonomazioni",
       "scene": "Scene",
       "media": "Multimedia (Google, Alexa...)",

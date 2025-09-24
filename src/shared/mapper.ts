@@ -86,10 +86,13 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
           return "mdi:fire";
         case "dry":
           return "m3of:cool-to-dry";
+        case "fan":
         case "fan_only":
           return "m3of:mode-fan";
         case "cool":
           return "mdi:snowflake";
+        case "eco":
+          return "m3rf:eco";
         case "off":
         case "unavailable":
           return "m3s:thermometer";

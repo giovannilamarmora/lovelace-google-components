@@ -31,14 +31,6 @@ export function adjustNewTempAuto(
   return temperature;
 }
 
-export function isAirConditioning(states: string[]) {
-  return (
-    states &&
-    !states.includes(OnStates.HEAT) &&
-    !states.includes(OnStates.HEAT_COOL)
-  );
-}
-
 /**
  * Applies the appropriate color scheme to a climate card based on device state,
  * connectivity, and theme settings.
@@ -112,18 +104,21 @@ export function setColorCard(
  * - `"material_dry"` → For cooling, fan, dry, or eco modes.
  * - `"material"` (default) → If the state does not match any known case.
  */
-function getPropertyColor(state: string) {
+export function getPropertyColor(state: string) {
   switch (state) {
     case OnStates.AUTO:
     case OnStates.HEAT:
     case OnStates.HEAT_COOL:
       return "material";
     case OnStates.COOL:
+      return "material_cool";
     case OnStates.FAN_ONLY:
     case OnStates.FAN:
+      return "material_fan";
     case OnStates.DRY:
-    case OnStates.ECO:
       return "material_dry";
+    case OnStates.ECO:
+      return "material_eco";
     default:
       return "material";
   }

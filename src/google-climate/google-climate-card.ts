@@ -138,15 +138,15 @@ export class GoogleClimateCard extends LitElement {
         if (use_material_color) {
           if (isConditioner) {
             nameColor =
-              this.google_color_scheme.dark.on.climate.material_dry.title;
+              this.google_color_scheme.dark.on.climate.material_cool.title;
             iconColor =
-              this.google_color_scheme.dark.on.climate.material_dry.icon;
+              this.google_color_scheme.dark.on.climate.material_cool.icon;
             adjustTemp =
-              this.google_color_scheme.dark.on.climate.material_dry.button;
+              this.google_color_scheme.dark.on.climate.material_cool.button;
             internalTemp =
-              this.google_color_scheme.dark.on.climate.material_dry.subtitle;
+              this.google_color_scheme.dark.on.climate.material_cool.subtitle;
             containerColor =
-              this.google_color_scheme.dark.on.climate.material_dry.background;
+              this.google_color_scheme.dark.on.climate.material_cool.background;
           } else {
             nameColor = this.google_color_scheme.dark.on.climate.material.title;
             iconColor = this.google_color_scheme.dark.on.climate.material.icon;
@@ -173,15 +173,16 @@ export class GoogleClimateCard extends LitElement {
         if (use_material_color) {
           if (isConditioner) {
             nameColor =
-              this.google_color_scheme.light.on.climate.material_dry.title;
+              this.google_color_scheme.light.on.climate.material_cool.title;
             iconColor =
-              this.google_color_scheme.light.on.climate.material_dry.icon;
+              this.google_color_scheme.light.on.climate.material_cool.icon;
             internalTemp =
-              this.google_color_scheme.light.on.climate.material_dry.subtitle;
+              this.google_color_scheme.light.on.climate.material_cool.subtitle;
             adjustTemp =
-              this.google_color_scheme.light.on.climate.material_dry.button;
+              this.google_color_scheme.light.on.climate.material_cool.button;
             containerColor =
-              this.google_color_scheme.light.on.climate.material_dry.background;
+              this.google_color_scheme.light.on.climate.material_cool
+                .background;
           } else {
             nameColor =
               this.google_color_scheme.light.on.climate.material.title;

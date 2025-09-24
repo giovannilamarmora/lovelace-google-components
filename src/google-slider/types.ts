@@ -20,7 +20,7 @@ export interface GoogleSliderCardConfig extends LovelaceCardConfig {
   control_type: ControlType;
   name?: string;
   entity?: string;
-  attribute: string;
+  attribute?: string;
   transition?: number;
   height?: number;
   color?: string;

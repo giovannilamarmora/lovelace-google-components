@@ -57,7 +57,6 @@ export class GoogleSliderCard extends LitElement {
     return {
       type: "custom:google-slider-card",
       entity: randomLight,
-      attribute: "brightness",
       icon: "m3of:lightbulb",
       show_percentage: true,
       bold_text: false,
@@ -93,15 +92,21 @@ export class GoogleSliderCard extends LitElement {
       );
     }
 
-    if (!config.attribute) {
-      if (config.control_type === ControlType.LIGHT) {
-        config.attribute = "brightness";
-      } else if (config.control_type === ControlType.COVER) {
-        config.attribute = "current_position";
+    const finalConfig: GoogleSliderCardConfig = {
+      ...DEFAULT_CONFIG,
+      ...config,
+    };
+
+    // fallback automatici
+    if (!finalConfig.attribute) {
+      if (finalConfig.control_type === ControlType.LIGHT) {
+        finalConfig.attribute = "brightness";
+      } else if (finalConfig.control_type === ControlType.COVER) {
+        finalConfig.attribute = "current_position";
       }
     }
 
-    this._config = { ...DEFAULT_CONFIG, ...config };
+    this._config = finalConfig;
     this._entity = this._config.entity;
     this._config.original_min = this._config.min;
     this._config.original_max = this._config.max;
@@ -434,7 +439,7 @@ export class GoogleSliderCard extends LitElement {
 
     // Default: gestione light
     let value = this.currentValue;
-    let attr = this._config.attribute;
+    let attr = this._config?.attribute ?? "brightness";
 
     let on = true;
     let _value;

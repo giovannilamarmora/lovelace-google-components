@@ -147,7 +147,7 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
             if (deviceOnline) {
               const batteryLevel = Number.parseInt(state);
               if (batteryLevel >= 90 && batteryLevel <= 100)
-                return "m3of:battery-android-full";
+                return "m3of:battery-android-0";
               if (batteryLevel >= 70 && batteryLevel < 90)
                 return "m3of:battery-android-5";
               if (batteryLevel >= 50 && batteryLevel < 70)
@@ -167,8 +167,11 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
             if (idDeviceTurnOn) return "m3rf:sensor-door";
             else return "m3r:sensor-door";
           case DeviceType.TEMPERATURE:
-            if (deviceOnline) return "mdi:temperature-celsius";
-            else return "mdi:thermometer-alert";
+            if (deviceOnline) return "m3rf:temp-preferences-eco";
+            else return "m3r:temp-preferences-eco";
+          case DeviceType.HUMIDITY:
+            if (deviceOnline) return "m3rf:humidity-percentage";
+            else return "m3r:humidity-percentage";
         }
       }
       if (domain == DomainType.SWITCH) {
@@ -239,8 +242,15 @@ export function mapStateDisplay(
     (control_type === ControlType.STATE && !isOffline)
   ) {
     const device_class = getValidDeviceClass(stateObj.attributes);
-    if (device_class == DeviceType.BATTERY) return stateObj.state + "%";
-    if (device_class == DeviceType.TEMPERATURE) return stateObj.state + "°";
+    if (
+      device_class == DeviceType.BATTERY ||
+      device_class == DeviceType.HUMIDITY
+    )
+      return stateObj.state + (stateObj.attributes.unit_of_measurement ?? "%");
+    if (device_class == DeviceType.TEMPERATURE)
+      return (
+        stateObj.state + " " + (stateObj.attributes.unit_of_measurement ?? "°")
+      );
     if (device_class == DeviceType.TIMESTAMP)
       return formatSmartDate(stateObj.state);
 

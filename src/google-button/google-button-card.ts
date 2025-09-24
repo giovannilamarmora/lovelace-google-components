@@ -18,8 +18,8 @@ import {
 import { isDeviceOn, isNullOrEmpty, isOfflineState } from "../shared/utils";
 import { google_color } from "../shared/color";
 import { getIcon, getName, mapStateDisplay } from "../shared/mapper";
-import { isAirConditioning } from "../google-climate/google-climate-mapper";
 import { GoogleMediaOverlay } from "../google-media-overlay/google-media-overlay";
+import { setColorCard } from "./google-button-mapper";
 
 @customElement("google-button-card")
 export class GoogleButtonCard extends LitElement {
@@ -332,7 +332,7 @@ export class GoogleButtonCard extends LitElement {
     let device_class: DeviceType = DeviceType.NONE;
     let stateDisplay: string;
     const default_text = this._config.use_default_text ?? true;
-    let isConditioner: boolean = false;
+    //let isConditioner: boolean = false;
     if (
       this._config.control_type != ControlType.APP_VERSION &&
       this._config.control_type != ControlType.ACTION
@@ -347,7 +347,7 @@ export class GoogleButtonCard extends LitElement {
       isOffline = isOfflineState(stateObj.state, this._config.control_type!);
       device_class = getValidDeviceClass(stateObj.attributes)!;
 
-      isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
+      //isConditioner = isAirConditioning(stateObj.attributes.hvac_modes);
     }
 
     //let icon = "";
@@ -394,13 +394,16 @@ export class GoogleButtonCard extends LitElement {
       (this._config.use_default_text ||
         isNullOrEmpty(this._config.use_default_text));
 
-    this.setColorCard(
-      this._config.control_type,
-      theme,
-      isOffline,
-      isOn,
-      isConditioner
-    );
+    const state = stateObj && stateObj.state ? stateObj.state : "unavaiable";
+    setColorCard(this.style, this._config, isOffline, isOn, theme, state);
+
+    //this.setColorCard(
+    //  this._config.control_type,
+    //  theme,
+    //  isOffline,
+    //  isOn,
+    //  isConditioner
+    //);
 
     return html`
       <ha-card
@@ -492,10 +495,11 @@ export class GoogleButtonCard extends LitElement {
       if (theme === "dark") {
         if (control_type === "thermometer" && this._config.use_material_color) {
           if (isConditioner) {
-            nameColor = this.color.dark.on.climate.material_dry.title;
-            iconColor = this.color.dark.on.climate.material_dry.icon;
-            percentageColor = this.color.dark.on.climate.material_dry.subtitle;
-            containerColor = this.color.dark.on.climate.material_dry.background;
+            nameColor = this.color.dark.on.climate.material_cool.title;
+            iconColor = this.color.dark.on.climate.material_cool.icon;
+            percentageColor = this.color.dark.on.climate.material_cool.subtitle;
+            containerColor =
+              this.color.dark.on.climate.material_cool.background;
           } else {
             nameColor = this.color.dark.on.climate.material.title;
             iconColor = this.color.dark.on.climate.material.icon;
@@ -512,11 +516,12 @@ export class GoogleButtonCard extends LitElement {
         // Acceso, tema light
         if (control_type === "thermometer" && this._config.use_material_color) {
           if (isConditioner) {
-            nameColor = this.color.light.on.climate.material_dry.title;
-            iconColor = this.color.light.on.climate.material_dry.icon;
-            percentageColor = this.color.light.on.climate.material_dry.subtitle;
+            nameColor = this.color.light.on.climate.material_cool.title;
+            iconColor = this.color.light.on.climate.material_cool.icon;
+            percentageColor =
+              this.color.light.on.climate.material_cool.subtitle;
             containerColor =
-              this.color.light.on.climate.material_dry.background;
+              this.color.light.on.climate.material_cool.background;
           } else {
             nameColor = this.color.light.on.climate.material.title;
             iconColor = this.color.light.on.climate.material.icon;

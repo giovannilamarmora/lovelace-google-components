@@ -9,7 +9,7 @@ import { CARD_VERSION } from "../google-slider/const";
 import { localize } from "../localize/localize";
 import { GoogleDevice } from "./google_model";
 import {
-  formatDate,
+  formatSmartDate,
   getOrDefault,
   isDeviceOn,
   isDeviceOnline,
@@ -61,6 +61,22 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
   // Se use_default_icon è true, prosegui con la logica predefinita
 
   switch (controlType) {
+    case ControlType.LIGHT: {
+      return config.icon == undefined ||
+        config.icon === "m3of:lightbulb" ||
+        config.icon === "m3r:lightbulb"
+        ? idDeviceTurnOn
+          ? "m3of:lightbulb"
+          : "m3r:lightbulb"
+        : config.icon;
+    }
+    case ControlType.COVER: {
+      return config.icon == undefined
+        ? idDeviceTurnOn
+          ? "m3rf:blinds"
+          : "m3rf:blinds-closed"
+        : config.icon;
+    }
     case ControlType.THERMOMETER: {
       switch (state) {
         case "auto":
@@ -115,7 +131,8 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
         }
       }
       break;
-    case ControlType.GENERIC: {
+    case ControlType.GENERIC:
+    case ControlType.STATE: {
       const deviceOnline = !isOfflineState(state, controlType);
       if (domain == DomainType.BINARY_SENSOR || domain == DomainType.SENSOR) {
         const device_class = getValidDeviceClass(stateObj.attributes);
@@ -149,6 +166,9 @@ export function getIcon(stateObj: any, config: any, hass: any): string {
           case DeviceType.DOOR:
             if (idDeviceTurnOn) return "m3rf:sensor-door";
             else return "m3r:sensor-door";
+          case DeviceType.TEMPERATURE:
+            if (deviceOnline) return "mdi:temperature-celsius";
+            else return "mdi:thermometer-alert";
         }
       }
       if (domain == DomainType.SWITCH) {
@@ -176,6 +196,10 @@ export function mapStateDisplay(
   is_presence_sensor: boolean = false,
   is_climate_card: boolean = false
 ) {
+  const domain = isNullOrEmpty(stateObj)
+    ? ""
+    : stateObj.entity_id!.split(".")[0];
+
   if (control_type === ControlType.APP_VERSION) {
     return "V".concat(CARD_VERSION);
   }
@@ -210,26 +234,31 @@ export function mapStateDisplay(
     const app_name = getOrDefault(stateObj.attributes.app_name, "");
     text = app_name ? " • " + app_name : "";
   }
-  if (control_type === ControlType.GENERIC && !isOffline) {
+  if (
+    (control_type === ControlType.GENERIC && !isOffline) ||
+    (control_type === ControlType.STATE && !isOffline)
+  ) {
     const device_class = getValidDeviceClass(stateObj.attributes);
-    if (device_class == DeviceType.BATTERY) {
-      const batteryLevel = stateObj.state;
-      return batteryLevel + "%";
+    if (device_class == DeviceType.BATTERY) return stateObj.state + "%";
+    if (device_class == DeviceType.TEMPERATURE) return stateObj.state + "°";
+    if (device_class == DeviceType.TIMESTAMP)
+      return formatSmartDate(stateObj.state);
+
+    if (domain == "event") {
+      return formatSmartDate(stateObj.state);
     }
-    // TODO: Testo Sensore porta
-    //if (device_class == DeviceType.DOOR) {
-    //  const batteryLevel = stateObj.state;
-    //  return batteryLevel + "%";
-    //}
+
+    if (
+      (control_type === ControlType.STATE && !isOffline) ||
+      (!isDeviceOnline(stateObj.state) && !isOffline)
+    ) {
+      return stateObj.state;
+    }
   }
-  if (control_type === ControlType.STATE && !isOffline) {
-    return stateObj.state;
-  }
-  const domain = isNullOrEmpty(stateObj)
-    ? ""
-    : stateObj.entity_id!.split(".")[0];
-  if (domain == "event") {
-    return formatDate(stateObj.state);
+
+  if (control_type == ControlType.AUTOMATION) {
+    if (isDeviceOn(stateObj.state)) return localize("common.active");
+    else return localize("common.inactive");
   }
   return getStateDisplay(stateObj.state, text, is_presence_sensor);
 }

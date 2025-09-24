@@ -17,7 +17,13 @@
     "playing": "Playing",
     "idle": "Cast",
     "presence": "Motion",
-    "off_presence": "No motion"
+    "off_presence": "No motion",
+    "today_at": "Today at",
+    "yesterday_at": "Yesterday at",
+    "open": "Open",
+    "closed": "Closed",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "google_dashboard_card": {
     "description": "Configure the navigation path when a card is tapped.",
@@ -61,7 +67,8 @@
     "type": {
       "generic": "Generic (Switch, Button...)",
       "thermometer": "Thermometer",
-      "scene": "Autonomation and scene",
+      "automation": "Autonomation",
+      "scene": "Scene",
       "media": "Multimedia (Google, Alexa...)",
       "state": "State",
       "action": "Action",
@@ -109,6 +116,11 @@
   },
   "google_slider_card": {
     "name": "Card Name",
+    "control_type": "Control Type",
+    "type": {
+      "light": "Light",
+      "cover": "Cover"
+    },
     "entity": "Entity to control",
     "icon": "Custom icon (if left empty, changes automatically based on On/Off state)",
     "percentage": "Display value as percentage",

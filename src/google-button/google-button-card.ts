@@ -1,7 +1,6 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { localize } from "../localize/localize";
-import { DEFAULT_BTN_CONFIG } from "../google-slider/const";
 import {
   ActionConfig,
   fireEvent,
@@ -11,6 +10,7 @@ import { HomeAssistant } from "../ha-types";
 import { applyRippleEffect } from "../animations";
 import {
   ControlType,
+  DEFAULT_BTN_CONFIG,
   DeviceType,
   getValidDeviceClass,
   GoogleButtonCardConfig,
@@ -102,7 +102,7 @@ export class GoogleButtonCard extends LitElement {
     //if (!entityId) return;
 
     const domain = !entityId ? "" : entityId.split(".")[0];
-    const controlType = this._config.control_type ?? "generic";
+    const controlType = this._config.control_type ?? ControlType.GENERIC;
 
     const toggleDomains = [
       "light",
@@ -122,7 +122,7 @@ export class GoogleButtonCard extends LitElement {
         controlType != ControlType.THERMOMETER &&
         controlType != ControlType.MEDIA_PLAYER;
 
-      if (isToggleable) {
+      if (isToggleable || controlType == ControlType.AUTOMATION) {
         return this.hass.callService("homeassistant", "toggle", {
           entity_id: entityId,
         });

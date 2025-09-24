@@ -1,4 +1,5 @@
 import { ControlType } from "../google-button/google-button-const";
+import { localize } from "../localize/localize";
 
 export enum OnStates {
   // Lights
@@ -16,10 +17,13 @@ export enum OnStates {
   IDLE = "idle",
   PLAYING = "playing",
   PAUSED = "paused",
+  // Cover
+  OPEN = "open",
 }
 
 export enum OffStates {
   OFF = "off",
+  CLOSED = "closed",
 }
 
 export const OnlineStates = {
@@ -50,23 +54,77 @@ export function isOfflineState(
 ): boolean {
   const stateNum = Number.parseInt(state);
 
+  // Caso 1: stato numerico valido e diverso da 0 → online
   if (!isNaN(stateNum) && stateNum !== 0) {
-    // Se è un numero diverso da 0, non è offline
     return false;
   }
 
+  // Caso 2: scene con stato "unknown" oppure controllo tipo STATE → consideriamo online
   if (
-    (control_type == ControlType.SCENE && state == "unknown") ||
-    control_type == ControlType.STATE
+    (control_type === ControlType.SCENE && state === "unknown") ||
+    control_type === ControlType.STATE
   ) {
     return false;
   }
 
-  return !isDeviceOnline(state);
+  // Caso 3: stato conosciuto in OnStates o OffStates → online
+  if (isDeviceOnline(state)) {
+    return false;
+  }
+
+  // Ultimo controllo: ritorna true solo se lo stato è "offline" o "unavailable"
+  return (
+    state.toLowerCase() === "offline" || state.toLowerCase() === "unavailable"
+  );
+  //return !isDeviceOnline(state);
 }
 
 export function getOrDefault<T>(value: T | undefined | null, defValue: T): T {
   return value !== undefined && value !== null ? value : defValue;
+}
+
+export function formatSmartDate(dateString: string): string {
+  const date = new Date(dateString);
+
+  // Controllo validità
+  if (isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  const now = new Date();
+
+  // Normalizziamo le date a mezzanotte per confrontarle solo sul giorno
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const targetDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+
+  // Caso 1: Oggi
+  if (targetDate.getTime() === today.getTime()) {
+    return `${localize("common.today_at")} ${date.toLocaleTimeString("it-IT", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
+  }
+
+  // Caso 2: Ieri
+  if (targetDate.getTime() === yesterday.getTime()) {
+    return `${localize("common.yesterday_at")} ${date.toLocaleTimeString(
+      "it-IT",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    )}`;
+  }
+
+  // Caso 3: Altro → usa la tua formatDate
+  return formatDate(dateString);
 }
 
 export function formatDate(dateString: string): string {

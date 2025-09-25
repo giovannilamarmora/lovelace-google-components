@@ -87,6 +87,7 @@ cards:
               return lights.length === 0 ? "none" : "block";
             ]]]
         - margin-bottom: 1px
+        - margin-left: 13px
         - height: 130px
         - width: 130px
         - border-radius: 30px
@@ -122,7 +123,14 @@ cards:
               return hass.themes.darkMode ? '#8AB4F8' : '#1A73E8';
             ]]]
     state:
-      - value: "on"
+      - operator: template
+        value: |
+          [[[
+            return Object.keys(hass.states).some(entity => 
+              entity.startsWith('camera.') && 
+              (hass.states[entity].state === 'on' || hass.states[entity].state === 'idle')
+            );
+          ]]]
         styles:
           card:
             - background: |
@@ -132,7 +140,7 @@ cards:
           icon:
             - color: |
                 [[[
-                  return hass.themes.darkMode ? '#fee183' : '#1A73E8';
+                  return hass.themes.darkMode ? '#8AB4F8' : '#1A73E8';
                 ]]]
   - type: custom:button-card
     icon: m3r:light-group
